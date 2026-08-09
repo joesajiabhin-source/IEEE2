@@ -48,8 +48,7 @@
    1. BASE
    ============================================================ */
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:calc(var(--housing-h) + 24px);scrollbar-width:none}
-html::-webkit-scrollbar{display:none}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--housing-h) + 24px)}
 body{
   margin:0;
   background:
@@ -59,7 +58,6 @@ body{
   color:var(--fg);
   font:16px/1.65 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
 }
 /* Warehouse background — lives INSIDE the hero only, revealed when the
    shutter rolls up. It scrolls away with #home, so the rest of the page
@@ -81,18 +79,12 @@ body{
   will-change:transform,opacity;
 }
 .is-open #home::before{opacity:1;transform:scale(1.02) perspective(900px) translateZ(0)}
-
-/* Mobile hero — the portrait crop places the headbox up top and the logo
-   wall centred under the fold, so we anchor to top-centre and let the
-   sides crop. Same reveal motion as desktop. */
-@media (max-width:720px){
-  #home::before{
-    background:
-      linear-gradient(180deg, rgba(6,7,10,.42) 0%, rgba(6,7,10,.18) 26%, rgba(6,7,10,.22) 62%, rgba(6,7,10,.55) 100%),
-      radial-gradient(ellipse 150% 100% at 50% 40%, transparent 52%, rgba(0,0,0,.5) 100%),
-      url('warehouse-bg(mobile).png') center top / cover no-repeat;
-    transform-origin:50% 30%;
-  }
+/* soft fade at the bottom of the hero so the photo hands off cleanly
+   to the dark page background below */
+#home::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:140px;z-index:1;
+  pointer-events:none;
+  background:linear-gradient(180deg, transparent, var(--ink-0));
 }
 /* soft fade at the bottom of the hero so the photo hands off cleanly
    to the dark page background below */
@@ -286,7 +278,7 @@ button,input,select,textarea{font:inherit;color:inherit}
    5. SHUTTER  +  HOUSING
    ============================================================ */
 .housing{
-  position:fixed;top:0;left:0;right:0;height:var(--housing-h);z-index:210;
+  position:fixed;top:0;left:0;right:0;height:var(--housing-h);z-index:80;
   pointer-events:none;
   /* dark wall behind the headbox */
   background:linear-gradient(180deg,#101011 0%,#0b0b0b 100%);
@@ -491,44 +483,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 .enter-btn:hover{border-color:#c9252d;color:#e04048;background:rgba(0,0,0,.55)}
 .enter-btn:focus-visible{outline:2px solid #c9252d;outline-offset:3px}
 
-/* ---------- MOBILE SHUTTER FACE ----------
-   On phones we swap the CSS-painted corrugated metal for the portrait
-   warehouse photo, so the closed shutter IS the room door. The stencil
-   lettering sits over it (slightly smaller) and the enter button lifts
-   just above the floor glow. The hero behind it uses the same image,
-   so when the shutter rolls up the hand-off is seamless. */
-@media (max-width:720px){
-  .shutter{background:#0a0a0b}
-  .shutter::before{
-    /* hide the painted slats */
-    background:none;
-  }
-  .shutter-skin{
-    background:
-      /* dim the photo a touch so the stencil letters read off it */
-      linear-gradient(180deg, rgba(4,5,7,.34) 0%, rgba(4,5,7,.16) 34%, rgba(4,5,7,.28) 72%, rgba(2,2,3,.6) 100%),
-      url('warehouse-bg(mobile).png') center top / cover no-repeat;
-  }
-  .st-ieee{
-    font-size:clamp(3.4rem,19vw,7rem);
-    filter:drop-shadow(0 2px 2px rgba(0,0,0,.7));
-  }
-  .st-vjec{
-    font-size:clamp(1.05rem,5vw,2rem);
-    margin-top:.9rem;
-  }
-  .enter-btn{
-    bottom:clamp(1.6rem,8vh,3rem);
-    padding:.72rem 2.2rem;
-    font-size:.72rem;letter-spacing:.4em;text-indent:.4em;
-    background:rgba(0,0,0,.5);
-    backdrop-filter:blur(6px);
-    -webkit-backdrop-filter:blur(6px);
-  }
-  /* keep the narrow side rails for depth on the portrait image */
-  .shutter .rail{width:10px}
-}
-
 /* OPEN STATE — rolls up into the barrel with a metallic rattle */
 @keyframes rattle{
   0%,100%{transform:translateX(0)}
@@ -546,9 +500,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 @keyframes rollWrap{to{background-position:0 -15px}}
 
 @media (prefers-reduced-motion:reduce){
-  .shutter{transition:transform .6s ease}
-  .shutter.open{transform:translateY(-101%)}
-  .shutter.open .shutter-skin,.shutter.open::before{animation:none}
+  .shutter{transition:opacity .5s ease}
+  .shutter.open{transform:none;opacity:0}
+  .shutter.open .shutter-skin,.shutter.open::before,.is-open .housing::before{animation:none}
 }
 
 /* ============================================================
@@ -768,11 +722,6 @@ input[type="radio"] {
 /* ============================================================
    ID CARD — PREMIUM EVENT BADGE
    ============================================================ */
-/* Blood-red backdrop — DISABLED (not needed for ID card reveal) */
-#blood-bg{
-  display:none !important;
-}
-
 .id-card-overlay{
   --badge-gold:#d4a017;
   --badge-gold-soft:#e6be4e;
@@ -782,24 +731,20 @@ input[type="radio"] {
   --line:#ececec;
   --line-soft:#f4f4f4;
   --sp:8px;
-  position:fixed;inset:0;z-index:65;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:16px;
-  overflow:hidden;
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;
+  padding:max(3vh,24px) 16px 24px;
+  overflow-y:auto;
   pointer-events:none;
   background:
-    radial-gradient(circle at 50% -20%, rgba(212,160,23,.08) 0%, transparent 50%),
-    url('Id card bg.png') center center / cover no-repeat;
-  perspective:1000px;
-  opacity:0;transition:opacity .3s ease, transform 1s ease-out;
+    radial-gradient(120% 90% at 50% -10%, rgba(212,160,23,.10), transparent 55%),
+    radial-gradient(90% 70% at 50% 120%, rgba(0,0,0,.55), transparent 60%),
+    rgba(8,9,12,.72);
+  backdrop-filter:blur(10px) saturate(115%);
+  -webkit-backdrop-filter:blur(10px) saturate(115%);
+  opacity:0;transition:opacity .3s ease;
 }
-.id-card-overlay.open{opacity:1;pointer-events:auto}
-.id-card-overlay::before {
-  content: ""; position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-  width: 100vw; max-width: 800px; height: 100vh;
-  background: radial-gradient(ellipse at top, rgba(232,194,122,0.06) 0%, transparent 70%);
-  pointer-events: none; z-index: -1;
-}
+.id-card-overlay.open{opacity:1}
 .id-card-overlay[hidden]{display:none}
 
 /* white flash */
@@ -829,44 +774,82 @@ input[type="radio"] {
   50%{transform:translateY(-18px) scale(1.06)}
 }
 
-/* ---------- LANYARD ---------- */
+/* ---------- LANYARD — REALISTIC V-SHAPE ---------- */
 .id-card-lanyard{
   position:relative;z-index:3;
-  width:80px;height:220px;
+  width:300px;height:80px;
   pointer-events:none;
   margin:0 auto;
   flex-shrink:0;
   overflow:visible;
+  opacity:0;
+  animation:lanyardDrop .7s cubic-bezier(.22,.68,.36,1) .08s forwards;
+}
+@keyframes lanyardDrop{
+  0%{opacity:0;transform:translateY(-80px)}
+  100%{opacity:1;transform:translateY(0)}
 }
 
-/* Strap: fills from top of lanyard container down to just above the ring */
+/* --- Each strap is a long flat fabric strip --- */
 .ly-strap{
   position:absolute;
-  top:0;bottom:32px;
-  left:50%;transform:translateX(-50%);
-  width:38px;
+  bottom:12px;
+  width:26px;
+  overflow:hidden;
+  border-radius:2px;
   background:
-    repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
-    linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
-  box-shadow: 2px 0 8px rgba(0,0,0,0.35), -2px 0 8px rgba(0,0,0,0.35);
-  border-radius:2px 2px 0 0;
+    repeating-linear-gradient(90deg,
+      rgba(255,255,255,.04) 0px,rgba(255,255,255,.04) 1px,
+      transparent 1px,transparent 2.5px),
+    repeating-linear-gradient(0deg,
+      rgba(255,255,255,.02) 0px,rgba(255,255,255,.02) 1px,
+      transparent 1px,transparent 2px),
+    linear-gradient(90deg,
+      #1a1a1a 0%,#242424 18%,#2c2c2c 50%,#242424 82%,#1a1a1a 100%);
+  box-shadow:
+    0 -4px 16px rgba(0,0,0,.3),
+    inset 1px 0 0 rgba(255,255,255,.04),
+    inset -1px 0 0 rgba(255,255,255,.04);
 }
-/* Center ridge highlight on strap */
+/* center ridge highlight */
 .ly-strap::before{
   content:"";
   position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.06) 44%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.06) 56%,transparent 100%);
+  background:
+    linear-gradient(90deg,transparent 0%,rgba(255,255,255,.05) 45%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.05) 55%,transparent 100%);
   pointer-events:none;
 }
 
 /* --- Left strap: goes up-left at ~16deg, extends above container --- */
-
+.ly-strap-l{
+  left:50%;margin-left:-13px;
+  height:300px;
+  transform-origin:bottom center;
+  transform:rotate(16deg);
+}
 
 /* --- Right strap: goes up-right at ~16deg --- */
-
+.ly-strap-r{
+  right:50%;margin-right:-13px;
+  height:300px;
+  transform-origin:bottom center;
+  transform:rotate(-16deg);
+}
 
 /* --- Printed text running along the strap --- */
-
+.ly-label{
+  position:absolute;
+  top:20px;left:50%;transform:translateX(-50%) rotate(0deg);
+  width:200px;
+  font-size:7px;font-weight:800;letter-spacing:.16em;
+  text-transform:uppercase;
+  color:rgba(212,160,23,.85);
+  white-space:nowrap;
+  text-shadow:0 0 2px rgba(0,0,0,.6);
+  -webkit-text-stroke:.3px rgba(212,160,23,.2);
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+}
 .ly-strap-l .ly-label{
   transform:translateX(-50%) rotate(0deg);
 }
@@ -876,7 +859,14 @@ input[type="radio"] {
 }
 
 /* --- Breakaway buckle on left strap --- */
-
+.ly-breakaway{
+  position:absolute;
+  bottom:48px;left:50%;margin-left:-28px;
+  width:22px;height:28px;
+  z-index:4;
+  transform:rotate(16deg);
+  transform-origin:bottom center;
+}
 .ly-breakaway::before{
   content:"";
   position:absolute;top:0;left:0;right:0;height:12px;
@@ -954,16 +944,16 @@ input[type="radio"] {
 
 /* ---------- CONTAINER (hanging + ground shadow) ---------- */
 .id-card-container{
-  display:flex;flex-direction:column;
-  width:var(--card-w);max-width:440px;
-  margin:0 auto;position:relative;z-index:2;
-  transform:translateY(-150vh);
-  transform-style:preserve-3d;
-  opacity: 1; /* always opaque, position hides it */
+  position:relative;z-index:2;
+  margin-top:-5px;
+  perspective:1200px;
+  pointer-events:auto;
+  opacity:0;
+  transition:opacity .4s ease;
 }
-.stage-reveal .id-card-container, .stage-enhance .id-card-container, .stage-complete .id-card-container {
-  animation: cardDrop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, cardSwing 4s ease-in-out 0.8s infinite alternate;
-}
+.stage-reveal .id-card-container,
+.stage-enhance .id-card-container,
+.stage-complete .id-card-container{opacity:1}
 .id-card-container::after{
   content:"";position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);
   width:66%;height:26px;border-radius:50%;
@@ -1141,8 +1131,17 @@ input[type="radio"] {
 }
 
 /* card inner content fades in just after the drop */
-.id-card-header,.id-card-tagline,.id-card-avatar,.id-card-name,.id-card-subrole,.id-card-meta,.id-card-codes{opacity:1;}
-
+.id-card-header,.id-card-tagline,.id-card-avatar,
+.id-card-name,.id-card-subrole,.id-card-meta,.id-card-codes{opacity:0}
+.stage-reveal .id-card-header,   .stage-enhance .id-card-header,   .stage-complete .id-card-header,
+.stage-reveal .id-card-tagline,  .stage-enhance .id-card-tagline,  .stage-complete .id-card-tagline,
+.stage-reveal .id-card-avatar,   .stage-enhance .id-card-avatar,   .stage-complete .id-card-avatar,
+.stage-reveal .id-card-name,     .stage-enhance .id-card-name,     .stage-complete .id-card-name,
+.stage-reveal .id-card-subrole,  .stage-enhance .id-card-subrole,  .stage-complete .id-card-subrole,
+.stage-reveal .id-card-meta,     .stage-enhance .id-card-meta,     .stage-complete .id-card-meta,
+.stage-reveal .id-card-codes,    .stage-enhance .id-card-codes,    .stage-complete .id-card-codes{
+  animation:idFadeUp .5s ease forwards;
+}
 .stage-reveal .id-card-header  {animation-delay:.34s}
 .stage-reveal .id-card-tagline {animation-delay:.42s}
 .stage-reveal .id-card-avatar  {animation-delay:.50s}
@@ -1150,20 +1149,8 @@ input[type="radio"] {
 .stage-reveal .id-card-subrole {animation-delay:.64s}
 .stage-reveal .id-card-meta    {animation-delay:.70s}
 .stage-reveal .id-card-codes   {animation-delay:.78s}
-
-/* card container drops from above the viewport */
-@keyframes cardDrop{
-  0%  {transform:translateY(-150vh)}
-  100%{transform:translateY(0)}
-}
-/* gentle pendulum swing once settled */
-@keyframes cardSwing{
-  0%  {transform:translateY(0) rotate(-1.5deg)}
-  100%{transform:translateY(0) rotate(1.5deg)}
-}
-/* actions fade up into place */
 @keyframes idFadeUp{
-  from{opacity:0;transform:translateY(10px)}
+  from{opacity:0;transform:translateY(8px)}
   to  {opacity:1;transform:translateY(0)}
 }
 
@@ -1318,25 +1305,20 @@ input[type="radio"] {
 
 /* close button */
 .id-card-close{
-  position:fixed;top:20px;right:20px;z-index:120;
-  width:44px;height:44px;border-radius:50%;
+  position:fixed;top:16px;right:16px;z-index:8;
+  width:42px;height:42px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.10);
-  border:1.5px solid rgba(255,255,255,.30);
-  color:#e9ecf1;cursor:pointer;
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.16);
+  color:var(--fg);cursor:pointer;
   opacity:0;pointer-events:none;
-  transition:background .2s ease,transform .25s ease,opacity .4s ease;
-  box-shadow:0 2px 12px rgba(0,0,0,.45);
+  transition:background .2s ease,transform .2s ease,opacity .3s ease;
 }
-/* show from stage-reveal onwards (not just stage-complete) */
-.stage-reveal .id-card-close,
-.stage-enhance .id-card-close,
 .stage-complete .id-card-close{opacity:1;pointer-events:auto}
-.id-card-close:hover{background:rgba(255,80,80,.35);border-color:rgba(255,120,120,.5);transform:rotate(90deg) scale(1.1)}
-.id-card-close:active{transform:rotate(90deg) scale(.95)}
+.id-card-close:hover{background:rgba(255,255,255,.15);transform:rotate(90deg)}
 
 /* ---------- LANYARD RECOLOUR (teal, per reference) ---------- */
-.id-card-lanyard{opacity:1;transition:opacity .4s ease}
+.id-card-lanyard{opacity:0;transition:opacity .4s ease}
 .stage-reveal .id-card-lanyard,
 .stage-enhance .id-card-lanyard,
 .stage-complete .id-card-lanyard{opacity:1}
@@ -1345,50 +1327,13 @@ input[type="radio"] {
 }
 
 /* ---------- RESPONSIVE ---------- */
-/* Phone: swap in the portrait ID-card backdrop and shrink the badge.
-   The desktop card is sized for a wide screen; on a phone it dominates
-   the viewport, so the clamp range moves down and padding/radius shrink. */
-@media (max-width:720px){
-  .id-card-overlay{
-    background:
-      radial-gradient(circle at 50% -16%, rgba(212,160,23,.07) 0%, transparent 46%),
-      url('id card bg(mobile).png') center top / cover no-repeat;
-    padding:12px;
-  }
-  .id-card-lanyard{height:120px}
-  .ly-strap{width:30px}
-  .id-card{
-    --card-w:clamp(236px,72vw,300px);
-    padding:14px 16px 15px;border-radius:16px;
-  }
-  .id-card::before{top:8px;width:40px;height:7px}
-  .id-card-header{gap:7px;margin-top:9px}
-  .id-card-logo svg{width:24px;height:24px}
-  .id-card-brand{font-size:12.5px}
-  .id-card-brandsub{font-size:8px}
-  .id-card-eventtag{font-size:8px}
-  .id-card-tagline{margin:12px 0 0;font-size:16px}
-  .id-card-role{margin-top:6px;font-size:8px;letter-spacing:.2em}
-  .id-card-avatar{width:74px;height:74px;margin:12px auto 0}
-  .id-card-avatar svg{width:42px;height:42px}
-  .id-card-name{margin:10px 0 0;font-size:15.5px}
-  .id-card-subrole{margin-top:3px;font-size:8px;letter-spacing:.2em}
-  .id-card-meta{margin-top:9px;gap:6px}
-  .id-card-chip{font-size:8px;padding:4px 8px}
-  .id-card-codes{margin-top:12px;padding-top:12px;gap:10px}
-  .id-card-qr{width:58px;height:58px;padding:5px}
-  .id-card-id{font-size:8.5px}
-  .id-wireframe{width:clamp(236px,72vw,300px)}
-  .id-card-actions{width:clamp(236px,72vw,300px);margin-top:20px}
-  .id-card-close{top:12px;right:12px;width:38px;height:38px}
-}
 @media (max-width:460px){
-  .id-card{--card-w:78vw;padding:14px 15px 14px}
-  .id-card-tagline{font-size:15px}
-  .id-card-avatar{width:66px;height:66px}
-  .id-card-name{font-size:14.5px}
-  .id-card-qr{width:52px;height:52px}
-  .id-card-actions{width:78vw}
+  .id-card{--card-w:90vw;padding:18px 18px 18px}
+  .id-card-tagline{font-size:20px}
+  .id-card-avatar{width:96px;height:96px}
+  .id-card-name{font-size:19px}
+  .id-card-qr{width:66px;height:66px}
+  .id-card-actions{width:90vw}
 }
 
 /* ---------- REDUCED MOTION ---------- */
@@ -1409,36 +1354,6 @@ input[type="radio"] {
   .id-wire-status,.id-card-bg .bokeh{animation:none!important}
   .id-check svg{stroke-dashoffset:0}
   .id-card-close{transition:none}
-}
-
-/* ---------- PRINT / DOWNLOAD (badge only) ---------- */
-@media print{
-  @page{margin:12mm}
-  body{background:#fff!important}
-  /* hide everything except the badge */
-  body>*:not(.id-card-overlay){display:none!important}
-  .id-card-overlay{
-    position:static!important;display:block!important;
-    background:none!important;backdrop-filter:none!important;
-    -webkit-backdrop-filter:none!important;
-    opacity:1!important;padding:0!important;overflow:visible!important;
-  }
-  .id-card-overlay[hidden]{display:none!important}
-  .id-card-bg,.id-particles,.id-card-close,.id-card-actions,
-  .id-stage,.id-card-lanyard{display:none!important}
-  .id-card-container{opacity:1!important;margin:0 auto!important;perspective:none!important}
-  .id-card-container::after{display:none!important}
-  .id-card{
-    opacity:1!important;transform:none!important;animation:none!important;
-    box-shadow:none!important;border:1px solid #999!important;
-    margin:0 auto;break-inside:avoid;
-    /* force the dark badge to actually render on paper */
-    -webkit-print-color-adjust:exact;print-color-adjust:exact;
-  }
-  .id-card-header,.id-card-tagline,.id-card-avatar,.id-card-name,
-  .id-card-subrole,.id-card-meta,.id-card-codes{
-    opacity:1!important;transform:none!important;animation:none!important;
-  }
 }
 
 /* ============================================================
@@ -1482,27 +1397,6 @@ input[type="radio"] {
   .stats{grid-template-columns:repeat(2,1fr)}
   .admin-body{padding:1.2rem}
   .actions .btn{width:100%}
-
-  /* Hero content sits over the portrait room photo. The logo occupies the
-     upper-middle of the image, so copy is pushed down and the bottom fade
-     is taller to hand off to the dark page cleanly. */
-  #home{padding:calc(var(--housing-h) + 4vh) 0 0;align-content:center}
-  #home .wrap{width:min(100% - 2rem,var(--maxw))}
-  #home::after{height:200px}
-  .stage-grid{gap:1.3rem;padding-top:0}
-  .stage-grid h2{font-size:clamp(1.35rem,6.4vw,1.9rem)}
-  #home .lede{font-size:.8rem;margin-top:.8rem !important}
-  .stage-actions{gap:.5rem}
-  .stage-actions .btn{padding:.62rem 1.15rem;font-size:.62rem;letter-spacing:.1em}
-  .scroll-cue{margin-top:1.1rem}
-  .scroll-cue i{height:26px}
-  #home .stat{padding:.65rem .8rem}
-  #home .stat b{font-size:1.2rem}
-  .section{padding:3.5rem 0}
-}
-@media (max-width:400px){
-  .stage-grid h2{font-size:1.3rem}
-  #home .lede{font-size:.77rem}
 }
 
 /* ============================================================
@@ -1548,25 +1442,12 @@ input[type="radio"] {
 </div>
 
 <!-- ============ SHUTTER — lifted only by REGISTER / .cta ============ -->
-<div id="blood-bg" aria-hidden="true"></div>
 <div class="shutter" id="shutter" role="region" aria-label="Entry shutter" tabindex="0">
   <div class="shutter-skin">
     <div class="shutter-face">
-      <div id="shutter-initial-view">
-        <h1 class="st-ieee">IEEE</h1>
-        <p class="st-vjec">VJEC</p>
-        <button class="enter-btn" id="registerBtn" aria-label="Open shutter and enter site">Enter</button>
-      </div>
-      <div id="shutter-processing-view" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-        <h1 class="st-ieee" style="font-size: clamp(2.5rem, 8vw, 4rem); letter-spacing: 0.1em; line-height: 1.1; margin-bottom: 1rem;">BUILDING YOUR<br>EVENT PASS</h1>
-        <div style="font-family: monospace; color: var(--gold-0); font-size: 1.5rem; letter-spacing: 2px;" id="shutter-progress">
-          <span id="shutter-p-bar">□□□□□□□□□□</span> <span id="shutter-p-text" style="display:inline-block; width: 60px; text-align:right;">0%</span>
-        </div>
-      </div>
-      <div id="shutter-thankyou-view" style="display: none; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
-        <h1 class="st-ieee" style="font-size: clamp(2.5rem, 10vw, 6rem); letter-spacing: 0.08em; line-height: 1.1;">THANK YOU<br>FOR<br>REGISTERING</h1>
-        <p class="st-vjec" style="font-size: clamp(0.9rem, 3vw, 1.4rem); margin-top: 1.5rem; opacity: 0.7;">IEEE Summer School 2026</p>
-      </div>
+      <h1 class="st-ieee">IEEE</h1>
+      <p class="st-vjec">VJEC</p>
+      <button class="enter-btn" id="registerBtn" aria-label="Open shutter and enter site">Enter</button>
     </div>
     <div class="grooves" aria-hidden="true"></div>
     <span class="rail rail-l" aria-hidden="true"></span>
@@ -1887,18 +1768,32 @@ input[type="radio"] {
     <p class="id-stage-sub">Preparing your event ID card…</p>
   </div>
 
-
-  <!-- lanyard — V-shape hanging from the neck -->
-  <div id="idCardWrapper" style="transform-style: preserve-3d; perspective: 1000px;">
-  <div class="id-card-container" id="idCardContainer">
-    <div class="id-card-lanyard" id="idCardLanyard" aria-hidden="true">
-      <div class="ly-strap ly-strap-main"></div>
-      <div class="ly-ring"></div>
-      <div class="ly-clip">
-        <div class="ly-clip-ring"></div>
-        <div class="ly-clip-body"></div>
-      </div>
+  <!-- ===== STAGE 2 — GENERATE ===== -->
+  <div class="id-stage id-stage-generate">
+    <div class="id-wireframe">
+      <div class="id-wire-logo">IEEE</div>
+      <div class="id-wire-status">Generating…</div>
     </div>
+  </div>
+
+  <!-- ===== STAGE 3–5 — the badge itself ===== -->
+  <!-- lanyard — V-shape hanging from the neck -->
+  <div class="id-card-lanyard" id="idCardLanyard" aria-hidden="true">
+    <div class="ly-strap ly-strap-l">
+      <span class="ly-label">IEEE SB VJEC · IEEE SB VJEC · IEEE SB VJEC</span>
+    </div>
+    <div class="ly-strap ly-strap-r">
+      <span class="ly-label">SUMMER SCHOOL 2026 · SUMMER SCHOOL 2026</span>
+    </div>
+    <div class="ly-breakaway"></div>
+    <div class="ly-ring"></div>
+    <div class="ly-clip">
+      <div class="ly-clip-ring"></div>
+      <div class="ly-clip-body"></div>
+    </div>
+  </div>
+
+  <div class="id-card-container" id="idCardContainer">
     <article class="id-card" id="idCard">
 
       <header class="id-card-header">
@@ -1943,15 +1838,17 @@ input[type="radio"] {
       <div class="id-card-codes">
         <div class="id-card-qr" id="idCardQr" aria-label="Participant QR code" role="img"></div>
         <div class="id-card-codestack">
-          
+          <div class="id-card-barcode" id="idCardBarcode" aria-hidden="true"></div>
           <div class="id-card-id" id="idCardRegId">—</div>
         </div>
       </div>
 
     </article>
-    </div>
+
     <!-- ===== STAGE 5 — actions ===== -->
-    <div class="id-card-actions" style="flex-direction:column; gap:8px;">
+    <div class="id-card-actions">
+      <button class="btn btn-gold" type="button" id="idCardDownload">Download</button>
+      <button class="btn btn-ghost" type="button" id="idCardShare">Share</button>
       <p class="id-card-hint" id="idCardHint">Show this badge at the registration desk.</p>
     </div>
   </div>
@@ -1984,12 +1881,11 @@ input[type="radio"] {
     shutter.addEventListener('transitionend', e => {
       if (e.propertyName === 'transform') finish();
     }, { once: true });
-    // timeout must exceed --shutter-dur (2.2s) + generous buffer for reliability
-    setTimeout(finish, reduced ? 1000 : 3000);
+    setTimeout(finish, reduced ? 500 : 1900);
   }
 
-  function openShutter(scrollTo, cb) {
-    if (isOpen) { if (scrollTo) smoothScroll(scrollTo); if (cb) cb(); return; }
+  function openShutter(scrollTo) {
+    if (isOpen) { if (scrollTo) smoothScroll(scrollTo); return; }
     isOpen = true;
 
     shutter.style.visibility = '';             // may have been hidden by a previous cycle
@@ -2006,20 +1902,6 @@ input[type="radio"] {
       shutter.style.visibility = 'hidden';    // keep it out of the paint / hit-test path
       window.dispatchEvent(new CustomEvent('shutter:open'));
       if (scrollTo) smoothScroll(scrollTo);
-      if (cb) cb();
-    });
-  }
-
-  // Lift the shutter for ID card reveal WITHOUT unlocking scroll or showing nav
-  function liftShutterForCard(cb) {
-    shutter.style.visibility = '';
-    void shutter.offsetHeight;
-    shutter.classList.add('open');
-    shutter.setAttribute('aria-hidden', 'true');
-    // do NOT add 'is-open' class — nav stays hidden, page stays locked
-    afterShutterTransition(() => {
-      shutter.style.visibility = 'hidden';
-      if (cb) cb();
     });
   }
 
@@ -2586,343 +2468,4 @@ input[type="radio"] {
     return { render };
   })();
 
-  // ---- ID card elements ----
-  const idCardOverlay = document.getElementById('idCardOverlay');
-  const idCardClose   = document.getElementById('idCardClose');
-  const idCardName    = document.getElementById('idCardName');
-  const idCardSubrole = document.getElementById('idCardSubrole');
-  const idCardRole    = document.getElementById('idCardRole');
-  const idCardTrack   = document.getElementById('idCardTrack');
-  const idCardTicket  = document.getElementById('idCardTicket');
-  const idCardRegId   = document.getElementById('idCardRegId');
-  const idCardQr      = document.getElementById('idCardQr');
-  const idCardBarcode = document.getElementById('idCardBarcode');
-  const idCardDownload= document.getElementById('idCardDownload');
-  const idCardShare   = document.getElementById('idCardShare');
-  const idCardHint    = document.getElementById('idCardHint');
-
-  const STAGES = ['stage-initiate','stage-generate','stage-reveal','stage-enhance','stage-complete'];
-  let sequenceRunning = false;
-  let lastFocused = null;
-  let currentRegId = '';
-  const stageTimers = [];
-
-  function setStage(name) {
-    idCardOverlay.classList.remove(...STAGES);
-    if (name) idCardOverlay.classList.add(name);
-  }
-  function clearStageTimers() {
-    while (stageTimers.length) clearTimeout(stageTimers.pop());
-  }
-  const at = (ms, fn) => stageTimers.push(setTimeout(fn, ms));
-
-  /* Reg ID follows the printed badge format: IEEE2026VJEC####.
-     Base-36 time slice + a random tail keeps it unique per submission
-     without a server to allocate sequential numbers. */
-  function generateRegId() {
-    const t = Date.now().toString(36).toUpperCase().slice(-3);
-    const r = Math.floor(Math.random() * 36).toString(36).toUpperCase();
-    return 'IEEE2026VJEC' + (t + r).slice(-4);
-  }
-
-  function roleForMembership(isMember) {
-    return isMember === 'Yes' ? 'IEEE Member' : 'Participant';
-  }
-
-  function populateCard(data) {
-    const name = data.name.trim();
-    currentRegId = generateRegId();
-
-    idCardName.textContent    = name;
-    idCardRole.textContent    = 'Event Participant';
-    idCardSubrole.textContent = roleForMembership(data.is_ieee_member);
-    idCardTrack.textContent   = data.track || '—';
-    idCardTicket.textContent  = data.is_ieee_member === 'Yes' ? 'IEEE Member' : 'Non-Member';
-    idCardRegId.textContent   = 'ID: ' + currentRegId;
-
-    // ID + name + event, so a scan identifies the holder offline
-    const payload = ['IEEE-SS26', currentRegId, name, 'IEEE Summer School 2026'].join('|');
-    try {
-      QR.render(idCardQr, payload);
-      // Barcode removed
-    } catch (err) {
-      console.error('Code generation failed', err);
-    }
-  }
-
-  function closeIdCard() {
-    clearStageTimers();
-    sequenceRunning = false;
-    idCardOverlay.classList.remove('open', ...STAGES);
-    document.removeEventListener('keydown', onEsc);
-    const bloodBg = document.getElementById('blood-bg');
-    if (bloodBg) {
-      bloodBg.classList.remove('active');
-      // Force visibility:hidden immediately when closing
-      setTimeout(() => {
-        if (!bloodBg.classList.contains('active')) {
-          bloodBg.style.visibility = 'hidden';
-        }
-      }, 250);
-    }
-    targetRotX = 0; targetRotY = 0; rotX = 0; rotY = 0;
-    idCardOverlay.style.transform = '';
-    idCardOverlay.style.transition = '';
-
-    // Reset all three shutter views back to the initial state
-    const initView = document.getElementById('shutter-initial-view');
-    const procView = document.getElementById('shutter-processing-view');
-    const tyView   = document.getElementById('shutter-thankyou-view');
-    if (initView) initView.style.display = 'block';
-    if (procView) procView.style.display = 'none';
-    if (tyView)   tyView.style.display   = 'none';
-
-    // Reset progress bar
-    const pBar  = document.getElementById('shutter-p-bar');
-    const pText = document.getElementById('shutter-p-text');
-    if (pBar)  pBar.textContent  = '□□□□□□□□□□';
-    if (pText) pText.textContent = '0%';
-
-    setTimeout(() => {
-      idCardOverlay.hidden = true;
-      // Restore the page to its fully-open state (nav visible, scroll enabled).
-      // liftShutterForCard did NOT call openShutter, so we set everything manually.
-      isOpen = true;
-      body.classList.add('is-open');
-      shutter.classList.add('open');
-      shutter.setAttribute('aria-hidden', 'true');
-      shutter.style.visibility = 'hidden';
-      root.classList.remove('locked');
-      body.classList.remove('locked');
-      body.style.overflow = 'auto';
-      if (lastFocused && lastFocused.focus) lastFocused.focus();
-    }, 260);
-  }
-  function onEsc(e) { if (e.key === 'Escape') closeIdCard(); }
-
-  /* The five-stage reveal from the design:
-     INITIATE → GENERATE → REVEAL (shutter down/up) → ENHANCE → COMPLETE */
-  
-  
-  const idCardWrapper = document.getElementById('idCardWrapper');
-  let rotX = 0, rotY = 0;
-  let targetRotX = 0, targetRotY = 0;
-  
-  function updateCardRotation() {
-    rotX += (targetRotX - rotX) * 0.1;
-    rotY += (targetRotY - rotY) * 0.1;
-    if(idCardWrapper) {
-       idCardWrapper.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-    }
-    requestAnimationFrame(updateCardRotation);
-  }
-  updateCardRotation();
-  
-  document.addEventListener('mousemove', (e) => {
-    if(!sequenceRunning) return;
-    const x = (e.clientX / window.innerWidth - 0.5) * 20; // max 10 deg
-    const y = -(e.clientY / window.innerHeight - 0.5) * 20;
-    targetRotX = y;
-    targetRotY = x;
-  });
-
-
-  function runIdCardSequence(data) {
-    if (sequenceRunning) return;
-    sequenceRunning = true;
-    lastFocused = document.activeElement;
-    clearStageTimers();
-
-    populateCard(data);
-
-    const initView = document.getElementById('shutter-initial-view');
-    const procView = document.getElementById('shutter-processing-view');
-    const tyView   = document.getElementById('shutter-thankyou-view');
-    if (initView) initView.style.display = 'none';
-    if (procView) procView.style.display = 'flex';
-    if (tyView)   tyView.style.display   = 'none';
-
-    // Reset progress bar
-    const pBar  = document.getElementById('shutter-p-bar');
-    const pText = document.getElementById('shutter-p-text');
-    if (pBar)  pBar.textContent  = '□□□□□□□□□□';
-    if (pText) pText.textContent = '0%';
-
-    // Close shutter to show processing animation
-    if (!isOpen) {
-      openShutter(null, () => {
-        closeShutter(runProcessingSequence);
-      });
-    } else {
-      closeShutter(runProcessingSequence);
-    }
-
-    function runProcessingSequence() {
-      // Animate progress bar on shutter face (~2s)
-      animateProgressBar(() => {
-        // Switch to "THANK YOU" view
-        if (procView) procView.style.display = 'none';
-        if (tyView)   tyView.style.display   = 'flex';
-
-        // Keep "THANK YOU" visible for 2 seconds before lifting
-        at(2000, () => {
-          // 1. Show the id-card-overlay immediately (no fade transition) BEHIND the
-          //    shutter (z-index:65 < shutter z-index:70).  The overlay's own warehouse
-          //    background image is what gets revealed as the shutter rolls up — no
-          //    red flash because #blood-bg is never activated.
-          idCardOverlay.hidden = false;
-          idCardOverlay.style.transition = 'none';
-          idCardOverlay.style.opacity    = '1';
-          void idCardOverlay.offsetHeight;   // force paint before shutter moves
-
-          // 2. Lift the shutter — overlay's warehouse bg is already visible underneath
-          at(100, () => {
-            shutter.style.visibility = 'visible';
-            shutter.classList.remove('open');
-            void shutter.offsetHeight;
-            shutter.classList.add('open');
-            shutter.setAttribute('aria-hidden', 'true');
-
-            afterShutterTransition(() => {
-              shutter.style.visibility = 'hidden';
-              // 3. Shutter is gone — finish activating overlay (restore transition, pointer-events)
-              idCardOverlay.style.transition = '';
-              idCardOverlay.style.opacity    = '';
-              idCardOverlay.classList.add('open');
-              document.addEventListener('keydown', onEsc);
-
-              // 5. Card drop starts as overlay fades in
-              at(80, () => {
-                setStage('stage-reveal');
-                at(900, () => {
-                  setStage('stage-enhance');
-                  at(1200, () => {
-                    setStage('stage-complete');
-                    idCardClose.focus();
-                  });
-                });
-              });
-            });
-          });
-        });
-      });
-    }
-  }
-
-  function animateProgressBar(cb) {
-    const pBar  = document.getElementById('shutter-p-bar');
-    const pText = document.getElementById('shutter-p-text');
-    if (!pBar || !pText) { cb(); return; }
-
-    const steps = 20;
-    const duration = 2000; // 2 seconds
-    const stepTime = duration / steps;
-    let currentStep = 0;
-
-    function step() {
-      currentStep++;
-      const filled = '■'.repeat(currentStep) + '□'.repeat(steps - currentStep);
-      const percent = Math.round((currentStep / steps) * 100);
-      pBar.textContent = filled;
-      pText.textContent = percent + '%';
-
-      if (currentStep < steps) {
-        setTimeout(step, stepTime);
-      } else {
-        // Brief pause at 100% then callback
-        setTimeout(cb, 300);
-      }
-    }
-    step();
-  }
-
-
-  /* ---- stage 5 actions ---- */
-  idCardClose.addEventListener('click', closeIdCard);
-  idCardOverlay.addEventListener('click', e => {
-    // only a click on the backdrop itself dismisses the badge
-    if (e.target === idCardOverlay) closeIdCard();
-  });
-
-  // Download / share buttons removed from UI — no handlers needed
-
-  const rules = {
-    'f-name'   : v => v.trim().length >= 3 || 'Please enter your full name.',
-    'f-phone'  : v => /^[0-9+\-\s]{10,15}$/.test(v.trim()) || 'Enter a valid phone number.',
-    'f-email'  : v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || 'Enter a valid email address.',
-    'f-track'  : v => !!v || 'Choose a track.',
-    'f-payment-method': v => !!v || 'Choose a payment method.',
-    'f-ieee-id': v => {
-      const radio = document.querySelector('input[name="is_ieee_member"]:checked');
-      if(radio && radio.value === 'Yes') {
-         return v.trim().length > 0 || 'IEEE Membership ID is required.';
-      }
-      return true;
-    },
-    'f-screenshot': v => {
-      if(document.getElementById('f-payment-method').value === 'upi') {
-         const input = document.getElementById('f-screenshot');
-         return (input.files && input.files.length > 0) || 'Screenshot is required for UPI payment.';
-      }
-      return true;
-    }
-  };
-
-  function validateField(id) {
-    const el     = document.getElementById(id);
-    const result = rules[id](el.value);
-    const wrap   = el.closest('.field');
-    const err    = wrap.querySelector('.err');
-    const ok     = result === true;
-    wrap.classList.toggle('invalid', !ok);
-    err.textContent = ok ? '' : result;
-    return ok;
-  }
-
-  Object.keys(rules).forEach(id => {
-    const el = document.getElementById(id);
-    el.addEventListener('blur',  () => validateField(id));
-    el.addEventListener('input', () => {
-      if (el.closest('.field').classList.contains('invalid')) validateField(id);
-    });
-  });
-
-  // form.reset() clears the file input but leaves the thumbnail on screen,
-  // so the next registration would show the previous person's screenshot.
-  function resetUpload() {
-    const preview     = document.getElementById('uploadPreview');
-    const placeholder = document.getElementById('uploadPlaceholder');
-    if (preview)     { preview.src = ''; preview.style.display = 'none'; }
-    if (placeholder) { placeholder.style.display = ''; }
-    // conditional fields collapse back to their default state
-    toggleUpiScreenshot();
-    toggleIeeeId(false);
-  }
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const allOk = Object.keys(rules).map(validateField).every(Boolean);
-    if (!allOk) {
-      status.hidden = true;
-      form.querySelector('.field.invalid input, .field.invalid select')?.focus();
-      return;
-    }
-    const data = Object.fromEntries(new FormData(form).entries());
-
-    // NOTE: there is no backend. The UPI screenshot is previewed client-side only
-    // and is NOT uploaded or stored anywhere — `data.screenshot` is a File object
-    // that is discarded here. Wire a fetch() to a real endpoint to persist it.
-    console.log('Registration payload →', data);
-
-    status.hidden = false;
-    status.textContent = 'Thank you — your registration is being processed.';
-
-    runIdCardSequence(data);
-    form.reset();
-    resetUpload();
-  });
-
-})();
-</script>
-</body>
-</html>
+  /* ==== ID CARD SEQUENCE ==== */
