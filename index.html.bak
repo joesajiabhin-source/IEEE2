@@ -1,0 +1,2203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IEEE Summer School 2026 — IEEE SB VJEC</title>
+<meta name="description" content="IEEE Summer School 2026, hosted by IEEE Student Branch, Vimal Jyothi Engineering College — two days of hands-on tracks, workshops and industry talks.">
+<style>
+/* ============================================================
+   0. DESIGN TOKENS  (retained metallic / gold system)
+   ============================================================ */
+:root{
+  /* gold ramp */
+  --gold-0:#fff6dd;
+  --gold-1:#e8c27a;
+  --gold-2:#c79c4d;
+  --gold-3:#8c6626;
+  /* ink ramp (dark metal) */
+  --ink-0:#06070a;
+  --ink-1:#0d0f13;
+  --ink-2:#14171d;
+  --ink-3:#1e2229;
+  --ink-4:#2b3038;
+  /* type */
+  --fg:#e9ecf1;
+  --fg-dim:#a8b0bb;
+  --fg-mute:#6f7783;
+  /* action */
+  --green-1:#3ad07f;
+  --green-2:#149a58;
+  --red-1:#ff6b6b;
+  /* surfaces */
+  --glass:rgba(255,255,255,.045);
+  --glass-2:rgba(255,255,255,.075);
+  --line:rgba(232,194,122,.20);
+  --line-soft:rgba(255,255,255,.08);
+  /* motion */
+  --ease-shutter:cubic-bezier(0.22, 1, 0.36, 1);
+  --shutter-dur:2.2s;
+  --reveal-dur:1.05s;
+  /* metrics */
+  --nav-h:64px;
+  --housing-h:96px;
+  --maxw:1140px;
+}
+
+/* ============================================================
+   1. BASE
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--housing-h) + 24px)}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 700px at 78% -10%, rgba(232,194,122,.10), transparent 60%),
+    radial-gradient(900px 600px at 8% 110%, rgba(232,194,122,.055), transparent 60%),
+    var(--ink-0);
+  color:var(--fg);
+  font:16px/1.65 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+/* Warehouse background — lives INSIDE the hero only, revealed when the
+   shutter rolls up. It scrolls away with #home, so the rest of the page
+   sits on the plain dark metal background. Slight over-scale + slow
+   settle gives a wide-angle, walking-into-the-room 3D feel. */
+#home::before{
+  content:"";position:absolute;inset:0;z-index:0;
+  background:
+    /* very light overlay — lets the room breathe */
+    linear-gradient(180deg, rgba(6,7,10,.30) 0%, rgba(6,7,10,.15) 30%, rgba(6,7,10,.20) 70%, rgba(6,7,10,.40) 100%),
+    /* soft vignette at edges only */
+    radial-gradient(ellipse 160% 90% at 50% 45%, transparent 55%, rgba(0,0,0,.45) 100%),
+    /* the warehouse photograph — stretched edge-to-edge */
+    url('warehouse-bg.png') center 30% / cover no-repeat;
+  opacity:0;
+  transform:scale(1.18) perspective(900px) translateZ(0);
+  transform-origin:50% 42%;
+  transition:opacity 1.2s ease .5s, transform 3.2s var(--ease-shutter) .4s;
+  will-change:transform,opacity;
+}
+.is-open #home::before{opacity:1;transform:scale(1.02) perspective(900px) translateZ(0)}
+/* soft fade at the bottom of the hero so the photo hands off cleanly
+   to the dark page background below */
+#home::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:140px;z-index:1;
+  pointer-events:none;
+  background:linear-gradient(180deg, transparent, var(--ink-0));
+}
+/* soft fade at the bottom of the hero so the photo hands off cleanly
+   to the dark page background below */
+#home::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:140px;z-index:1;
+  pointer-events:none;
+  background:linear-gradient(180deg, transparent, var(--ink-0));
+}
+/* Realistic spotlight lighting overlay — composited on top of everything in #home */
+.room-lights{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:url('lighting-overlay.png') center top / cover no-repeat;
+  mix-blend-mode:screen;
+  opacity:0;
+  transition:opacity 1.6s ease 1.8s;
+}
+.is-open .room-lights{opacity:.55}
+/* scroll is locked until the REGISTER button lifts the shutter.
+   JS flips body.style.overflow to 'auto' once the slats clear the viewport. */
+html.locked{overflow:hidden;height:100%}
+body.locked{overflow:hidden;height:100%}
+
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+
+.wrap{width:min(100% - 2.5rem,var(--maxw));margin-inline:auto}
+
+.display{
+  font-weight:800;
+  letter-spacing:.04em;
+  line-height:1.02;
+  text-transform:uppercase;
+  background:linear-gradient(180deg,var(--gold-0) 0%,var(--gold-1) 42%,var(--gold-3) 100%);
+  -webkit-background-clip:text;background-clip:text;
+  color:transparent;
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:.45rem;
+  font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--gold-1);
+  padding:.32rem .7rem;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--glass);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+.eyebrow::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gold-1);box-shadow:0 0 8px var(--gold-1)}
+.lede{color:var(--fg-dim);font-size:.88rem;max-width:54ch}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:0}
+
+/* ============================================================
+   2. GLASS CARD
+   ============================================================ */
+.card{
+  position:relative;
+  background:linear-gradient(180deg,var(--glass-2),var(--glass));
+  border:1px solid var(--line-soft);
+  border-radius:16px;
+  padding:1.6rem;
+  backdrop-filter:blur(14px) saturate(130%);
+  -webkit-backdrop-filter:blur(14px) saturate(130%);
+  box-shadow:0 22px 50px -30px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.06);
+  transition:transform .45s var(--ease-shutter),border-color .45s ease,box-shadow .45s ease;
+}
+.card:hover{
+  transform:translateY(-4px);
+  border-color:var(--line);
+  box-shadow:0 30px 60px -30px rgba(0,0,0,1), inset 0 1px 0 rgba(255,255,255,.10);
+}
+.card h3{margin:.15rem 0 .5rem;font-size:1.12rem;letter-spacing:.01em}
+.card p{margin:0;color:var(--fg-dim);font-size:.94rem}
+/* cards that hold live controls should not drift on hover */
+.card.static:hover{transform:none}
+
+/* ============================================================
+   3. BUTTONS  (.register / .cta)
+   ============================================================ */
+.btn{
+  --_bg:var(--glass-2);
+  position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+  padding:.95rem 1.9rem;border-radius:999px;border:1px solid var(--line);
+  background:var(--_bg);color:var(--fg);
+  font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:.8rem;
+  cursor:pointer;overflow:hidden;
+  transition:transform .3s var(--ease-shutter),box-shadow .3s ease,border-color .3s ease,filter .3s ease;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0) scale(.985)}
+.btn:focus-visible{outline:2px solid var(--gold-1);outline-offset:3px}
+
+/* sheen sweep */
+.btn::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.35) 50%,transparent 65%);
+  transform:translateX(-120%);
+  transition:transform .8s var(--ease-shutter);
+}
+.btn:hover::after{transform:translateX(120%)}
+
+.btn-ghost{background:transparent;color:var(--gold-1)}
+.btn-ghost:hover{border-color:var(--gold-1);box-shadow:0 0 0 1px rgba(232,194,122,.18)}
+
+.btn-gold{
+  --_bg:linear-gradient(180deg,var(--gold-0),var(--gold-1) 45%,var(--gold-2));
+  color:#241a06;border-color:transparent;
+  box-shadow:0 14px 34px -16px rgba(232,194,122,.75);
+}
+
+.btn-sm{padding:.6rem 1.15rem;font-size:.68rem;letter-spacing:.16em}
+
+/* the primary shutter trigger */
+.register{
+  --_bg:linear-gradient(180deg,#5ee59b,var(--green-1) 45%,var(--green-2));
+  color:#04220f;border-color:transparent;
+  padding:1.05rem 2.6rem;font-size:.86rem;letter-spacing:.2em;
+  box-shadow:0 18px 44px -18px rgba(58,208,127,.8), inset 0 1px 0 rgba(255,255,255,.5);
+}
+.register:hover{box-shadow:0 24px 56px -18px rgba(58,208,127,.95), inset 0 1px 0 rgba(255,255,255,.6)}
+/* soft pulse invitation, killed once the shutter is up */
+.register::before{
+  content:"";position:absolute;inset:-2px;border-radius:inherit;
+  border:1px solid rgba(58,208,127,.55);
+  animation:pulse 2.8s var(--ease-shutter) infinite;
+}
+@keyframes pulse{
+  0%{transform:scale(1);opacity:.7}
+  70%{transform:scale(1.14);opacity:0}
+  100%{opacity:0}
+}
+.is-open .register::before{animation:none;opacity:0}
+
+/* ============================================================
+   4. NAV  (fixed, always above the shutter)
+   ============================================================ */
+/* the nav sits OVER the roller headbox — hidden while the shutter is
+   down, fades in once the curtain has rolled up. The bar itself is
+   transparent (the headbox shows through); the links live in their own
+   glass pill so the menu reads distinct from the shutter metal. */
+.nav{
+  position:fixed;inset:0 0 auto 0;height:calc(var(--housing-h) - 10px);z-index:95;
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;
+  padding-inline:clamp(1rem,4vw,2.4rem);
+  background:none;border:none;
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:opacity .7s ease,transform .7s var(--ease-shutter),visibility 0s linear .7s;
+}
+.is-open .nav{
+  opacity:1;visibility:visible;transform:none;
+  transition:opacity .7s ease 1.7s,transform .7s var(--ease-shutter) 1.7s,visibility 0s linear 1.7s;
+}
+.brand{display:flex;align-items:center;gap:.75rem;font-weight:800;letter-spacing:.18em;font-size:.78rem;text-transform:uppercase}
+.brand .mark{
+  width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  background:linear-gradient(150deg,#e04048,#8e161d);
+  color:#f2e9e9;font-size:.62rem;font-weight:900;letter-spacing:.02em;
+  box-shadow:0 8px 20px -10px #c9252d;
+}
+.brand small{display:block;color:var(--fg-mute);letter-spacing:.14em;font-size:.6rem;font-weight:600}
+
+.nav-links{
+  display:flex;align-items:center;gap:.25rem;
+  padding:.3rem .5rem;border-radius:999px;
+  background:linear-gradient(180deg, rgba(10,11,15,.85), rgba(10,11,15,.65));
+  border:1px solid var(--line);
+  backdrop-filter:blur(14px) saturate(130%);
+  -webkit-backdrop-filter:blur(14px) saturate(130%);
+  box-shadow:0 12px 26px -16px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.nav-links a{
+  position:relative;padding:.55rem .8rem;border-radius:999px;
+  font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--fg-dim);
+  transition:color .3s ease,background .3s ease;
+}
+.nav-links a:hover,.nav-links a.active{color:var(--gold-1);background:var(--glass)}
+.nav-links a::after{
+  content:"";position:absolute;left:50%;bottom:.28rem;height:1px;width:0;
+  background:var(--gold-1);transform:translateX(-50%);
+  transition:width .35s var(--ease-shutter);
+}
+.nav-links a.active::after{width:38%}
+
+/* nav links stay inert until the shutter is lifted */
+.nav-links{opacity:.45;pointer-events:none;transition:opacity .6s ease .6s}
+.is-open .nav-links{opacity:1;pointer-events:auto}
+
+.nav-toggle{display:none;background:none;border:1px solid var(--line);border-radius:10px;padding:.5rem .7rem;cursor:pointer}
+
+/* ============================================================
+   5. SHUTTER  +  HOUSING
+   ============================================================ */
+.housing{
+  position:fixed;top:0;left:0;right:0;height:var(--housing-h);z-index:80;
+  pointer-events:none;
+  /* dark wall behind the headbox */
+  background:linear-gradient(180deg,#101011 0%,#0b0b0b 100%);
+}
+/* steel headbox enclosure — folded sheet metal, flush to the wall */
+.hbox{
+  position:absolute;inset:6px 0 0 0;
+  background:
+    /* dust film + fine vertical brushing */
+    repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 1px, transparent 1px 5px),
+    linear-gradient(180deg,#1a1a1c 0%,#151517 30%,#101012 70%,#0a0a0b 100%);
+  border-top:1px solid rgba(255,255,255,.05);
+  box-shadow:
+    inset 0 2px 2px rgba(255,255,255,.04),   /* top fold highlight */
+    inset 0 -4px 6px rgba(0,0,0,.8),         /* underside occlusion */
+    0 10px 18px -8px rgba(0,0,0,.95);        /* contact shadow onto curtain */
+}
+/* top mounting seam where the box meets the wall */
+.hbox::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:5px;
+  background:linear-gradient(180deg,rgba(0,0,0,.9),rgba(0,0,0,.25) 70%,transparent);
+}
+/* wear: grain + faint dust pooling on the box face */
+.hbox::after{
+  content:"";position:absolute;inset:0;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .05 0'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>"),
+    radial-gradient(140% 100% at 50% 0%, transparent 55%, rgba(0,0,0,.35) 100%);
+}
+/* brushed-steel roller drum, recessed between the end caps */
+.drum{
+  position:absolute;top:8px;bottom:18px;left:26px;right:26px;
+  border-radius:12px;
+  background:
+    /* mottled grime / worn patches */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='90'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.012 .05' numOctaves='4'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .06 0'/></filter><rect width='260' height='90' filter='url(%23n)'/></svg>"),
+    /* fine grain */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .07 0'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>"),
+    /* near-black matte cylinder — only a faint mid sheen */
+    linear-gradient(180deg,
+      #050506 0%, #0e0e10 10%, #17181a 26%, #202124 42%, #26272a 50%,
+      #202124 58%, #161719 72%, #0c0c0e 88%, #040405 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),   /* thin top rim catch-light */
+    inset 0 -2px 3px rgba(0,0,0,.95),
+    inset 3px 0 4px -2px rgba(0,0,0,.8),   /* seam shading at the ends */
+    inset -3px 0 4px -2px rgba(0,0,0,.8),
+    0 8px 12px -5px rgba(0,0,0,.95);
+}
+/* faint panel seam lines along the drum + rolled layers at the bottom */
+.drum::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background:
+    /* two horizontal seam lines like the reference */
+    linear-gradient(180deg,
+      transparent 0 18%, rgba(0,0,0,.5) 18%, rgba(0,0,0,.5) calc(18% + 1px), rgba(255,255,255,.04) calc(18% + 2px), transparent calc(18% + 3px),
+      transparent 74%, rgba(0,0,0,.6) 74%, rgba(0,0,0,.6) calc(74% + 1px), rgba(255,255,255,.03) calc(74% + 2px), transparent calc(74% + 3px));
+}
+/* end caps: support plate + bolts, bracketed to the wall */
+.hcap{
+  position:absolute;top:5px;bottom:15px;width:22px;
+  background:
+    radial-gradient(circle 3.5px at 50% 10px, #4a4e54 0 1.2px, #1b1d20 2.2px, #08090a 3.5px, transparent 4.5px),
+    radial-gradient(circle 3.5px at 50% calc(100% - 10px), #4a4e54 0 1.2px, #1b1d20 2.2px, #08090a 3.5px, transparent 4.5px),
+    linear-gradient(180deg,#1d1e21 0%,#26282b 30%,#141517 76%,#0a0b0c 100%);
+  border:1px solid #000;border-radius:4px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.09),
+    inset 0 -5px 7px -4px rgba(0,0,0,.95),
+    0 8px 14px -6px #000;
+}
+.hcap-l{left:2px}
+.hcap-r{right:2px}
+/* lower front lip — the slot the curtain exits through */
+.hlip{
+  position:absolute;left:0;right:0;bottom:0;height:16px;
+  background:linear-gradient(180deg,#1c1d1f 0%,#131416 45%,#060607 100%);
+  border-top:1px solid rgba(255,255,255,.05);
+  box-shadow:
+    inset 0 -5px 5px -3px #000,      /* dark slot opening */
+    0 8px 12px -5px rgba(0,0,0,.95); /* lip shadow cast onto the slats */
+}
+.hlip::after{ /* the slot itself */
+  content:"";position:absolute;left:8px;right:8px;bottom:0;height:4px;
+  background:#000;border-radius:2px 2px 0 0;
+}
+/* the headbox stays fixed — the curtain rolls up into it and the
+   nav then appears over the drum */
+
+/* --- the shutter itself --- */
+.shutter{
+  --slat:30px; /* slat pitch — grooves & lettering both key off this */
+  position:fixed;
+  top:calc(var(--housing-h) - 2px);
+  left:0;right:0;
+  height:calc(100vh - var(--housing-h) + 2px);
+  z-index:70;
+  transform:translateY(0);
+  transition:transform var(--shutter-dur) cubic-bezier(.55,.06,.35,1);
+  will-change:transform;
+  overflow:hidden;
+  background:#0c0d10;
+  cursor:pointer;
+}
+/* corrugated slats — each 44px band: highlight ridge, body, recessed groove */
+.shutter::before{
+  content:"";position:absolute;inset:0;
+  background:
+    /* horizontal brushed-steel micro-texture */
+    repeating-linear-gradient(90deg, rgba(255,255,255,.016) 0 1px, transparent 1px 4px),
+    /* slat profile — bright rolled ridge, satin body, deep groove */
+    repeating-linear-gradient(180deg,
+      #37393e 0px,
+      #4a4d53 1px,
+      #34363b 3px,
+      #202225 9px,
+      #191b1e 16px,
+      #101214 22px,
+      #060708 26px,
+      #000    28px,
+      #3d4046 29px,
+      #34363b 30px
+    );
+}
+/* deep shadow where the curtain disappears under the housing */
+.shutter{box-shadow:inset 0 26px 30px -12px rgba(0,0,0,.95)}
+/* grain + side rails + uneven lighting, painted OVER the lettering
+   so the grooves visibly cut through the letters */
+.shutter .grooves{
+  position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:
+    /* groove shadow lines riding over everything */
+    repeating-linear-gradient(180deg,
+      transparent 0 25px,
+      rgba(0,0,0,.55) 26px,
+      rgba(0,0,0,.9)  28px,
+      rgba(255,255,255,.06) 29px,
+      transparent 30px),
+    /* film grain */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .10 0'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>"),
+    /* soft overhead specular sweep across the metal */
+    linear-gradient(115deg, transparent 30%, rgba(255,255,255,.05) 44%, rgba(255,255,255,.09) 50%, rgba(255,255,255,.05) 56%, transparent 70%),
+    /* uneven low-key lighting */
+    radial-gradient(120% 90% at 50% 22%, transparent 38%, rgba(0,0,0,.5) 100%),
+    linear-gradient(90deg, rgba(0,0,0,.7) 0%, transparent 9%, transparent 91%, rgba(0,0,0,.7) 100%);
+}
+/* side guide rails */
+.shutter .rail{
+  position:absolute;top:0;bottom:0;width:16px;z-index:4;
+  background:linear-gradient(90deg,#000,#17191d 45%,#000);
+  box-shadow:inset 0 0 6px #000;
+}
+.shutter .rail-l{left:0;border-right:1px solid rgba(255,255,255,.05)}
+.shutter .rail-r{right:0;border-left:1px solid rgba(255,255,255,.05)}
+
+.shutter-skin{position:absolute;inset:0}
+
+/* stencil lettering painted on the slats */
+.shutter-face{
+  position:relative;z-index:2;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;padding:0 1.5rem;text-align:center;
+  user-select:none;
+}
+.st-ieee,.st-vjec{
+  margin:0;text-transform:uppercase;font-weight:900;line-height:.9;
+  font-family:"Arial Black","Segoe UI",ui-sans-serif,sans-serif;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+/* weathered white paint — background-image longhand so it never
+   resets background-clip:text (the shorthand does, and the letters
+   then render as solid rectangles) */
+.st-ieee{
+  font-size:clamp(6rem,26vw,21rem);
+  letter-spacing:.06em;
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.08 .12' numOctaves='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .30 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>"),
+    linear-gradient(180deg,#e8e6e2 0%,#c7c4bf 38%,#d5d2cc 55%,#9b9892 100%);
+  -webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(0 3px 2px rgba(0,0,0,.55));
+}
+/* distressed red paint */
+.st-vjec{
+  margin-top:clamp(.6rem,2.5vh,1.6rem);
+  font-size:clamp(1.6rem,6.5vw,4.6rem);
+  letter-spacing:.5em;text-indent:.5em; /* re-centre wide tracking */
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.1 .15' numOctaves='3'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .35 0'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>"),
+    linear-gradient(180deg,#c9252d 0%,#b01b1b 50%,#7c1216 100%);
+  -webkit-background-clip:text;background-clip:text;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.6));
+}
+/* single minimal entry control */
+.enter-btn{
+  position:absolute;left:50%;bottom:clamp(2rem,7vh,4.5rem);transform:translateX(-50%);
+  background:rgba(0,0,0,.35);border:1px solid rgba(217,215,210,.35);
+  color:#c9c6c0;border-radius:4px;
+  padding:.8rem 2.6rem;cursor:pointer;
+  font-weight:800;font-size:.78rem;letter-spacing:.5em;text-indent:.5em;text-transform:uppercase;
+  transition:border-color .3s ease,color .3s ease,background .3s ease;
+}
+.enter-btn:hover{border-color:#c9252d;color:#e04048;background:rgba(0,0,0,.55)}
+.enter-btn:focus-visible{outline:2px solid #c9252d;outline-offset:3px}
+
+/* OPEN STATE — rolls up into the barrel with a metallic rattle */
+@keyframes rattle{
+  0%,100%{transform:translateX(0)}
+  12%{transform:translateX(-1.5px)}
+  26%{transform:translateX(1.5px)}
+  40%{transform:translateX(-1px)}
+  55%{transform:translateX(1px)}
+  70%{transform:translateX(-.7px)}
+  85%{transform:translateX(.5px)}
+}
+.shutter.open{transform:translateY(-101%);pointer-events:none}
+.shutter.open .shutter-skin{animation:rattle .38s linear 5}
+/* slats visually compress as they meet the barrel */
+.shutter.open::before{animation:rollWrap var(--shutter-dur) cubic-bezier(.55,.06,.35,1) 1 forwards}
+@keyframes rollWrap{to{background-position:0 -15px}}
+
+@media (prefers-reduced-motion:reduce){
+  .shutter{transition:opacity .5s ease}
+  .shutter.open{transform:none;opacity:0}
+  .shutter.open .shutter-skin,.shutter.open::before,.is-open .housing::before{animation:none}
+}
+
+/* ============================================================
+   6. SECTIONS
+   ============================================================ */
+main{position:relative;z-index:1}
+.section{padding:clamp(4.5rem,10vh,8rem) 0;position:relative}
+.section-head{display:grid;gap:1rem;margin-bottom:2.8rem;max-width:70ch}
+.section-head h2{margin:0;font-size:clamp(1.9rem,4.4vw,3rem)}
+
+/* --- Section 1: hero stage --- */
+/* hero is EXACTLY one screen — the room photo fits the first viewport
+   with no scroll; scrolling past it leaves the image behind entirely */
+#home{
+  height:100vh;min-height:0;display:grid;align-content:center;
+  padding:var(--housing-h) 0 0;
+  position:relative;
+  overflow:hidden;
+}
+/* narrower content wrap inside hero so the room walls are visible */
+#home .wrap{
+  width:min(100% - 4rem, 920px);
+  margin-left:auto;margin-right:auto;
+  position:relative;z-index:2;
+}
+
+/* headline reads as thick gold metal letters bolted to the back wall */
+#home .stage-grid h2.display{
+  background:none;
+  -webkit-background-clip:border-box;background-clip:border-box;
+  color:#f2d795;
+  text-shadow:
+    0 1px 0 #d3a95c,
+    1px 2px 0 #b18944,
+    2px 3px 0 #916e33,
+    3px 4px 0 #745625,
+    3px 5px 2px rgba(0,0,0,.4),
+    6px 10px 16px rgba(0,0,0,.55),
+    12px 20px 36px rgba(0,0,0,.35);
+}
+/* stats read as dark glass-metal panels hung in the space */
+#home .stat{
+  background:linear-gradient(160deg, rgba(22,24,29,.86), rgba(9,10,13,.92));
+  border-color:rgba(232,194,122,.17);
+  box-shadow:
+    -14px 22px 34px -20px rgba(0,0,0,.85),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  transition:transform .45s var(--ease-shutter),box-shadow .45s ease,border-color .45s ease;
+}
+#home .stat:hover{transform:translateY(-3px);border-color:var(--line)}
+#home .stat b{text-shadow:0 0 22px rgba(232,194,122,.4)}
+.stage-grid{
+  display:grid;gap:1.8rem;grid-template-columns:1.15fr .85fr;align-items:center;
+  /* centred in the one-screen hero, nudged slightly below true centre */
+  padding-top:1vh;
+}
+.stage-grid h2{margin:0;font-size:clamp(1.6rem,4vw,2.6rem)}
+.stage-actions{display:flex;flex-wrap:wrap;gap:.65rem;margin-top:.3rem}
+.stage-actions .btn{padding:.7rem 1.4rem;font-size:.68rem;letter-spacing:.12em}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:.65rem}
+.stat{
+  background:linear-gradient(180deg,var(--glass-2),var(--glass));
+  border:1px solid var(--line-soft);border-radius:12px;padding:.8rem .95rem;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.stat b{display:block;font-size:1.5rem;line-height:1.1;color:var(--gold-1);font-weight:800}
+.stat span{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-mute)}
+
+.scroll-cue{
+  display:inline-flex;align-items:center;gap:.5rem;margin-top:1.6rem;
+  color:var(--fg-mute);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
+}
+.scroll-cue i{
+  width:1px;height:36px;background:linear-gradient(180deg,var(--gold-1),transparent);
+  animation:cue 2.2s var(--ease-shutter) infinite;transform-origin:top;
+}
+@keyframes cue{0%{transform:scaleY(0)}45%{transform:scaleY(1)}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* --- grids --- */
+.grid{display:grid;gap:1.15rem}
+.g-2{grid-template-columns:repeat(2,1fr)}
+.g-3{grid-template-columns:repeat(3,1fr)}
+.g-4{grid-template-columns:repeat(4,1fr)}
+.g-2-1{grid-template-columns:1.1fr .9fr}
+
+.pill-list{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:.65rem}
+.pill-list li{display:flex;gap:.7rem;align-items:flex-start;color:var(--fg-dim);font-size:.94rem}
+.pill-list li::before{
+  content:"";flex:0 0 auto;width:7px;height:7px;margin-top:.55rem;border-radius:2px;
+  background:linear-gradient(150deg,var(--gold-0),var(--gold-2));
+  box-shadow:0 0 10px rgba(232,194,122,.55);
+}
+
+/* --- highlight strip (section 1) --- */
+.highlights{display:grid;grid-template-columns:repeat(4,1fr);gap:1.15rem}
+.highlight{display:grid;gap:.45rem;padding:1.3rem}
+.highlight .ico{
+  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+  background:linear-gradient(150deg,rgba(232,194,122,.22),rgba(232,194,122,.05));
+  border:1px solid var(--line);color:var(--gold-1);font-size:.9rem;
+}
+.highlight h4{margin:.4rem 0 0;font-size:.98rem}
+.highlight p{font-size:.88rem}
+
+/* --- track cards --- */
+.track{display:grid;gap:.8rem}
+.track .tag{
+  align-self:start;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold-1);border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;
+}
+.track .speaker{
+  display:flex;align-items:center;gap:.7rem;margin-top:.35rem;
+  padding-top:.85rem;border-top:1px dashed var(--line-soft);
+}
+.avatar{
+  width:36px;height:36px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+  background:linear-gradient(150deg,var(--ink-4),var(--ink-2));
+  border:1px solid var(--line);color:var(--gold-1);font-size:.7rem;font-weight:800;
+}
+.speaker b{display:block;font-size:.86rem}
+.speaker span{font-size:.72rem;color:var(--fg-mute)}
+
+/* --- schedule --- */
+.day-switch{display:flex;gap:.5rem;margin-bottom:1.8rem;flex-wrap:wrap}
+.day-switch button{
+  padding:.6rem 1.3rem;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line-soft);background:var(--glass);
+  font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-dim);
+  transition:all .35s var(--ease-shutter);
+}
+.day-switch button[aria-selected="true"]{
+  color:#241a06;border-color:transparent;
+  background:linear-gradient(180deg,var(--gold-0),var(--gold-2));
+}
+.timeline{position:relative;padding-left:2.1rem;display:grid;gap:1rem}
+.timeline::before{
+  content:"";position:absolute;left:.52rem;top:.4rem;bottom:.4rem;width:1px;
+  background:linear-gradient(180deg,transparent,var(--line),transparent);
+}
+.slot{position:relative;padding:1.05rem 1.25rem}
+.slot::before{
+  content:"";position:absolute;left:-1.85rem;top:1.45rem;width:11px;height:11px;border-radius:50%;
+  background:var(--ink-0);border:2px solid var(--gold-2);
+  box-shadow:0 0 0 4px rgba(232,194,122,.10);
+}
+.slot time{
+  display:block;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-1);
+  margin-bottom:.3rem;
+}
+.slot h4{margin:0 0 .25rem;font-size:1rem}
+.slot p{margin:0;color:var(--fg-dim);font-size:.9rem}
+.day-panel[hidden]{display:none}
+
+/* --- tickets --- */
+.tickets{display:grid;grid-template-columns:repeat(3,1fr);gap:1.15rem;margin-bottom:2.4rem}
+.ticket{display:grid;gap:.75rem;position:relative}
+.ticket.featured{border-color:var(--line);box-shadow:0 30px 70px -34px rgba(232,194,122,.4),inset 0 1px 0 rgba(255,255,255,.10)}
+.ticket .badge{
+  position:absolute;top:-.7rem;right:1.1rem;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
+  background:linear-gradient(180deg,var(--gold-0),var(--gold-2));color:#241a06;
+  padding:.28rem .7rem;border-radius:999px;font-weight:800;
+}
+.price{font-size:2rem;font-weight:800;color:var(--gold-1);line-height:1}
+.price small{font-size:.66rem;letter-spacing:.2em;color:var(--fg-mute);font-weight:600;display:block;margin-top:.3rem;text-transform:uppercase}
+
+/* --- form --- */
+.form-grid{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr)}
+.field{display:grid;gap:.4rem}
+.field.full{grid-column:1 / -1}
+.field label{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-mute)}
+.field input,.field select,.field textarea{
+  width:100%;padding:.8rem .95rem;border-radius:11px;
+  background:rgba(0,0,0,.35);border:1px solid var(--line-soft);
+  transition:border-color .3s ease,box-shadow .3s ease,background .3s ease;
+}
+.field textarea{resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--gold-2);background:rgba(0,0,0,.55);
+  box-shadow:0 0 0 3px rgba(232,194,122,.12);
+}
+.field .err{font-size:.7rem;color:var(--red-1);min-height:1em}
+.field.invalid input,.field.invalid select{border-color:var(--red-1)}
+.form-note{color:var(--fg-mute);font-size:.78rem;margin-top:.9rem}
+.form-status{
+  margin-top:1.1rem;padding:.9rem 1.1rem;border-radius:12px;
+  border:1px solid rgba(58,208,127,.4);background:rgba(58,208,127,.10);
+  color:#a9f0c9;font-size:.9rem;
+}
+
+
+/* --- New Form & Pricing Styles --- */
+.upload-area {
+  border: 2px dashed var(--line);
+  border-radius: 11px;
+  background: rgba(0,0,0,.2);
+  padding: 2rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all .3s ease;
+  color: var(--fg-dim);
+  font-size: 0.85rem;
+}
+.upload-area:hover {
+  border-color: var(--gold-1);
+  background: rgba(0,0,0,.4);
+}
+.conditional-field {
+  transition: all 0.3s ease;
+}
+input[type="radio"] {
+  accent-color: var(--gold-1);
+  width: 16px;
+  height: 16px;
+}
+
+/* ============================================================
+   ID CARD — PREMIUM EVENT BADGE
+   ============================================================ */
+.id-card-overlay{
+  --badge-gold:#d4a017;
+  --badge-gold-soft:#e6be4e;
+  --ink-900:#1c1c1e;
+  --ink-700:#3a3a3c;
+  --ink-500:#8a8a8e;
+  --line:#ececec;
+  --line-soft:#f4f4f4;
+  --sp:8px;
+  position:fixed;inset:0;z-index:200;
+  display:flex;flex-direction:column;align-items:center;
+  padding:max(3vh,24px) 16px 24px;
+  overflow-y:auto;
+  pointer-events:none;
+  background:
+    radial-gradient(120% 90% at 50% -10%, rgba(212,160,23,.10), transparent 55%),
+    radial-gradient(90% 70% at 50% 120%, rgba(0,0,0,.55), transparent 60%),
+    rgba(8,9,12,.72);
+  backdrop-filter:blur(10px) saturate(115%);
+  -webkit-backdrop-filter:blur(10px) saturate(115%);
+  opacity:0;transition:opacity .3s ease;
+}
+.id-card-overlay.open{opacity:1}
+.id-card-overlay[hidden]{display:none}
+
+/* white flash */
+.id-card-flash{
+  position:fixed;inset:0;z-index:1;
+  background:#fff;opacity:0;pointer-events:none;
+  transition:opacity .12s ease;
+}
+.id-card-flash.active{opacity:1}
+
+/* ---------- AMBIENT BACKGROUND ---------- */
+.id-card-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+}
+.id-card-bg .bokeh{
+  position:absolute;border-radius:50%;
+  filter:blur(40px);opacity:.5;
+  background:radial-gradient(circle at 30% 30%, rgba(212,160,23,.55), transparent 70%);
+  animation:bokehFloat 9s ease-in-out infinite;
+}
+.id-card-bg .b1{width:220px;height:220px;top:8%;left:12%;animation-delay:0s}
+.id-card-bg .b2{width:160px;height:160px;top:65%;left:18%;opacity:.35;animation-delay:1.5s}
+.id-card-bg .b3{width:260px;height:260px;top:20%;right:8%;opacity:.3;animation-delay:.8s}
+.id-card-bg .b4{width:140px;height:140px;bottom:12%;right:20%;opacity:.4;animation-delay:2.2s}
+@keyframes bokehFloat{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-18px) scale(1.06)}
+}
+
+/* ---------- LANYARD — REALISTIC V-SHAPE ---------- */
+.id-card-lanyard{
+  position:relative;z-index:3;
+  width:300px;height:80px;
+  pointer-events:none;
+  margin:0 auto;
+  flex-shrink:0;
+  overflow:visible;
+  opacity:0;
+  animation:lanyardDrop .7s cubic-bezier(.22,.68,.36,1) .08s forwards;
+}
+@keyframes lanyardDrop{
+  0%{opacity:0;transform:translateY(-80px)}
+  100%{opacity:1;transform:translateY(0)}
+}
+
+/* --- Each strap is a long flat fabric strip --- */
+.ly-strap{
+  position:absolute;
+  bottom:12px;
+  width:26px;
+  overflow:hidden;
+  border-radius:2px;
+  background:
+    repeating-linear-gradient(90deg,
+      rgba(255,255,255,.04) 0px,rgba(255,255,255,.04) 1px,
+      transparent 1px,transparent 2.5px),
+    repeating-linear-gradient(0deg,
+      rgba(255,255,255,.02) 0px,rgba(255,255,255,.02) 1px,
+      transparent 1px,transparent 2px),
+    linear-gradient(90deg,
+      #1a1a1a 0%,#242424 18%,#2c2c2c 50%,#242424 82%,#1a1a1a 100%);
+  box-shadow:
+    0 -4px 16px rgba(0,0,0,.3),
+    inset 1px 0 0 rgba(255,255,255,.04),
+    inset -1px 0 0 rgba(255,255,255,.04);
+}
+/* center ridge highlight */
+.ly-strap::before{
+  content:"";
+  position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,transparent 0%,rgba(255,255,255,.05) 45%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.05) 55%,transparent 100%);
+  pointer-events:none;
+}
+
+/* --- Left strap: goes up-left at ~16deg, extends above container --- */
+.ly-strap-l{
+  left:50%;margin-left:-13px;
+  height:300px;
+  transform-origin:bottom center;
+  transform:rotate(16deg);
+}
+
+/* --- Right strap: goes up-right at ~16deg --- */
+.ly-strap-r{
+  right:50%;margin-right:-13px;
+  height:300px;
+  transform-origin:bottom center;
+  transform:rotate(-16deg);
+}
+
+/* --- Printed text running along the strap --- */
+.ly-label{
+  position:absolute;
+  top:20px;left:50%;transform:translateX(-50%) rotate(0deg);
+  width:200px;
+  font-size:7px;font-weight:800;letter-spacing:.16em;
+  text-transform:uppercase;
+  color:rgba(212,160,23,.85);
+  white-space:nowrap;
+  text-shadow:0 0 2px rgba(0,0,0,.6);
+  -webkit-text-stroke:.3px rgba(212,160,23,.2);
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+}
+.ly-strap-l .ly-label{
+  transform:translateX(-50%) rotate(0deg);
+}
+.ly-strap-r .ly-label{
+  transform:translateX(-50%) rotate(180deg);
+  top:30px;
+}
+
+/* --- Breakaway buckle on left strap --- */
+.ly-breakaway{
+  position:absolute;
+  bottom:48px;left:50%;margin-left:-28px;
+  width:22px;height:28px;
+  z-index:4;
+  transform:rotate(16deg);
+  transform-origin:bottom center;
+}
+.ly-breakaway::before{
+  content:"";
+  position:absolute;top:0;left:0;right:0;height:12px;
+  background:linear-gradient(180deg,#555 0%,#3a3a3a 50%,#2a2a2a 100%);
+  border-radius:3px 3px 2px 2px;
+  box-shadow:0 2px 4px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);
+}
+.ly-breakaway::after{
+  content:"";
+  position:absolute;bottom:0;left:2px;right:2px;height:14px;
+  background:linear-gradient(180deg,#3a3a3a 0%,#4a4a4a 50%,#3a3a3a 100%);
+  border-radius:2px 2px 3px 3px;
+  box-shadow:0 2px 4px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* --- Metal D-ring where both straps converge --- */
+.ly-ring{
+  position:absolute;
+  bottom:0;left:50%;transform:translateX(-50%);
+  width:22px;height:16px;
+  border:3px solid #b0b0b0;
+  border-radius:4px;
+  background:transparent;
+  z-index:5;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.25),
+    inset 0 1px 1px rgba(255,255,255,.4),
+    inset 0 -1px 1px rgba(0,0,0,.15);
+}
+
+/* --- Lobster claw clip connecting to card --- */
+.ly-clip{
+  position:absolute;
+  bottom:-34px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;
+  z-index:5;
+}
+.ly-clip-ring{
+  width:10px;height:8px;
+  border:2.5px solid #a0a0a0;
+  border-radius:3px 3px 0 0;
+  border-bottom:none;
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.3);
+}
+.ly-clip-body{
+  width:16px;height:28px;
+  background:linear-gradient(90deg,
+    #a8a8a8 0%,#d0d0d0 12%,#e8e8e8 28%,#f2f2f2 40%,
+    #dcdcdc 52%,#c8c8c8 65%,#d8d8d8 78%,#e8e8e8 90%,#a8a8a8 100%);
+  border-radius:3px 3px 6px 6px;
+  position:relative;
+  box-shadow:
+    0 4px 10px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.7),
+    inset 0 -1px 0 rgba(0,0,0,.12);
+}
+/* gate arm */
+.ly-clip-body::before{
+  content:"";
+  position:absolute;top:6px;right:-3px;
+  width:3px;height:16px;
+  background:linear-gradient(90deg,#b0b0b0,#d0d0d0,#b0b0b0);
+  border-radius:0 2px 2px 0;
+  box-shadow:1px 0 3px rgba(0,0,0,.15);
+}
+/* hook tip */
+.ly-clip-body::after{
+  content:"";
+  position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);
+  width:10px;height:6px;
+  background:linear-gradient(180deg,#c0c0c0,#999);
+  border-radius:0 0 4px 4px;
+  box-shadow:0 2px 4px rgba(0,0,0,.2);
+}
+
+/* ---------- CONTAINER (hanging + ground shadow) ---------- */
+.id-card-container{
+  position:relative;z-index:2;
+  margin-top:-5px;
+  perspective:1000px;
+  pointer-events:auto;
+}
+.id-card-container::after{
+  content:"";position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);
+  width:64%;height:26px;border-radius:50%;
+  background:radial-gradient(ellipse at center, rgba(0,0,0,.4), transparent 70%);
+  filter:blur(9px);opacity:0;
+  animation:groundShadow .55s var(--ease-shutter) .15s forwards;
+}
+@keyframes groundShadow{to{opacity:1}}
+
+/* ---------- CARD ---------- */
+.id-card{
+  --card-w:clamp(340px,90vw,440px);
+  width:var(--card-w);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,0) 12%),
+    #ffffff;
+  border:1px solid rgba(0,0,0,.05);
+  border-radius:24px;
+  overflow:hidden;
+  transform-origin:top center;
+  transform:translateY(-24px) scale(.96) rotateX(6deg);
+  opacity:0;
+  will-change:transform,opacity;
+  position:relative;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.04),
+    0 12px 24px -8px rgba(0,0,0,.18),
+    0 40px 70px -24px rgba(0,0,0,.4);
+  transition:transform .4s cubic-bezier(.4,0,.2,1),box-shadow .4s ease;
+}
+.id-card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9);
+}
+.id-card:hover{
+  transform:translateY(-28px) scale(1.012) rotateX(0deg);
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.04),
+    0 18px 34px -10px rgba(0,0,0,.22),
+    0 54px 90px -24px rgba(0,0,0,.46);
+}
+.id-card-overlay.open .id-card{
+  animation:idCardEnter .6s var(--ease-shutter) forwards;
+}
+@keyframes idCardEnter{
+  0%{transform:translateY(-24px) scale(.96) rotateX(6deg);opacity:0}
+  55%{transform:translateY(5px) scale(1.008) rotateX(-1deg);opacity:.9}
+  78%{transform:translateY(-2px) scale(.997) rotateX(0);opacity:.98}
+  100%{transform:translateY(0) scale(1) rotateX(0);opacity:1}
+}
+
+/* ---------- TOP BAR ---------- */
+.id-card-top-bar{
+  height:6px;
+  background:linear-gradient(90deg,
+    var(--gold-3) 0%,var(--gold-1) 28%,var(--gold-0) 50%,var(--gold-1) 72%,var(--gold-3) 100%);
+}
+
+/* ---------- REALISTIC FOLDED RIBBON ---------- */
+.id-card-ribbon{
+  position:absolute;
+  top:6px;
+  left:50%;
+  transform:translateX(-50%);
+  width:82%;
+  z-index:1;
+  pointer-events:none;
+  opacity:0;
+  transform:translateX(-50%) translateY(-8px) scaleY(.92);
+  animation:ribbonUnfurl .7s var(--ease-shutter) .25s forwards;
+}
+@keyframes ribbonUnfurl{
+  0%{opacity:0;transform:translateX(-50%) translateY(-8px) scaleY(.92)}
+  100%{opacity:1;transform:translateX(-50%) translateY(0) scaleY(1)}
+}
+.ribbon-fold{
+  position:absolute;
+  left:0;right:0;
+  pointer-events:none;
+}
+.ribbon-fold--top{
+  top:-6px;
+  height:14px;
+  background:linear-gradient(180deg,
+    var(--gold-3) 0%,
+    var(--gold-1) 30%,
+    var(--gold-0) 50%,
+    var(--gold-1) 70%,
+    var(--gold-2) 100%);
+  border-radius:3px 3px 0 0;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.4),
+    inset 0 -1px 0 rgba(0,0,0,.08),
+    0 2px 4px rgba(0,0,0,.12),
+    0 0 0 1px rgba(212,160,23,.2);
+  transform-origin:bottom center;
+  transform:perspective(40px) rotateX(8deg);
+}
+.ribbon-face{
+  position:relative;
+  z-index:1;
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.15) 0%,
+      transparent 8%,
+      transparent 92%,
+      rgba(0,0,0,.04) 100%),
+    linear-gradient(90deg,
+      var(--gold-3) 0%,
+      var(--gold-1) 25%,
+      var(--gold-0) 50%,
+      var(--gold-1) 75%,
+      var(--gold-3) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.25),
+    inset 0 -1px 0 rgba(0,0,0,.05),
+    0 1px 2px rgba(0,0,0,.08),
+    0 0 0 1px rgba(212,160,23,.15);
+}
+.ribbon-text{
+  display:block;
+  padding:10px 16px 8px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  text-align:center;
+  color:#1a1a1a;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.4),
+    0 -1px 0 rgba(0,0,0,.05);
+}
+.ribbon-fold--bottom{
+  bottom:-6px;
+  height:14px;
+  background:linear-gradient(180deg,
+    var(--gold-2) 0%,
+    var(--gold-1) 30%,
+    var(--gold-0) 50%,
+    var(--gold-1) 70%,
+    var(--gold-3) 100%);
+  border-radius:0 0 3px 3px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.3),
+    inset 0 -1px 0 rgba(0,0,0,.06),
+    0 2px 4px rgba(0,0,0,.1),
+    0 0 0 1px rgba(212,160,23,.15);
+  transform-origin:top center;
+  transform:perspective(40px) rotateX(-8deg);
+}
+.ribbon-tail{
+  position:absolute;
+  bottom:-28px;
+  left:50%;
+  transform:translateX(-50%);
+  width:36px;
+  height:28px;
+  background:
+    linear-gradient(180deg,
+      var(--gold-2) 0%,
+      var(--gold-1) 40%,
+      var(--gold-0) 60%,
+      var(--gold-1) 80%,
+      var(--gold-3) 100%);
+  border-radius:0 0 6px 6px;
+  box-shadow:
+    0 3px 6px rgba(0,0,0,.18),
+    inset 0 -1px 0 rgba(0,0,0,.06);
+  clip-path:polygon(0 0, 100% 0, 50% 100%);
+}
+
+/* ---------- HEADER ---------- */
+.id-card-header{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  padding:20px 24px 16px;
+}
+.id-card-brandblock{
+  display:flex;align-items:center;gap:12px;min-width:0;
+}
+.id-card-logo{
+  color:var(--badge-gold);flex-shrink:0;
+  display:grid;place-items:center;
+  filter:drop-shadow(0 4px 8px rgba(212,160,23,.3));
+}
+.id-card-logo svg{display:block}
+.id-card-brandtext{display:flex;flex-direction:column;gap:1px;min-width:0}
+.id-card-brand{
+  font-size:13px;font-weight:800;letter-spacing:.04em;
+  color:var(--ink-900);line-height:1.25;
+}
+.id-card-brandsub{
+  font-size:11px;font-weight:600;letter-spacing:.02em;
+  color:var(--ink-700);line-height:1.3;
+}
+.id-card-brandloc{
+  font-size:11px;font-weight:500;letter-spacing:.02em;
+  color:var(--ink-500);line-height:1.3;
+}
+.id-card-headright{
+  display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;
+}
+.id-card-date{
+  font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-500);white-space:nowrap;
+  padding:4px 10px;border-radius:999px;
+  background:#f6f6f6;border:1px solid var(--line);
+}
+
+/* ---------- CLOSE (44px target, 32px visual) ---------- */
+.id-card-close{
+  width:44px;height:44px;padding:0;margin:-6px -6px 0 0;
+  background:none;border:none;cursor:pointer;
+  display:grid;place-items:center;
+  opacity:0;transform:scale(.8);
+  transition:opacity .3s ease .5s,transform .3s var(--ease-shutter) .5s;
+}
+.id-card-overlay.open .id-card-close{opacity:1;transform:scale(1)}
+.id-card-close-dot{
+  width:32px;height:32px;border-radius:50%;
+  background:#f2f2f2;color:var(--ink-500);
+  display:grid;place-items:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.08),inset 0 0 0 1px rgba(0,0,0,.03);
+  transition:background .2s ease,color .2s ease,transform .2s var(--ease-shutter),box-shadow .2s ease;
+}
+.id-card-close:hover .id-card-close-dot{
+  background:var(--ink-900);color:#fff;transform:scale(1.08);
+  box-shadow:0 4px 10px rgba(0,0,0,.2);
+}
+.id-card-close:active .id-card-close-dot{transform:scale(.94)}
+.id-card-close:focus-visible{outline:none}
+.id-card-close:focus-visible .id-card-close-dot{
+  outline:2px solid var(--badge-gold);outline-offset:3px;
+}
+
+/* ---------- DIVIDER ---------- */
+.id-card-divider{
+  height:1px;margin:0 24px;
+  background:var(--line);
+}
+
+/* ---------- PROFILE ---------- */
+.id-card-profile{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  padding:24px 24px 20px;
+}
+.id-card-avatar{
+  width:104px;height:104px;border-radius:50%;
+  background:
+    radial-gradient(circle at 32% 28%, #3a4048, #1a1d24 75%);
+  display:grid;place-items:center;
+  color:var(--badge-gold-soft);
+  box-shadow:
+    0 0 0 4px #fff,
+    0 0 0 6px var(--badge-gold),
+    0 10px 24px -6px rgba(0,0,0,.28);
+  opacity:0;transform:scale(.5);
+}
+.id-card-overlay.open .id-card-avatar{
+  animation:avatarPop .6s cubic-bezier(.34,1.56,.64,1) .35s forwards;
+}
+@keyframes avatarPop{
+  0%{opacity:0;transform:scale(.5)}
+  100%{opacity:1;transform:scale(1)}
+}
+.id-card:hover .id-card-avatar{
+  box-shadow:
+    0 0 0 4px #fff,
+    0 0 0 6px var(--badge-gold-soft),
+    0 14px 30px -6px rgba(0,0,0,.34);
+}
+.id-card-avatar,.id-card-avatar svg{transition:transform .3s ease,box-shadow .3s ease}
+.id-card:hover .id-card-avatar svg{transform:scale(1.06)}
+.id-card-name{
+  margin:0;
+  font-size:24px;font-weight:800;letter-spacing:-.01em;
+  color:var(--ink-900);line-height:1.15;text-align:center;
+  max-width:100%;padding:0 8px;
+  overflow-wrap:anywhere;
+}
+.id-card-role{
+  font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--badge-gold);
+  padding:5px 12px;border-radius:999px;
+  background:rgba(212,160,23,.1);
+  border:1px solid rgba(212,160,23,.25);
+}
+
+/* ---------- INFO GRID ---------- */
+.id-card-fields{
+  margin:0;padding:16px 24px 4px;
+  display:flex;flex-direction:column;
+}
+.id-card-field{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 0;
+  border-bottom:1px solid var(--line-soft);
+  opacity:0;transform:translateY(8px);
+}
+.id-card-field:last-child{border-bottom:none}
+.id-card-overlay.open .id-card-field{
+  animation:rowReveal .45s ease forwards;
+}
+.id-card-overlay.open .id-card-field:nth-child(1){animation-delay:.42s}
+.id-card-overlay.open .id-card-field:nth-child(2){animation-delay:.50s}
+.id-card-overlay.open .id-card-field:nth-child(3){animation-delay:.58s}
+.id-card-overlay.open .id-card-field:nth-child(4){animation-delay:.66s}
+.id-card-overlay.open .id-card-field:nth-child(5){animation-delay:.74s}
+@keyframes rowReveal{to{opacity:1;transform:translateY(0)}}
+.id-card-ficon{
+  width:36px;height:36px;flex-shrink:0;border-radius:10px;
+  display:grid;place-items:center;
+  background:rgba(212,160,23,.08);
+  color:var(--badge-gold);
+}
+.id-card-ficon svg{width:18px;height:18px;display:block}
+.id-card-fmeta{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.id-card-fmeta dt{
+  font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-500);
+}
+.id-card-fmeta dd{
+  margin:0;
+  font-size:15px;font-weight:500;color:var(--ink-900);line-height:1.35;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+/* ---------- FOOTER ---------- */
+.id-card-footer{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  padding:18px 24px 24px;
+  opacity:0;
+  animation:none;
+}
+.id-card-overlay.open .id-card-footer{
+  animation:fadeIn .5s ease .8s forwards;
+}
+@keyframes fadeIn{to{opacity:1}}
+.id-card-barcode{
+  display:flex;gap:2px;height:44px;width:100%;max-width:240px;
+  align-items:stretch;justify-content:center;
+}
+.id-card-barcode span{
+  flex:1;background:var(--ink-900);border-radius:1px;
+}
+.id-card-barcode span:nth-child(odd){opacity:1}
+.id-card-barcode span:nth-child(even){opacity:.55;transform:scaleX(.6)}
+.id-card-barcode span:nth-child(3n){transform:scaleX(1.4)}
+.id-card-barcode span:nth-child(4n){opacity:.35}
+.id-card-barcode span:nth-child(5n){transform:scaleX(.5)}
+.id-card-barcode span:nth-child(7n){opacity:.8;transform:scaleX(1.2)}
+.id-card-id{
+  font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+  color:var(--ink-500);font-weight:600;font-variant-numeric:tabular-nums;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:460px){
+  .id-card{--card-w:92vw}
+  .id-card-header{padding:16px 18px 14px}
+  .id-card-profile{padding:20px 18px 16px}
+  .id-card-avatar{width:92px;height:92px}
+  .id-card-name{font-size:21px}
+  .id-card-fields{padding:14px 18px 4px}
+  .id-card-fmeta dd{font-size:14px}
+  .id-card-footer{padding:16px 18px 20px}
+  .id-card-brandsub,.id-card-brandloc{font-size:10px}
+}
+
+/* ---------- REDUCED MOTION ---------- */
+@media (prefers-reduced-motion:reduce){
+  .id-card-overlay{transition:none}
+  .id-card-flash{transition:opacity .01s}
+  .id-card-overlay.open .id-card{animation:none;transform:none;opacity:1}
+  .id-card-lanyard,.id-card-container::after{opacity:1;animation:none}
+  .id-card-overlay.open .id-card-avatar{animation:none;opacity:1;transform:none}
+  .id-card-overlay.open .id-card-field{animation:none;opacity:1;transform:none}
+  .id-card-overlay.open .id-card-footer{animation:none;opacity:1}
+  .id-card-close{opacity:1;transform:none;transition:none}
+  .id-card-bg .bokeh{animation:none}
+  .id-card,.id-card-avatar,.id-card-avatar svg{transition:none}
+  .id-card-ribbon{opacity:1;transform:none;animation:none}
+}
+
+/* ============================================================
+   7. SLOW-REVEAL  (IntersectionObserver driven)
+   ============================================================ */
+.reveal{
+  opacity:0;
+  transform:translateY(30px);
+  transition:
+    opacity var(--reveal-dur) var(--ease-shutter),
+    transform var(--reveal-dur) var(--ease-shutter);
+  transition-delay:var(--d,0ms);
+}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* ============================================================
+   8. RESPONSIVE
+   ============================================================ */
+@media (max-width:1040px){
+  .metrics,.coords,.highlights{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:960px){
+  .stage-grid,.g-2-1{grid-template-columns:1fr}
+  .g-3,.g-4,.tickets{grid-template-columns:repeat(2,1fr)}
+  .room-lights{display:none}
+  #home .wrap{width:min(100% - 2.5rem,var(--maxw))}
+}
+@media (max-width:720px){
+  :root{--housing-h:88px}
+  .nav-links{
+    position:fixed;top:var(--nav-h);left:0;right:0;z-index:85;
+    flex-direction:column;align-items:stretch;gap:.15rem;padding:.8rem 1rem 1.1rem;
+    background:rgba(6,7,10,.96);backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-bottom:1px solid var(--line-soft);
+    transform:translateY(-120%);transition:transform .5s var(--ease-shutter),opacity .4s ease;
+  }
+  .is-open .nav-links.show{transform:translateY(0)}
+  .nav-toggle{display:block}
+  .g-2,.g-3,.g-4,.tickets,.form-grid,.metrics,.coords,.highlights{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .admin-body{padding:1.2rem}
+  .actions .btn{width:100%}
+}
+
+/* ============================================================
+   9. REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  :root{--shutter-dur:.45s;--reveal-dur:.25s}
+  html{scroll-behavior:auto}
+  .reveal{transform:none}
+  .register::before,.scroll-cue i,.chip.live .dot{animation:none}
+  .btn::after{display:none}
+}
+</style>
+</head>
+<body class="locked">
+
+<!-- ============ NAV (fixed) ============ -->
+<header class="nav">
+  <a class="brand" href="#home">
+    <span class="mark">IEEE</span>
+    <span>SB VJEC<small>Summer School 2026</small></span>
+  </a>
+
+  <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="Toggle navigation">☰</button>
+
+  <nav class="nav-links" id="navLinks" aria-label="Primary">
+    <a href="#home">Home</a>
+    <a href="#about">Event Details</a>
+    <a href="#schedule">Schedule</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#register-section">Register</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<!-- ============ HOUSING (fixed) ============ -->
+<div class="housing" aria-hidden="true">
+  <div class="hbox"></div>
+  <div class="drum"></div>
+  <span class="hcap hcap-l"></span>
+  <span class="hcap hcap-r"></span>
+  <div class="hlip"></div>
+</div>
+
+<!-- ============ SHUTTER — lifted only by REGISTER / .cta ============ -->
+<div class="shutter" id="shutter" role="region" aria-label="Entry shutter" tabindex="0">
+  <div class="shutter-skin">
+    <div class="shutter-face">
+      <h1 class="st-ieee">IEEE</h1>
+      <p class="st-vjec">VJEC</p>
+      <button class="enter-btn" id="registerBtn" aria-label="Open shutter and enter site">Enter</button>
+    </div>
+    <div class="grooves" aria-hidden="true"></div>
+    <span class="rail rail-l" aria-hidden="true"></span>
+    <span class="rail rail-r" aria-hidden="true"></span>
+  </div>
+</div>
+
+<main>
+
+  <!-- ============ 1. HERO STAGE & EVENT HIGHLIGHTS ============ -->
+  <section class="section" id="home">
+    <!-- Realistic spotlight lighting overlay -->
+    <div class="room-lights" aria-hidden="true"></div>
+
+    <div class="wrap">
+      <div class="stage-grid">
+        <div class="reveal" style="--d:0ms">
+          <span class="eyebrow">Event Overview</span>
+          <h2 class="display" style="margin-top:1rem">Two days.<br>Five tracks.<br>One build sprint.</h2>
+          <p class="lede" style="margin-top:1.1rem">
+            IEEE Summer School 2026 is the flagship technical programme of IEEE Student Branch,
+            Vimal Jyothi Engineering College. It compresses a semester of practical engineering into
+            a weekend of guided labs, industry sessions and a closing showcase — no slide-decks-only
+            sessions, every track ends with something you have actually built.
+          </p>
+          <div class="stage-actions">
+            <a class="btn cta btn-gold" href="#register-section" data-target="#register-section">Reserve a Seat</a>
+            <a class="btn cta btn-ghost" href="#events" data-target="#events">Explore Tracks</a>
+          </div>
+          <div class="scroll-cue"><i></i> Scroll to explore</div>
+        </div>
+
+        <div class="stats reveal" style="--d:160ms">
+          <div class="stat"><b>02</b><span>Days</span></div>
+          <div class="stat"><b>05</b><span>Tracks</span></div>
+          <div class="stat"><b>12</b><span>Mentors</span></div>
+          <div class="stat"><b>200</b><span>Seats</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 2. ABOUT IEEE SB VJEC & OBJECTIVES ============ -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Event Details</span>
+        <h2 class="display">IEEE SB VJEC &amp; the Summer School</h2>
+        <p class="lede">
+          The student branch has run technical programmes, workshops and outreach for over a decade.
+          Summer School is where that experience is distilled: small cohorts, working mentors, and a
+          curriculum that assumes you want to build rather than watch.
+        </p>
+      </div>
+
+      <div class="grid g-2-1">
+        <div class="card reveal" style="--d:80ms">
+          <h3>Our Vision</h3>
+          <p>
+            To turn classroom theory into shipped work. Every participant leaves with a repository,
+            a demo, and a mentor they can keep talking to — not just a certificate.
+          </p>
+          <ul class="pill-list">
+            <li>Project-first pedagogy over lecture-first delivery.</li>
+            <li>Mentors drawn from industry and senior IEEE volunteers.</li>
+            <li>Open, documented outputs that outlive the event.</li>
+          </ul>
+        </div>
+
+        <div class="card reveal" style="--d:200ms">
+          <h3>Summer School Objectives</h3>
+          <ul class="pill-list">
+            <li>Give students hands-on exposure to current engineering toolchains.</li>
+            <li>Bridge the gap between academic syllabus and industry practice.</li>
+            <li>Build a peer network across colleges in the Kerala Section.</li>
+            <li>Encourage IEEE membership through demonstrated value.</li>
+            <li>Seed year-round project teams from the cohort.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid g-3" style="margin-top:1.15rem">
+        <div class="card reveal" style="--d:80ms">
+          <h3>Who should attend</h3>
+          <p>Second- and third-year engineering students across CSE, ECE, EEE and allied branches. Basic programming familiarity is enough — tracks ramp from fundamentals.</p>
+        </div>
+        <div class="card reveal" style="--d:180ms">
+          <h3>What you take home</h3>
+          <p>A working project, a documented repository, IEEE-issued participation credentials, and access to the alumni mentor channel.</p>
+        </div>
+        <div class="card reveal" style="--d:280ms">
+          <h3>Format</h3>
+          <p>Two full days on campus. Mornings are guided labs, afternoons are build blocks, and each day closes with a review panel and demos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <!-- ============ 4. TIMELINE / SCHEDULE ============ -->
+  <section class="section" id="schedule">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Timeline</span>
+        <h2 class="display">Two days, hour by hour</h2>
+        <p class="lede">Timings are indicative and may shift by up to 30 minutes. Lunch and tea are provided on both days.</p>
+      </div>
+
+      <div class="day-switch reveal" role="tablist" aria-label="Schedule days">
+        <button type="button" role="tab" aria-selected="true"  aria-controls="day1" id="tab1">Day 01 · 14 June</button>
+        <button type="button" role="tab" aria-selected="false" aria-controls="day2" id="tab2">Day 02 · 15 June</button>
+      </div>
+
+      <div class="day-panel" id="day1" role="tabpanel" aria-labelledby="tab1">
+        <div class="timeline">
+          <div class="card slot reveal" style="--d:0ms">
+            <time>08:30 — 09:30</time><h4>Registration &amp; Kit Handover</h4>
+            <p>Check-in at the academic block, badge and kit collection, track room allocation.</p>
+          </div>
+          <div class="card slot reveal" style="--d:70ms">
+            <time>09:30 — 10:15</time><h4>Inauguration &amp; Keynote</h4>
+            <p>Welcome address by the branch counsellor, followed by the opening industry keynote.</p>
+          </div>
+          <div class="card slot reveal" style="--d:140ms">
+            <time>10:30 — 13:00</time><h4>Track Lab — Session I</h4>
+            <p>Fundamentals and environment setup inside your chosen track. Everything installed and running before lunch.</p>
+          </div>
+          <div class="card slot reveal" style="--d:210ms">
+            <time>14:00 — 16:30</time><h4>Track Lab — Session II</h4>
+            <p>Guided build. Mentors circulate; checkpoint commits at the end of each hour.</p>
+          </div>
+          <div class="card slot reveal" style="--d:280ms">
+            <time>16:45 — 18:00</time><h4>Review Panel &amp; Networking</h4>
+            <p>Cross-track review of day-one progress, followed by an open networking hour.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="day-panel" id="day2" role="tabpanel" aria-labelledby="tab2" hidden>
+        <div class="timeline">
+          <div class="card slot reveal" style="--d:0ms">
+            <time>09:00 — 09:30</time><h4>Standup &amp; Day-Two Brief</h4>
+            <p>Each cohort states its build target for the day in two minutes.</p>
+          </div>
+          <div class="card slot reveal" style="--d:70ms">
+            <time>09:30 — 12:30</time><h4>Track Lab — Session III</h4>
+            <p>The main build block. Integration, debugging, and a mid-block mentor review.</p>
+          </div>
+          <div class="card slot reveal" style="--d:140ms">
+            <time>13:30 — 15:00</time><h4>Challenge Round</h4>
+            <p>Track-specific challenge — CTF, line-follow race, deployment sprint or model bake-off.</p>
+          </div>
+          <div class="card slot reveal" style="--d:210ms">
+            <time>15:15 — 16:30</time><h4>Project Showcase</h4>
+            <p>Every team demos to the full cohort. Five minutes each, live only — no slides.</p>
+          </div>
+          <div class="card slot reveal" style="--d:280ms">
+            <time>16:30 — 17:30</time><h4>Valediction &amp; Certificates</h4>
+            <p>Awards, IEEE membership drive, and certificate distribution.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rule"></div>
+
+  <!-- ============ 5. PRICING ============ -->
+  <section class="section" id="pricing">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Pricing</span>
+        <h2 class="display">Simple, straightforward pricing</h2>
+        <p class="lede">Seats are allotted per track on a first-come basis. Confirmation and payment instructions are emailed within 24 hours.</p>
+        <p class="lede" style="color: var(--fg-dim); font-size: 0.9rem; margin-top: 1rem;">
+          Dummy pricing details: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+          This is a placeholder for any additional demi/dummy pricing details required for the event.
+        </p>
+      </div>
+
+      <div class="grid g-2-1">
+        <form class="card static reveal" id="regForm" novalidate style="--d:0ms">
+          <h3 style="margin-bottom:1.1rem" id="register-section">Reserve your seat</h3>
+          <div class="form-grid">
+            <div class="field">
+              <label for="f-name">Full name</label>
+              <input id="f-name" name="name" type="text" autocomplete="name" required>
+              <span class="err" data-err-for="f-name"></span>
+            </div>
+            <div class="field">
+              <label for="f-phone">Phone</label>
+              <input id="f-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" required>
+              <span class="err" data-err-for="f-phone"></span>
+            </div>
+            <div class="field full">
+              <label for="f-email">Email</label>
+              <input id="f-email" name="email" type="email" autocomplete="email" required>
+              <span class="err" data-err-for="f-email"></span>
+            </div>
+            <div class="field full">
+              <label for="f-track">Track</label>
+              <select id="f-track" name="track" required>
+                <option value="">Select a track…</option>
+                <option>Applied Machine Learning</option>
+                <option>Embedded &amp; IoT Systems</option>
+                <option>Modern Web Engineering</option>
+                <option>Cybersecurity Foundations</option>
+                <option>Robotics &amp; Control</option>
+              </select>
+              <span class="err" data-err-for="f-track"></span>
+            </div>
+            
+            <div class="field full" style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem;">
+              <label style="margin:0;">Are you an IEEE Member?</label>
+              <label style="display:flex; align-items:center; gap:0.3rem; font-size:0.8rem; cursor:pointer; color:var(--fg);">
+                <input type="radio" name="is_ieee_member" value="Yes" onchange="toggleIeeeId(true)"> Yes
+              </label>
+              <label style="display:flex; align-items:center; gap:0.3rem; font-size:0.8rem; cursor:pointer; color:var(--fg);">
+                <input type="radio" name="is_ieee_member" value="No" onchange="toggleIeeeId(false)" checked> No
+              </label>
+            </div>
+            
+            <div class="field full conditional-field" id="ieee-id-field" style="display:none;">
+              <label for="f-ieee-id">IEEE Membership ID</label>
+              <input id="f-ieee-id" name="ieee_id" type="text">
+              <span class="err" data-err-for="f-ieee-id"></span>
+            </div>
+            
+            <div class="field full">
+              <label for="f-payment-method">Payment Method</label>
+              <select id="f-payment-method" name="payment_method" required onchange="toggleUpiScreenshot()">
+                <option value="">Select payment method…</option>
+                <option value="upi">UPI Payment</option>
+                <option value="cash">Cash</option>
+                <option value="bank">Bank Transfer</option>
+              </select>
+              <span class="err" data-err-for="f-payment-method"></span>
+            </div>
+            
+            <div class="field full conditional-field" id="upi-screenshot-field" style="display:none;">
+              <label>Upload UPI Payment Screenshot</label>
+              <div class="upload-area" id="uploadArea" onclick="document.getElementById('f-screenshot').click()">
+                <div id="uploadPlaceholder">
+                  <span style="font-size: 1.5rem; display:block; margin-bottom: 0.5rem; color: var(--gold-1);">↑</span>
+                  Click to upload screenshot
+                </div>
+                <img id="uploadPreview" src="" alt="Screenshot Preview" style="display:none; max-width: 100%; max-height: 200px; border-radius: 8px; margin: 0 auto;">
+              </div>
+              <input id="f-screenshot" name="screenshot" type="file" accept="image/*" style="display:none;" onchange="previewImage(this)">
+              <span class="err" data-err-for="f-screenshot"></span>
+            </div>
+
+            <div class="field full">
+              <label for="f-note">Anything we should know? (optional)</label>
+              <textarea id="f-note" name="note" rows="3"></textarea>
+            </div>
+          </div>
+          <button class="btn btn-gold" type="submit" style="margin-top:1.2rem; width:100%;">Submit Registration</button>
+          <p class="form-status" id="formStatus" role="status" hidden></p>
+        </form>
+
+        <aside class="card reveal" style="--d:140ms">
+          <h3>Venue &amp; contact</h3>
+          <ul class="contact-list" style="margin-top:1rem">
+            <li><b>Venue</b><span>Vimal Jyothi Engineering College, Chemperi, Kannur, Kerala 670632</span></li>
+            <li><b>Dates</b><span>14 – 15 June 2026 · 08:30 onwards</span></li>
+            <li><b>Email</b><a href="mailto:ieeesb@vjec.ac.in">ieeesb@vjec.ac.in</a></li>
+            <li><b>Student Branch Chair</b><a href="tel:+919000000000">+91 90000 00000</a></li>
+            <li><b>Registration Desk</b><a href="tel:+919111111111">+91 91111 11111</a></li>
+          </ul>
+          <div style="margin-top:1.4rem;display:flex;gap:.6rem;flex-wrap:wrap">
+            <a class="btn btn-ghost" href="mailto:ieeesb@vjec.ac.in">Email us</a>
+            <a class="btn btn-ghost" href="#home">Back to top</a>
+          </div>
+        </aside>
+      </div>
+
+      <div class="footer" style="margin-top:3rem">
+        <span>© 2026 IEEE Student Branch · Vimal Jyothi Engineering College</span>
+        <span>Built for IEEE Summer School 2026</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ ID CARD SUCCESS MODAL ============ -->
+<div class="id-card-overlay" id="idCardOverlay" role="dialog" aria-modal="true" aria-labelledby="idCardName" hidden>
+  <div class="id-card-flash" id="idCardFlash"></div>
+
+  <!-- ambient background -->
+  <div class="id-card-bg" aria-hidden="true">
+    <span class="bokeh b1"></span>
+    <span class="bokeh b2"></span>
+    <span class="bokeh b3"></span>
+    <span class="bokeh b4"></span>
+  </div>
+
+  <!-- lanyard — realistic V-shape hanging from neck -->
+  <div class="id-card-lanyard" id="idCardLanyard" aria-hidden="true">
+    <!-- left strap going up-left (around the neck) -->
+    <div class="ly-strap ly-strap-l">
+      <span class="ly-label">IEEE SB VJEC · IEEE SB VJEC · IEEE SB VJEC</span>
+    </div>
+    <!-- right strap going up-right (around the neck) -->
+    <div class="ly-strap ly-strap-r">
+      <span class="ly-label">SUMMER SCHOOL 2026 · SUMMER SCHOOL 2026</span>
+    </div>
+    <!-- breakaway buckle on the left strap -->
+    <div class="ly-breakaway"></div>
+    <!-- metal D-ring where straps meet -->
+    <div class="ly-ring"></div>
+    <!-- lobster claw clip connecting to card -->
+    <div class="ly-clip">
+      <div class="ly-clip-ring"></div>
+      <div class="ly-clip-body"></div>
+    </div>
+  </div>
+
+  <div class="id-card-container" id="idCardContainer">
+        <div class="ribbon-face">
+          <span class="ribbon-text">IEEE SUMMER SCHOOL 2026</span>
+        </div>
+        <div class="ribbon-fold ribbon-fold--bottom"></div>
+        <div class="ribbon-tail"></div>
+      </div>
+
+      <!-- header -->
+      <header class="id-card-header">
+        <div class="id-card-brandblock">
+          <div class="id-card-logo">
+            <svg width="38" height="38" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <rect width="32" height="32" rx="8" fill="currentColor"/>
+              <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="12" fill="#241a06">IEEE</text>
+            </svg>
+          </div>
+          <div class="id-card-brandtext">
+            <span class="id-card-brand">IEEE SB VJEC</span>
+            <span class="id-card-brandsub">Summer School 2026</span>
+            <span class="id-card-brandloc">Chemperi, Kannur</span>
+          </div>
+        </div>
+        <div class="id-card-headright">
+          <button class="id-card-close" id="idCardClose" aria-label="Close badge">
+            <span class="id-card-close-dot">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </span>
+          </button>
+          <span class="id-card-date">Jun 14–15</span>
+        </div>
+      </header>
+
+      <div class="id-card-divider"></div>
+
+      <!-- profile -->
+      <section class="id-card-profile">
+        <div class="id-card-avatar" id="idCardAvatar">
+          <svg width="52" height="52" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <circle cx="24" cy="18" r="8" fill="currentColor"/>
+            <ellipse cx="24" cy="41" rx="14" ry="12" fill="currentColor"/>
+          </svg>
+        </div>
+        <h2 class="id-card-name" id="idCardName">—</h2>
+        <span class="id-card-role" id="idCardRole">Participant</span>
+      </section>
+
+      <!-- info grid -->
+      <dl class="id-card-fields">
+        <div class="id-card-field">
+          <span class="id-card-ficon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          </span>
+          <div class="id-card-fmeta">
+            <dt>Email</dt>
+            <dd id="idCardEmail">—</dd>
+          </div>
+        </div>
+        <div class="id-card-field">
+          <span class="id-card-ficon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>
+          </span>
+          <div class="id-card-fmeta">
+            <dt>Phone</dt>
+            <dd id="idCardPhone">—</dd>
+          </div>
+        </div>
+        <div class="id-card-field">
+          <span class="id-card-ficon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-4 7 4v13"/><path d="M9 21v-6h6v6"/></svg>
+          </span>
+          <div class="id-card-fmeta">
+            <dt>College</dt>
+            <dd id="idCardCollege">—</dd>
+          </div>
+        </div>
+        <div class="id-card-field">
+          <span class="id-card-ficon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+          </span>
+          <div class="id-card-fmeta">
+            <dt>Track</dt>
+            <dd id="idCardTrack">—</dd>
+          </div>
+        </div>
+        <div class="id-card-field">
+          <span class="id-card-ficon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2 2 2 0 0 0 0-4Z"/><path d="M13 6v12"/></svg>
+          </span>
+          <div class="id-card-fmeta">
+            <dt>Ticket</dt>
+            <dd id="idCardTicket">—</dd>
+          </div>
+        </div>
+      </dl>
+
+      <div class="id-card-divider"></div>
+
+      <!-- footer -->
+      <footer class="id-card-footer">
+        <div class="id-card-barcode" id="idCardBarcode" aria-hidden="true">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="id-card-id" id="idCardRegId">SS26-XXXX</div>
+      </footer>
+    </article>
+  </div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  const root      = document.documentElement;
+  const body      = document.body;
+  const shutter   = document.getElementById('shutter');
+  const registerB = document.getElementById('registerBtn');
+  const navLinks  = document.getElementById('navLinks');
+  const navToggle = document.getElementById('navToggle');
+  const reduced   = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let isOpen = false;
+
+  /* ----------------------------------------------------------
+     1. SHUTTER — triggered only by .register / .cta
+     ---------------------------------------------------------- */
+  function openShutter(scrollTo) {
+    if (isOpen) { if (scrollTo) smoothScroll(scrollTo); return; }
+    isOpen = true;
+
+    shutter.classList.add('open');            // → transform: translateY(-100%)
+    shutter.setAttribute('aria-hidden', 'true');
+    body.classList.add('is-open');
+
+    // Scrolling is released only once the slats have fully cleared the viewport.
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+
+      root.classList.remove('locked');
+      body.classList.remove('locked');
+      body.style.overflow = 'auto';           // hand vertical scrolling back to the user
+
+      shutter.style.visibility = 'hidden';    // keep it out of the paint / hit-test path
+      window.dispatchEvent(new CustomEvent('shutter:open'));
+      if (scrollTo) smoothScroll(scrollTo);
+    };
+
+    shutter.addEventListener('transitionend', e => {
+      if (e.propertyName === 'transform') finish();
+    }, { once: true });
+    // fallback if transitionend never fires (backgrounded tab, etc.)
+    setTimeout(finish, reduced ? 500 : 1900);
+  }
+
+  // primary triggers: the ENTER button, clicking the shutter itself, or the Enter key
+  registerB.addEventListener('click', e => { e.stopPropagation(); openShutter(); });
+  shutter.addEventListener('click', () => openShutter());
+  shutter.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openShutter(); }
+  });
+
+  // every .cta / .register lifts the shutter first, then scrolls to its target
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.cta, .register');
+    if (!btn || btn === registerB) return;
+    const target = btn.dataset.target || btn.getAttribute('href');
+    if (!isOpen) { e.preventDefault(); openShutter(target); }
+  });
+
+  /* ----------------------------------------------------------
+     2. NAVIGATION — smooth scroll + scroll-spy
+     ---------------------------------------------------------- */
+  function smoothScroll(sel) {
+    const el = typeof sel === 'string' ? document.querySelector(sel) : sel;
+    if (!el) return;
+    const navH = parseInt(getComputedStyle(root).getPropertyValue('--nav-h')) || 64;
+    const top  = el.getBoundingClientRect().top + window.scrollY - navH - 16;
+    window.scrollTo({ top: Math.max(top, 0), behavior: reduced ? 'auto' : 'smooth' });
+  }
+
+  navLinks.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    e.preventDefault();
+    navLinks.classList.remove('show');
+    navToggle.setAttribute('aria-expanded', 'false');
+    const href = a.getAttribute('href');
+    if (!isOpen) openShutter(href);
+    else smoothScroll(href);
+  });
+
+  navToggle.addEventListener('click', () => {
+    const open = navLinks.classList.toggle('show');
+    navToggle.setAttribute('aria-expanded', String(open));
+  });
+
+  // in-page anchors outside the nav (brand, "back to top")
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || navLinks.contains(a) || a.classList.contains('cta')) return;
+    const href = a.getAttribute('href');
+    if (href.length < 2) return;
+    e.preventDefault();
+    if (!isOpen) openShutter(href); else smoothScroll(href);
+  });
+
+  /* ----------------------------------------------------------
+     3. SCROLL REVEAL  (IntersectionObserver)
+     ---------------------------------------------------------- */
+  const revealables = document.querySelectorAll('.reveal');
+
+  if (!('IntersectionObserver' in window) || reduced) {
+    revealables.forEach(el => el.classList.add('in'));
+  } else {
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('in');
+        obs.unobserve(entry.target);          // reveal once, then stop watching
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+
+    revealables.forEach(el => io.observe(el));
+  }
+
+  // section scroll-spy for the nav underline
+  if ('IntersectionObserver' in window) {
+    const links = [...navLinks.querySelectorAll('a')];
+    const spy = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = '#' + entry.target.id;
+        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+      });
+    }, { threshold: 0.25, rootMargin: '-80px 0px -45% 0px' });
+    document.querySelectorAll('main section[id]').forEach(s => spy.observe(s));
+  }
+
+  /* ----------------------------------------------------------
+     4. SCHEDULE TABS
+     ---------------------------------------------------------- */
+  const tabs = [...document.querySelectorAll('.day-switch [role="tab"]')];
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+      // the newly shown panel was display:none, so its observer never fired
+      document.querySelectorAll('#' + tab.getAttribute('aria-controls') + ' .reveal')
+        .forEach(el => el.classList.add('in'));
+    });
+  });
+
+  /* ----------------------------------------------------------
+     6. REGISTRATION FORM (client-side validation only)
+     ---------------------------------------------------------- */
+  
+  window.toggleIeeeId = function(isMember) {
+    const field = document.getElementById('ieee-id-field');
+    const input = document.getElementById('f-ieee-id');
+    if(isMember) {
+      field.style.display = 'block';
+      input.setAttribute('required', 'true');
+    } else {
+      field.style.display = 'none';
+      input.removeAttribute('required');
+      input.value = '';
+    }
+  };
+
+  window.toggleUpiScreenshot = function() {
+    const method = document.getElementById('f-payment-method').value;
+    const field = document.getElementById('upi-screenshot-field');
+    const input = document.getElementById('f-screenshot');
+    if(method === 'upi') {
+      field.style.display = 'block';
+      input.setAttribute('required', 'true');
+    } else {
+      field.style.display = 'none';
+      input.removeAttribute('required');
+      input.value = '';
+      document.getElementById('uploadPreview').style.display = 'none';
+      document.getElementById('uploadPlaceholder').style.display = 'block';
+    }
+  };
+
+  window.previewImage = function(input) {
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('uploadPlaceholder').style.display = 'none';
+        const preview = document.getElementById('uploadPreview');
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+      }
+      reader.readAsDataURL(input.files[0]);
+    }
+  };
+
+  const form   = document.getElementById('regForm');
+  const status = document.getElementById('formStatus');
+
+  // ID Card elements
+  const idCardOverlay   = document.getElementById('idCardOverlay');
+  const idCardFlash     = document.getElementById('idCardFlash');
+  const idCardContainer = document.getElementById('idCardContainer');
+  const idCardClose     = document.getElementById('idCardClose');
+  const idCardName      = document.getElementById('idCardName');
+  const idCardRole      = document.getElementById('idCardRole');
+  const idCardEmail     = document.getElementById('idCardEmail');
+  const idCardPhone     = document.getElementById('idCardPhone');
+  const idCardCollege   = document.getElementById('idCardCollege');
+  const idCardTrack     = document.getElementById('idCardTrack');
+  const idCardTicket    = document.getElementById('idCardTicket');
+  const idCardRegId     = document.getElementById('idCardRegId');
+
+  let idCardAnimating = false;
+  let lastFocused = null;
+
+  function generateRegId() {
+    const num = Math.floor(Math.random() * 9000) + 1000;
+    return 'SS26-' + num.toString().padStart(4, '0');
+  }
+
+  function roleForTicket(ticket) {
+    const t = (ticket || '').toLowerCase();
+    if (t.includes('team')) return 'Team Lead';
+    if (t.includes('member')) return 'IEEE Member';
+    return 'Participant';
+  }
+
+  function showIdCard(data) {
+    if (idCardAnimating) return;
+    idCardAnimating = true;
+    lastFocused = document.activeElement;
+
+    // Populate ID card with form data
+    idCardName.textContent    = data.name.trim();
+    idCardRole.textContent    = roleForTicket(data.ticket);
+    idCardEmail.textContent   = data.email.trim();
+    idCardPhone.textContent   = data.phone.trim();
+    // idCardCollege.textContent = data.college.trim(); // Removed
+    idCardTrack.textContent   = data.track;
+    idCardTicket.textContent  = data.is_ieee_member === 'Yes' ? 'IEEE Member' : 'Non-Member';
+    idCardRegId.textContent   = generateRegId();
+
+    // Show overlay
+    idCardOverlay.hidden = false;
+    // Force reflow for animation
+    idCardOverlay.offsetHeight;
+
+    // Trigger white flash
+    idCardFlash.classList.add('active');
+
+    // Trigger card enter animation (on overlay)
+    idCardOverlay.classList.add('open');
+
+    // Move focus to the close button for keyboard users
+    setTimeout(() => idCardClose.focus(), 60);
+
+    // Remove flash after brief moment
+    setTimeout(() => {
+      idCardFlash.classList.remove('active');
+    }, 180);
+
+    // Close handlers
+    function closeIdCard() {
+      idCardOverlay.classList.remove('open');
+      document.removeEventListener('keydown', onEsc);
+      setTimeout(() => {
+        idCardOverlay.hidden = true;
+        idCardAnimating = false;
+        if (lastFocused && lastFocused.focus) lastFocused.focus();
+      }, 260);
+    }
+
+    idCardClose.onclick = closeIdCard;
+    idCardOverlay.onclick = (e) => {
+      if (e.target === idCardOverlay) closeIdCard();
+    };
+
+    // ESC key to close
+    function onEsc(e) {
+      if (e.key === 'Escape') closeIdCard();
+    }
+    document.addEventListener('keydown', onEsc);
+  }
+
+  const rules = {
+    'f-name'   : v => v.trim().length >= 3 || 'Please enter your full name.',
+    'f-phone'  : v => /^[0-9+\-\s]{10,15}$/.test(v.trim()) || 'Enter a valid phone number.',
+    'f-email'  : v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || 'Enter a valid email address.',
+    'f-track'  : v => !!v || 'Choose a track.',
+    'f-payment-method': v => !!v || 'Choose a payment method.',
+    'f-ieee-id': v => {
+      const radio = document.querySelector('input[name="is_ieee_member"]:checked');
+      if(radio && radio.value === 'Yes') {
+         return v.trim().length > 0 || 'IEEE Membership ID is required.';
+      }
+      return true;
+    },
+    'f-screenshot': v => {
+      if(document.getElementById('f-payment-method').value === 'upi') {
+         const input = document.getElementById('f-screenshot');
+         return (input.files && input.files.length > 0) || 'Screenshot is required for UPI payment.';
+      }
+      return true;
+    }
+  };
+
+  function validateField(id) {
+    const el     = document.getElementById(id);
+    const result = rules[id](el.value);
+    const wrap   = el.closest('.field');
+    const err    = wrap.querySelector('.err');
+    const ok     = result === true;
+    wrap.classList.toggle('invalid', !ok);
+    err.textContent = ok ? '' : result;
+    return ok;
+  }
+
+  Object.keys(rules).forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('blur',  () => validateField(id));
+    el.addEventListener('input', () => {
+      if (el.closest('.field').classList.contains('invalid')) validateField(id);
+    });
+  });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const allOk = Object.keys(rules).map(validateField).every(Boolean);
+    if (!allOk) {
+      status.hidden = true;
+      form.querySelector('.field.invalid input, .field.invalid select')?.focus();
+      return;
+    }
+    const data = Object.fromEntries(new FormData(form).entries());
+    console.log('Registration payload →', data);   // replace with your fetch()
+    status.hidden = false;
+    status.textContent =
+      'Thanks, ' + data.name.trim().split(' ')[0] + ' — your seat for “' + data.track +
+      '” is provisionally held. Confirmation lands in ' + data.email + ' within 24 hours.';
+    form.reset();
+    showIdCard(data);
+  });
+
+})();
+</script>
+</body>
+</html>
