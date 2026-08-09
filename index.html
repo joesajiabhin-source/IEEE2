@@ -492,52 +492,34 @@ button,input,select,textarea{font:inherit;color:inherit}
 .enter-btn:focus-visible{outline:2px solid #c9252d;outline-offset:3px}
 
 /* ---------- MOBILE SHUTTER FACE ----------
-   On phones we swap the CSS-painted corrugated metal for the portrait
-   warehouse photo, so the closed shutter IS the room door. The stencil
-   lettering sits over it (slightly smaller) and the enter button lifts
-   just above the floor glow. The hero behind it uses the same image,
-   so when the shutter rolls up the hand-off is seamless. */
+   Keep the CSS-painted corrugated steel look on phones (same shutter the
+   desktop paints — solid corrugated metal with painted stencil letters).
+   We only shrink the type + adjust the ENTER button position so they fit
+   a phone screen, and remove the tap-highlight that iOS/Android adds. */
 @media (max-width:720px){
   .shutter{
-    background:#0a0a0b;
     /* kill the blue tap-highlight + focus ring mobile browsers add */
     -webkit-tap-highlight-color:transparent;
     outline:none;
     cursor:default;
   }
-  .shutter:focus,.shutter:focus-visible,.shutter:active{outline:none;box-shadow:none}
+  .shutter:focus,.shutter:focus-visible,.shutter:active{outline:none}
   .shutter *{-webkit-tap-highlight-color:transparent}
-  .shutter::before{
-    /* hide the painted slats */
-    background:none;
-  }
-  .shutter-skin{
-    background:
-      /* dim the photo a touch so the stencil letters read off it */
-      linear-gradient(180deg, rgba(4,5,7,.34) 0%, rgba(4,5,7,.16) 34%, rgba(4,5,7,.28) 68%, rgba(2,2,3,.66) 100%),
-      url('warehouse-bg(mobile).png') center top / cover no-repeat;
-  }
   .st-ieee{
-    font-size:clamp(2.6rem,15vw,5rem);
-    letter-spacing:.05em;
-    filter:drop-shadow(0 2px 2px rgba(0,0,0,.7));
+    font-size:clamp(4rem,21vw,8.5rem);
+    letter-spacing:.06em;
   }
   .st-vjec{
-    font-size:clamp(.95rem,4.2vw,1.6rem);
-    margin-top:.8rem;
+    font-size:clamp(1.05rem,4.8vw,1.9rem);
+    margin-top:1rem;
     letter-spacing:.42em;text-indent:.42em;
   }
   .enter-btn{
     /* lifted clear of the bottom edge + home gesture bar */
-    bottom:clamp(3.4rem,14vh,5.5rem);
+    bottom:clamp(2.6rem,9vh,4rem);
     padding:.85rem 2.4rem;
     font-size:.74rem;letter-spacing:.42em;text-indent:.42em;
-    background:rgba(0,0,0,.62);
-    border:1px solid rgba(217,215,210,.5);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
   }
-  .enter-btn:active{background:rgba(0,0,0,.78)}
   .enter-btn:focus,.enter-btn:focus-visible{outline:none}
   /* processing / thank-you shutter views — sized so they fit a phone */
   #shutter-processing-view,#shutter-thankyou-view{padding:0 1.2rem}
@@ -558,8 +540,6 @@ button,input,select,textarea{font:inherit;color:inherit}
     letter-spacing:.34em;text-indent:.34em;
   }
   #shutter-progress{font-size:1rem !important;letter-spacing:1px}
-  /* keep the narrow side rails for depth on the portrait image */
-  .shutter .rail{width:10px}
 }
 
 /* OPEN STATE — rolls up into the barrel with a metallic rattle */
@@ -1389,8 +1369,10 @@ input[type="radio"] {
     padding:12px;
   }
   .id-card-container{max-width:340px}
-  .id-card-lanyard{height:96px}
-  .ly-strap{width:26px}
+  .id-card-lanyard{height:96px;overflow:visible}
+  /* strap extends far above the lanyard box, past the top of the screen,
+     so the badge visually hangs from the ceiling of the stage image */
+  .ly-strap{width:26px;top:auto;bottom:30px;height:120vh}
   .id-card{
     --card-w:clamp(210px,60vw,272px);
     padding:12px 14px 13px;border-radius:14px;
