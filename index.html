@@ -787,13 +787,16 @@ input[type="radio"] {
   overflow:visible;
 }
 
-/* --- the strap, running far above the screen and down to the ring --- */
+/* --- the strap, running far above the screen and down THROUGH the ring ---
+   The strap's bottom tip extends to the ring's centerline, so the ring
+   visibly loops around the fabric. Bottom:4px places the fabric end just
+   past the ring's top edge — fabric goes through, ring surrounds it. */
 .ly-strap{
   position:absolute;
-  top:-100vh;            /* always hidden above the screen */
-  bottom:14px;           /* ends just at the ring's upper edge */
+  top:-100vh;
+  bottom:4px;            /* fabric drops to the ring's centerline */
   left:50%;transform:translateX(-50%);
-  width:22px;
+  width:16px;            /* slightly narrower than the ring inner diameter */
   background:
     repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
     linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
@@ -807,30 +810,47 @@ input[type="radio"] {
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.1) 50%,transparent);
 }
 
-/* --- the polished O-ring the strap loops around --- */
+/* --- the polished O-ring the strap loops around ---
+   The ring sits at the strap's ending point. Its bottom half (rendered by
+   border) is above the strap's z-index so the fabric looks tucked behind
+   the lower metal rim, while the upper half is hidden behind the strap. */
 .ly-ring{
   position:absolute;
-  bottom:3px;             /* sits at the strap's bottom */
+  bottom:2px;
   left:50%;transform:translateX(-50%);
   width:22px;height:22px;
   border:3px solid #b8bcc2;
   border-radius:50%;
   background:transparent;
   background-clip:padding-box;
-  z-index:4;
+  z-index:2;
+  /* clip top half so the strap appears to pass through the ring */
+  clip-path:polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
   box-shadow:
     inset 0 1px 1px rgba(255,255,255,.55),
     inset 0 -1px 1px rgba(0,0,0,.45),
     0 1px 2px rgba(0,0,0,.5);
 }
-/* glint on the ring's upper-left */
+/* glint on the ring's lower-left instead of upper-left */
 .ly-ring::before{
   content:"";position:absolute;
-  inset:-1px -1px auto -1px;height:40%;
+  inset:auto -1px -1px -1px;height:60%;
   border-radius:50%;
-  background:radial-gradient(ellipse 70% 100% at 32% 12%,
-    rgba(255,255,255,.6) 0%, transparent 60%);
+  background:radial-gradient(ellipse 70% 100% at 30% 80%,
+    rgba(255,255,255,.55) 0%, transparent 60%);
   pointer-events:none;
+}
+/* fabric patch re-drawn inside the ring's top half, so the strap
+   appears to enter through the metal rim instead of just meeting it */
+.ly-ring::after{
+  content:"";position:absolute;
+  top:-3px;left:-3px;right:-3px;height:14px;
+  background:
+    repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
+    linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
+  box-shadow:2px 0 8px rgba(0,0,0,.35), -2px 0 8px rgba(0,0,0,.35);
+  pointer-events:none;
+  z-index:4;
 }
 
 /* --- the chrome snap-hook: a small rectangular body at the
