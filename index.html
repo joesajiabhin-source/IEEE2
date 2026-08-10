@@ -774,171 +774,112 @@ input[type="radio"] {
 }
 
 /* ---------- LANYARD ----------
-   Wraps a long fabric strap that exits the viewport top, threads
-   through a polished metal O-ring, then feeds into a chrome J-hook
-   that drops into the card's punch-slot. */
+   The strap exits the viewport top, threads through a polished
+   metal O-ring, then feeds a slim chrome J-hook that drops into
+   the card's punch-slot. The stack is absolutely stacked inside
+   a container that is exactly the lanyard's width. */
 .id-card-lanyard{
   position:relative;z-index:3;
-  width:80px;height:220px;
+  width:80px;height:180px;
   pointer-events:none;
   margin:0 auto;
   flex-shrink:0;
   overflow:visible;
 }
 
-/* Strap: starts far above the lanyard container so it always runs
-   off the top of the screen regardless of where the lanyard sits
-   in the overlay. 120vh is overkill on purpose — hides any seam
-   where the strap would otherwise stop. The bottom sits at the
-   ring so the fabric visually wraps the metal. */
+/* --- the strap, running far above the screen and down to the ring --- */
 .ly-strap{
   position:absolute;
-  bottom:24px;            /* end of fabric sits under the ring */
+  top:-100vh;            /* always hidden above the screen */
+  bottom:14px;           /* ends just at the ring's upper edge */
   left:50%;transform:translateX(-50%);
-  height:120vh;
-  width:24px;
+  width:22px;
   background:
     repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
     linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
-  box-shadow: 2px 0 8px rgba(0,0,0,0.35), -2px 0 8px rgba(0,0,0,0.35);
+  box-shadow:2px 0 8px rgba(0,0,0,.35), -2px 0 8px rgba(0,0,0,.35);
   border-radius:2px 2px 0 0;
   z-index:1;
-  will-change:transform;
 }
-/* Center ridge highlight on strap */
+/* center ridge highlight on strap */
 .ly-strap::before{
-  content:"";
-  position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.06) 44%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.06) 56%,transparent 100%);
-  pointer-events:none;
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.1) 50%,transparent);
 }
 
-/* --- Left strap: goes up-left at ~16deg, extends above container --- */
-
-
-/* --- Right strap: goes up-right at ~16deg --- */
-
-
-/* --- Printed text running along the strap --- */
-
-.ly-strap-l .ly-label{
-  transform:translateX(-50%) rotate(0deg);
-}
-.ly-strap-r .ly-label{
-  transform:translateX(-50%) rotate(180deg);
-  top:30px;
-}
-
-/* --- Breakaway buckle on left strap --- */
-
-.ly-breakaway::before{
-  content:"";
-  position:absolute;top:0;left:0;right:0;height:12px;
-  background:linear-gradient(180deg,#555 0%,#3a3a3a 50%,#2a2a2a 100%);
-  border-radius:3px 3px 2px 2px;
-  box-shadow:0 2px 4px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);
-}
-.ly-breakaway::after{
-  content:"";
-  position:absolute;bottom:0;left:2px;right:2px;height:14px;
-  background:linear-gradient(180deg,#3a3a3a 0%,#4a4a4a 50%,#3a3a3a 100%);
-  border-radius:2px 2px 3px 3px;
-  box-shadow:0 2px 4px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-/* --- Metal swivel snap-hook (matches the reference photo exactly) ---
-   The strap folds double over a thin metal O-ring. The swivel hook's
-   spring gate is open at the back. The hook nose catches the card's
-   punch-slot and disappears inside, so the silver tip you see on the
-   card face is the closed spring. */
-
-/* container — fixed-width so the ring + hook stay centred */
-.ly-clip{
-  position:absolute;
-  bottom:-42px;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;
-  z-index:5;gap:0;pointer-events:none;
-}
-
-/* --- the O-ring the fabric folds over ---
-   Sits at the bottom of the strap, threaded over the fabric. */
+/* --- the polished O-ring the strap loops around --- */
 .ly-ring{
   position:absolute;
-  bottom:0;left:50%;transform:translateX(-50%);
-  width:26px;height:26px;
+  bottom:3px;             /* sits at the strap's bottom */
+  left:50%;transform:translateX(-50%);
+  width:22px;height:22px;
   border:3px solid #b8bcc2;
   border-radius:50%;
   background:transparent;
   background-clip:padding-box;
-  z-index:5;
+  z-index:4;
   box-shadow:
     inset 0 1px 1px rgba(255,255,255,.55),
     inset 0 -1px 1px rgba(0,0,0,.45),
     0 1px 2px rgba(0,0,0,.5);
 }
-/* thin highlight glint on the ring's upper-left */
+/* glint on the ring's upper-left */
 .ly-ring::before{
   content:"";position:absolute;
   inset:-1px -1px auto -1px;height:40%;
   border-radius:50%;
   background:radial-gradient(ellipse 70% 100% at 32% 12%,
-    rgba(255,255,255,.75) 0%, transparent 60%);
+    rgba(255,255,255,.6) 0%, transparent 60%);
   pointer-events:none;
 }
 
-/* --- the strap's visible fold that wraps over the ring ---
-   Same fabric as the strap but a tiny bit wider so it bulges
-   outward. Raw-cut edge visible just below the ring. */
-.ly-clip-ring{
+/* --- the chrome snap-hook: a small rectangular body at the
+   ring's bottom edge, with a thin J-curl into the card slot --- */
+.ly-clip{
   position:absolute;
-  bottom:10px;left:50%;transform:translateX(-50%);
-  width:34px;height:14px;
-  background:
-    repeating-linear-gradient(45deg,
-      rgba(0,0,0,.05) 0 1px, transparent 1px 2.5px),
-    linear-gradient(90deg,#0b5c52 0%,#12897a 30%,#16a394 50%,#12897a 70%,#0b5c52 100%);
-  border-radius:2px 2px 0 0;
-  box-shadow:
-    inset 0 -1px 0 rgba(0,0,0,.45),     /* raw cut line */
-    0 1px 2px rgba(0,0,0,.35);
-  z-index:5;
+  bottom:-30px;left:50%;transform:translateX(-50%);
+  width:14px;height:32px;
+  pointer-events:none;z-index:5;
 }
 
-/* --- the swivel hook body dropping from below the ring ---
-   Slim chrome J-hook: a vertical bar (with subtle highlight),
-   widening at the bottom where the spring-gate lives. */
+/* small chrome block that the ring rests on */
 .ly-clip-body{
-  position:relative;
-  width:12px;height:30px;
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:14px;height:14px;
   background:
     linear-gradient(90deg,
-      #5f6367 0%, #9aa0a5 18%, #d9dee2 38%,
-      #f4f7f9 50%, #d9dee2 62%, #9aa0a5 82%, #5f6367 100%);
-  border-radius:2px 2px 4px 4px;
+      #5f6367 0%, #9aa0a5 20%, #d9dee2 40%,
+      #f4f7f9 50%, #d9dee2 60%, #9aa0a5 80%, #5f6367 100%);
+  border-radius:2px;
   box-shadow:
     inset 0 1px 1px rgba(255,255,255,.55),
     inset 0 -1px 1px rgba(0,0,0,.35),
-    0 2px 3px rgba(0,0,0,.45);
+    0 2px 3px rgba(0,0,0,.4);
   z-index:5;
 }
-/* swivel collar joining ring to hook body */
+/* thin J-curl dropping from the body through the punch-slot */
 .ly-clip-body::after{
   content:"";
-  position:absolute;top:-4px;left:50%;transform:translateX(-50%);
-  width:6px;height:4px;
-  background:linear-gradient(180deg,#c2c7cc,#7d8286);
-  border-radius:1px;
-  box-shadow:inset 0 -1px 0 rgba(0,0,0,.4);
+  position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);
+  width:5px;height:12px;
+  background:linear-gradient(180deg,#3a3a3c,#161617);
+  border-radius:0 0 2px 2px;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.10);
 }
-/* spring-gate highlight on the right edge */
+/* spring-gate highlight on the right edge of the body */
 .ly-clip-body::before{
   content:"";
-  position:absolute;top:6px;right:-1px;
-  width:2px;height:20px;
+  position:absolute;top:2px;right:-1px;
+  width:2px;height:10px;
   background:linear-gradient(180deg,#dfe3e6,#90959b);
   border-radius:0 1px 1px 0;
   opacity:.9;
 }
+
+/* hidden slot-filler — kept only so the DOM matches the clip container.
+   All its rendering is moved to .ly-clip-body above. */
+.ly-clip-ring{display:none}
+.ly-ring{display:block}
 
 /* ---------- CONTAINER (hanging + ground shadow) ---------- */
 .id-card-container{
@@ -1019,9 +960,11 @@ input[type="radio"] {
     0 26px 52px -14px rgba(0,0,0,.88),
     0 60px 100px -30px rgba(0,0,0,.92);
 }
-/* punch-hole slot at the top of the badge */
+/* punch-hole slot at the top of the badge — sits where the chrome
+   J-hook drops in. Sits flush with the card's top edge so there's
+   no visible gap between the hook and the metal curve of the card. */
 .id-card::before{
-  content:"";position:absolute;top:11px;left:50%;transform:translateX(-50%);
+  content:"";position:absolute;top:3px;left:50%;transform:translateX(-50%);
   width:52px;height:9px;border-radius:5px;
   background:#05060a;
   box-shadow:inset 0 1px 2px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.05);
@@ -1346,13 +1289,14 @@ input[type="radio"] {
   .id-card-container{max-width:340px}
   .id-card-lanyard{height:96px;overflow:visible}
   /* strap extends far above the lanyard box, past the top of the screen,
-     and dips down to the ring so the fabric visibly wraps the metal */
-  .ly-strap{width:21px;height:120vh;bottom:20px}
+     and dips down through the O-ring so the fabric threads it */
+  .ly-strap{width:19px; top:-100vh; bottom:11px}
+  .ly-clip{bottom:-26px}
   .id-card{
     --card-w:clamp(210px,60vw,272px);
     padding:12px 14px 13px;border-radius:14px;
   }
-  .id-card::before{top:7px;width:34px;height:6px}
+  .id-card::before{top:5px;width:32px;height:8px}
   .id-card-header{gap:6px;margin-top:8px}
   .id-card-logo svg{width:20px;height:20px}
   .id-card-brand{font-size:11px}
