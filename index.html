@@ -481,7 +481,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 }
 /* single minimal entry control */
 .enter-btn{
-  position:absolute;left:50%;bottom:clamp(2rem,7vh,4.5rem);transform:translateX(-50%);
+  position:absolute;left:50%;bottom:clamp(3.2rem,12vh,5.5rem);transform:translateX(-50%);
   background:rgba(0,0,0,.35);border:1px solid rgba(217,215,210,.35);
   color:#c9c6c0;border-radius:4px;
   padding:.8rem 2.6rem;cursor:pointer;
@@ -515,10 +515,11 @@ button,input,select,textarea{font:inherit;color:inherit}
     letter-spacing:.42em;text-indent:.42em;
   }
   .enter-btn{
-    /* lifted clear of the bottom edge + home gesture bar */
-    bottom:clamp(2.6rem,9vh,4rem);
+    /* high enough that no phone's home-gesture bar / safe-area can cover it */
+    bottom:clamp(4.5rem,17vh,7rem);
     padding:.85rem 2.4rem;
     font-size:.74rem;letter-spacing:.42em;text-indent:.42em;
+    position:absolute;left:50%;transform:translateX(-50%);
   }
   .enter-btn:focus,.enter-btn:focus-visible{outline:none}
   /* processing / thank-you shutter views — sized so they fit a phone */
@@ -655,78 +656,8 @@ main{position:relative;z-index:1}
   background:linear-gradient(150deg,var(--gold-0),var(--gold-2));
   box-shadow:0 0 10px rgba(232,194,122,.55);
 }
-
-/* --- highlight strip (section 1) --- */
-.highlights{display:grid;grid-template-columns:repeat(4,1fr);gap:1.15rem}
-.highlight{display:grid;gap:.45rem;padding:1.3rem}
-.highlight .ico{
-  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
-  background:linear-gradient(150deg,rgba(232,194,122,.22),rgba(232,194,122,.05));
-  border:1px solid var(--line);color:var(--gold-1);font-size:.9rem;
-}
-.highlight h4{margin:.4rem 0 0;font-size:.98rem}
-.highlight p{font-size:.88rem}
-
-/* --- track cards --- */
-.track{display:grid;gap:.8rem}
-.track .tag{
-  align-self:start;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--gold-1);border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;
-}
-.track .speaker{
-  display:flex;align-items:center;gap:.7rem;margin-top:.35rem;
-  padding-top:.85rem;border-top:1px dashed var(--line-soft);
-}
-.avatar{
-  width:36px;height:36px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
-  background:linear-gradient(150deg,var(--ink-4),var(--ink-2));
-  border:1px solid var(--line);color:var(--gold-1);font-size:.7rem;font-weight:800;
-}
-.speaker b{display:block;font-size:.86rem}
-.speaker span{font-size:.72rem;color:var(--fg-mute)}
-
-/* --- schedule --- */
-.day-switch{display:flex;gap:.5rem;margin-bottom:1.8rem;flex-wrap:wrap}
-.day-switch button{
-  padding:.6rem 1.3rem;border-radius:999px;cursor:pointer;
-  border:1px solid var(--line-soft);background:var(--glass);
-  font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-dim);
-  transition:all .35s var(--ease-shutter);
-}
-.day-switch button[aria-selected="true"]{
-  color:#241a06;border-color:transparent;
-  background:linear-gradient(180deg,var(--gold-0),var(--gold-2));
-}
-.timeline{position:relative;padding-left:2.1rem;display:grid;gap:1rem}
-.timeline::before{
-  content:"";position:absolute;left:.52rem;top:.4rem;bottom:.4rem;width:1px;
-  background:linear-gradient(180deg,transparent,var(--line),transparent);
-}
-.slot{position:relative;padding:1.05rem 1.25rem}
-.slot::before{
-  content:"";position:absolute;left:-1.85rem;top:1.45rem;width:11px;height:11px;border-radius:50%;
-  background:var(--ink-0);border:2px solid var(--gold-2);
-  box-shadow:0 0 0 4px rgba(232,194,122,.10);
-}
-.slot time{
-  display:block;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-1);
-  margin-bottom:.3rem;
-}
-.slot h4{margin:0 0 .25rem;font-size:1rem}
-.slot p{margin:0;color:var(--fg-dim);font-size:.9rem}
-.day-panel[hidden]{display:none}
-
-/* --- tickets --- */
-.tickets{display:grid;grid-template-columns:repeat(3,1fr);gap:1.15rem;margin-bottom:2.4rem}
-.ticket{display:grid;gap:.75rem;position:relative}
-.ticket.featured{border-color:var(--line);box-shadow:0 30px 70px -34px rgba(232,194,122,.4),inset 0 1px 0 rgba(255,255,255,.10)}
-.ticket .badge{
-  position:absolute;top:-.7rem;right:1.1rem;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
-  background:linear-gradient(180deg,var(--gold-0),var(--gold-2));color:#241a06;
-  padding:.28rem .7rem;border-radius:999px;font-weight:800;
-}
-.price{font-size:2rem;font-weight:800;color:var(--gold-1);line-height:1}
-.price small{font-size:.66rem;letter-spacing:.2em;color:var(--fg-mute);font-weight:600;display:block;margin-top:.3rem;text-transform:uppercase}
+.pill-list b{color:inherit}
+.pill-list li{list-style:none}
 
 /* --- form --- */
 .form-grid{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr)}
@@ -842,7 +773,10 @@ input[type="radio"] {
   50%{transform:translateY(-18px) scale(1.06)}
 }
 
-/* ---------- LANYARD ---------- */
+/* ---------- LANYARD ----------
+   Wraps a long fabric strap that exits the viewport top, threads
+   through a polished metal O-ring, then feeds into a chrome J-hook
+   that drops into the card's punch-slot. */
 .id-card-lanyard{
   position:relative;z-index:3;
   width:80px;height:220px;
@@ -852,17 +786,24 @@ input[type="radio"] {
   overflow:visible;
 }
 
-/* Strap: fills from top of lanyard container down to just above the ring */
+/* Strap: starts far above the lanyard container so it always runs
+   off the top of the screen regardless of where the lanyard sits
+   in the overlay. 120vh is overkill on purpose — hides any seam
+   where the strap would otherwise stop. The bottom sits at the
+   ring so the fabric visually wraps the metal. */
 .ly-strap{
   position:absolute;
-  top:0;bottom:32px;
+  bottom:24px;            /* end of fabric sits under the ring */
   left:50%;transform:translateX(-50%);
-  width:38px;
+  height:120vh;
+  width:24px;
   background:
     repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
     linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
   box-shadow: 2px 0 8px rgba(0,0,0,0.35), -2px 0 8px rgba(0,0,0,0.35);
   border-radius:2px 2px 0 0;
+  z-index:1;
+  will-change:transform;
 }
 /* Center ridge highlight on strap */
 .ly-strap::before{
@@ -905,64 +846,98 @@ input[type="radio"] {
   box-shadow:0 2px 4px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06);
 }
 
-/* --- Metal D-ring where both straps converge --- */
+/* --- Metal swivel snap-hook (matches the reference photo exactly) ---
+   The strap folds double over a thin metal O-ring. The swivel hook's
+   spring gate is open at the back. The hook nose catches the card's
+   punch-slot and disappears inside, so the silver tip you see on the
+   card face is the closed spring. */
+
+/* container — fixed-width so the ring + hook stay centred */
+.ly-clip{
+  position:absolute;
+  bottom:-42px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;
+  z-index:5;gap:0;pointer-events:none;
+}
+
+/* --- the O-ring the fabric folds over ---
+   Sits at the bottom of the strap, threaded over the fabric. */
 .ly-ring{
   position:absolute;
   bottom:0;left:50%;transform:translateX(-50%);
-  width:22px;height:16px;
-  border:3px solid #b0b0b0;
-  border-radius:4px;
+  width:26px;height:26px;
+  border:3px solid #b8bcc2;
+  border-radius:50%;
   background:transparent;
+  background-clip:padding-box;
   z-index:5;
   box-shadow:
-    0 1px 3px rgba(0,0,0,.25),
-    inset 0 1px 1px rgba(255,255,255,.4),
-    inset 0 -1px 1px rgba(0,0,0,.15);
+    inset 0 1px 1px rgba(255,255,255,.55),
+    inset 0 -1px 1px rgba(0,0,0,.45),
+    0 1px 2px rgba(0,0,0,.5);
+}
+/* thin highlight glint on the ring's upper-left */
+.ly-ring::before{
+  content:"";position:absolute;
+  inset:-1px -1px auto -1px;height:40%;
+  border-radius:50%;
+  background:radial-gradient(ellipse 70% 100% at 32% 12%,
+    rgba(255,255,255,.75) 0%, transparent 60%);
+  pointer-events:none;
 }
 
-/* --- Lobster claw clip connecting to card --- */
-.ly-clip{
+/* --- the strap's visible fold that wraps over the ring ---
+   Same fabric as the strap but a tiny bit wider so it bulges
+   outward. Raw-cut edge visible just below the ring. */
+.ly-clip-ring{
   position:absolute;
-  bottom:-34px;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;
+  bottom:10px;left:50%;transform:translateX(-50%);
+  width:34px;height:14px;
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(0,0,0,.05) 0 1px, transparent 1px 2.5px),
+    linear-gradient(90deg,#0b5c52 0%,#12897a 30%,#16a394 50%,#12897a 70%,#0b5c52 100%);
+  border-radius:2px 2px 0 0;
+  box-shadow:
+    inset 0 -1px 0 rgba(0,0,0,.45),     /* raw cut line */
+    0 1px 2px rgba(0,0,0,.35);
   z-index:5;
 }
-.ly-clip-ring{
-  width:10px;height:8px;
-  border:2.5px solid #a0a0a0;
-  border-radius:3px 3px 0 0;
-  border-bottom:none;
-  box-shadow:inset 0 1px 2px rgba(255,255,255,.3);
-}
+
+/* --- the swivel hook body dropping from below the ring ---
+   Slim chrome J-hook: a vertical bar (with subtle highlight),
+   widening at the bottom where the spring-gate lives. */
 .ly-clip-body{
-  width:16px;height:28px;
-  background:linear-gradient(90deg,
-    #a8a8a8 0%,#d0d0d0 12%,#e8e8e8 28%,#f2f2f2 40%,
-    #dcdcdc 52%,#c8c8c8 65%,#d8d8d8 78%,#e8e8e8 90%,#a8a8a8 100%);
-  border-radius:3px 3px 6px 6px;
   position:relative;
+  width:12px;height:30px;
+  background:
+    linear-gradient(90deg,
+      #5f6367 0%, #9aa0a5 18%, #d9dee2 38%,
+      #f4f7f9 50%, #d9dee2 62%, #9aa0a5 82%, #5f6367 100%);
+  border-radius:2px 2px 4px 4px;
   box-shadow:
-    0 4px 10px rgba(0,0,0,.35),
-    inset 0 1px 0 rgba(255,255,255,.7),
-    inset 0 -1px 0 rgba(0,0,0,.12);
+    inset 0 1px 1px rgba(255,255,255,.55),
+    inset 0 -1px 1px rgba(0,0,0,.35),
+    0 2px 3px rgba(0,0,0,.45);
+  z-index:5;
 }
-/* gate arm */
-.ly-clip-body::before{
-  content:"";
-  position:absolute;top:6px;right:-3px;
-  width:3px;height:16px;
-  background:linear-gradient(90deg,#b0b0b0,#d0d0d0,#b0b0b0);
-  border-radius:0 2px 2px 0;
-  box-shadow:1px 0 3px rgba(0,0,0,.15);
-}
-/* hook tip */
+/* swivel collar joining ring to hook body */
 .ly-clip-body::after{
   content:"";
-  position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);
-  width:10px;height:6px;
-  background:linear-gradient(180deg,#c0c0c0,#999);
-  border-radius:0 0 4px 4px;
-  box-shadow:0 2px 4px rgba(0,0,0,.2);
+  position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+  width:6px;height:4px;
+  background:linear-gradient(180deg,#c2c7cc,#7d8286);
+  border-radius:1px;
+  box-shadow:inset 0 -1px 0 rgba(0,0,0,.4);
+}
+/* spring-gate highlight on the right edge */
+.ly-clip-body::before{
+  content:"";
+  position:absolute;top:6px;right:-1px;
+  width:2px;height:20px;
+  background:linear-gradient(180deg,#dfe3e6,#90959b);
+  border-radius:0 1px 1px 0;
+  opacity:.9;
 }
 
 /* ---------- CONTAINER (hanging + ground shadow) ---------- */
@@ -1371,8 +1346,8 @@ input[type="radio"] {
   .id-card-container{max-width:340px}
   .id-card-lanyard{height:96px;overflow:visible}
   /* strap extends far above the lanyard box, past the top of the screen,
-     so the badge visually hangs from the ceiling of the stage image */
-  .ly-strap{width:26px;top:auto;bottom:30px;height:120vh}
+     and dips down to the ring so the fabric visibly wraps the metal */
+  .ly-strap{width:21px;height:120vh;bottom:20px}
   .id-card{
     --card-w:clamp(210px,60vw,272px);
     padding:12px 14px 13px;border-radius:14px;
@@ -1476,11 +1451,11 @@ input[type="radio"] {
    8. RESPONSIVE
    ============================================================ */
 @media (max-width:1040px){
-  .metrics,.coords,.highlights{grid-template-columns:repeat(2,1fr)}
+  .g-3,.g-4{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:960px){
   .stage-grid,.g-2-1{grid-template-columns:1fr}
-  .g-3,.g-4,.tickets{grid-template-columns:repeat(2,1fr)}
+  .g-3,.g-4{grid-template-columns:repeat(2,1fr)}
   .room-lights{display:none}
   #home .wrap{width:min(100% - 2.5rem,var(--maxw))}
 }
@@ -1496,10 +1471,8 @@ input[type="radio"] {
   }
   .is-open .nav-links.show{transform:translateY(0)}
   .nav-toggle{display:block}
-  .g-2,.g-3,.g-4,.tickets,.form-grid,.metrics,.coords,.highlights{grid-template-columns:1fr}
+  .g-2,.g-3,.g-4,.form-grid{grid-template-columns:1fr}
   .stats{grid-template-columns:repeat(2,1fr)}
-  .admin-body{padding:1.2rem}
-  .actions .btn{width:100%}
 
   /* Hero content sits over the portrait room photo. The logo occupies the
      upper-middle of the image, so copy is pushed down and the bottom fade
@@ -1530,7 +1503,7 @@ input[type="radio"] {
   :root{--shutter-dur:.45s;--reveal-dur:.25s}
   html{scroll-behavior:auto}
   .reveal{transform:none}
-  .register::before,.scroll-cue i,.chip.live .dot{animation:none}
+  .register::before,.scroll-cue i{animation:none}
   .btn::after{display:none}
 }
 </style>
@@ -1548,11 +1521,9 @@ input[type="radio"] {
 
   <nav class="nav-links" id="navLinks" aria-label="Primary">
     <a href="#home">Home</a>
-    <a href="#about">Event Details</a>
     <a href="#schedule">Schedule</a>
-    <a href="#pricing">Pricing</a>
+    <a href="#venue">Venue</a>
     <a href="#register-section">Register</a>
-    <a href="#contact">Contact</a>
   </nav>
 </header>
 
@@ -1602,17 +1573,15 @@ input[type="radio"] {
     <div class="wrap">
       <div class="stage-grid">
         <div class="reveal" style="--d:0ms">
-          <span class="eyebrow">Event Overview</span>
+          <span class="eyebrow">IEEE Summer School 2026</span>
           <h2 class="display" style="margin-top:1rem">Two days.<br>Five tracks.<br>One build sprint.</h2>
           <p class="lede" style="margin-top:1.1rem">
-            IEEE Summer School 2026 is the flagship technical programme of IEEE Student Branch,
-            Vimal Jyothi Engineering College. It compresses a semester of practical engineering into
-            a weekend of guided labs, industry sessions and a closing showcase — no slide-decks-only
-            sessions, every track ends with something you have actually built.
+            A weekend of guided labs, industry sessions and a final showcase — every track
+            ends with something you've actually built. Hosted by IEEE SB VJEC.
           </p>
           <div class="stage-actions">
             <a class="btn cta btn-gold" href="#register-section" data-target="#register-section">Reserve a Seat</a>
-            <a class="btn cta btn-ghost" href="#events" data-target="#events">Explore Tracks</a>
+            <a class="btn cta btn-ghost" href="#schedule" data-target="#schedule">See Schedule</a>
           </div>
           <div class="scroll-cue"><i></i> Scroll to explore</div>
         </div>
@@ -1627,125 +1596,35 @@ input[type="radio"] {
     </div>
   </section>
 
-  <!-- ============ 2. ABOUT IEEE SB VJEC & OBJECTIVES ============ -->
-  <section class="section" id="about">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">Event Details</span>
-        <h2 class="display">IEEE SB VJEC &amp; the Summer School</h2>
-        <p class="lede">
-          The student branch has run technical programmes, workshops and outreach for over a decade.
-          Summer School is where that experience is distilled: small cohorts, working mentors, and a
-          curriculum that assumes you want to build rather than watch.
-        </p>
-      </div>
-
-      <div class="grid g-2-1">
-        <div class="card reveal" style="--d:80ms">
-          <h3>Our Vision</h3>
-          <p>
-            To turn classroom theory into shipped work. Every participant leaves with a repository,
-            a demo, and a mentor they can keep talking to — not just a certificate.
-          </p>
-          <ul class="pill-list">
-            <li>Project-first pedagogy over lecture-first delivery.</li>
-            <li>Mentors drawn from industry and senior IEEE volunteers.</li>
-            <li>Open, documented outputs that outlive the event.</li>
-          </ul>
-        </div>
-
-        <div class="card reveal" style="--d:200ms">
-          <h3>Summer School Objectives</h3>
-          <ul class="pill-list">
-            <li>Give students hands-on exposure to current engineering toolchains.</li>
-            <li>Bridge the gap between academic syllabus and industry practice.</li>
-            <li>Build a peer network across colleges in the Kerala Section.</li>
-            <li>Encourage IEEE membership through demonstrated value.</li>
-            <li>Seed year-round project teams from the cohort.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="grid g-3" style="margin-top:1.15rem">
-        <div class="card reveal" style="--d:80ms">
-          <h3>Who should attend</h3>
-          <p>Second- and third-year engineering students across CSE, ECE, EEE and allied branches. Basic programming familiarity is enough — tracks ramp from fundamentals.</p>
-        </div>
-        <div class="card reveal" style="--d:180ms">
-          <h3>What you take home</h3>
-          <p>A working project, a documented repository, IEEE-issued participation credentials, and access to the alumni mentor channel.</p>
-        </div>
-        <div class="card reveal" style="--d:280ms">
-          <h3>Format</h3>
-          <p>Two full days on campus. Mornings are guided labs, afternoons are build blocks, and each day closes with a review panel and demos.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="rule"></div>
-
-  <!-- ============ 4. TIMELINE / SCHEDULE ============ -->
+  <!-- ============ 2. SCHEDULE ============ -->
   <section class="section" id="schedule">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="eyebrow">Timeline</span>
-        <h2 class="display">Two days, hour by hour</h2>
-        <p class="lede">Timings are indicative and may shift by up to 30 minutes. Lunch and tea are provided on both days.</p>
+        <span class="eyebrow">Schedule</span>
+        <h2 class="display">Two days, in outline</h2>
+        <p class="lede">Final timings are mailed to registrants a week before.</p>
       </div>
 
-      <div class="day-switch reveal" role="tablist" aria-label="Schedule days">
-        <button type="button" role="tab" aria-selected="true"  aria-controls="day1" id="tab1">Day 01 · 14 June</button>
-        <button type="button" role="tab" aria-selected="false" aria-controls="day2" id="tab2">Day 02 · 15 June</button>
-      </div>
-
-      <div class="day-panel" id="day1" role="tabpanel" aria-labelledby="tab1">
-        <div class="timeline">
-          <div class="card slot reveal" style="--d:0ms">
-            <time>08:30 — 09:30</time><h4>Registration &amp; Kit Handover</h4>
-            <p>Check-in at the academic block, badge and kit collection, track room allocation.</p>
-          </div>
-          <div class="card slot reveal" style="--d:70ms">
-            <time>09:30 — 10:15</time><h4>Inauguration &amp; Keynote</h4>
-            <p>Welcome address by the branch counsellor, followed by the opening industry keynote.</p>
-          </div>
-          <div class="card slot reveal" style="--d:140ms">
-            <time>10:30 — 13:00</time><h4>Track Lab — Session I</h4>
-            <p>Fundamentals and environment setup inside your chosen track. Everything installed and running before lunch.</p>
-          </div>
-          <div class="card slot reveal" style="--d:210ms">
-            <time>14:00 — 16:30</time><h4>Track Lab — Session II</h4>
-            <p>Guided build. Mentors circulate; checkpoint commits at the end of each hour.</p>
-          </div>
-          <div class="card slot reveal" style="--d:280ms">
-            <time>16:45 — 18:00</time><h4>Review Panel &amp; Networking</h4>
-            <p>Cross-track review of day-one progress, followed by an open networking hour.</p>
-          </div>
+      <div class="grid g-2">
+        <div class="card reveal" style="--d:0ms">
+          <h3 style="margin:0 0 .9rem">Day 01 · Saturday <span style="color:var(--gold-1);font-weight:600">14 June</span></h3>
+          <ul class="pill-list">
+            <li><b style="color:var(--gold-1);font-weight:600">08:30</b> Check-in &amp; kit</li>
+            <li><b style="color:var(--gold-1);font-weight:600">09:30</b> Opening keynote</li>
+            <li><b style="color:var(--gold-1);font-weight:600">10:30</b> Track lab I</li>
+            <li><b style="color:var(--gold-1);font-weight:600">14:00</b> Track lab II</li>
+            <li><b style="color:var(--gold-1);font-weight:600">16:45</b> Cross-track review</li>
+          </ul>
         </div>
-      </div>
-
-      <div class="day-panel" id="day2" role="tabpanel" aria-labelledby="tab2" hidden>
-        <div class="timeline">
-          <div class="card slot reveal" style="--d:0ms">
-            <time>09:00 — 09:30</time><h4>Standup &amp; Day-Two Brief</h4>
-            <p>Each cohort states its build target for the day in two minutes.</p>
-          </div>
-          <div class="card slot reveal" style="--d:70ms">
-            <time>09:30 — 12:30</time><h4>Track Lab — Session III</h4>
-            <p>The main build block. Integration, debugging, and a mid-block mentor review.</p>
-          </div>
-          <div class="card slot reveal" style="--d:140ms">
-            <time>13:30 — 15:00</time><h4>Challenge Round</h4>
-            <p>Track-specific challenge — CTF, line-follow race, deployment sprint or model bake-off.</p>
-          </div>
-          <div class="card slot reveal" style="--d:210ms">
-            <time>15:15 — 16:30</time><h4>Project Showcase</h4>
-            <p>Every team demos to the full cohort. Five minutes each, live only — no slides.</p>
-          </div>
-          <div class="card slot reveal" style="--d:280ms">
-            <time>16:30 — 17:30</time><h4>Valediction &amp; Certificates</h4>
-            <p>Awards, IEEE membership drive, and certificate distribution.</p>
-          </div>
+        <div class="card reveal" style="--d:120ms">
+          <h3 style="margin:0 0 .9rem">Day 02 · Sunday <span style="color:var(--gold-1);font-weight:600">15 June</span></h3>
+          <ul class="pill-list">
+            <li><b style="color:var(--gold-1);font-weight:600">09:00</b> Day-two standup</li>
+            <li><b style="color:var(--gold-1);font-weight:600">09:30</b> Main build block</li>
+            <li><b style="color:var(--gold-1);font-weight:600">13:30</b> Track challenge</li>
+            <li><b style="color:var(--gold-1);font-weight:600">15:15</b> Project showcase</li>
+            <li><b style="color:var(--gold-1);font-weight:600">16:30</b> Certificates &amp; close</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -1753,119 +1632,120 @@ input[type="radio"] {
 
   <div class="rule"></div>
 
-  <!-- ============ 5. PRICING ============ -->
-  <section class="section" id="pricing">
+  <!-- ============ 3. VENUE & CONTACT ============ -->
+  <section class="section" id="venue">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="eyebrow">Pricing</span>
-        <h2 class="display">Simple, straightforward pricing</h2>
-        <p class="lede">Seats are allotted per track on a first-come basis. Confirmation and payment instructions are emailed within 24 hours.</p>
-        <p class="lede" style="color: var(--fg-dim); font-size: 0.9rem; margin-top: 1rem;">
-          Dummy pricing details: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-          This is a placeholder for any additional demi/dummy pricing details required for the event.
+        <span class="eyebrow">Venue</span>
+        <h2 class="display">Where it happens</h2>
+      </div>
+      <div class="card reveal" style="--d:80ms;padding:1.6rem 1.6rem 1.4rem">
+        <p style="margin:0;font-size:1.02rem;color:var(--gold-0);font-weight:600">Vimal Jyothi Engineering College</p>
+        <p style="margin:.35rem 0 0;font-size:.9rem;color:var(--fg-dim);line-height:1.6">
+          Chemperi, Kannur, Kerala 670632 &nbsp;·&nbsp; 14 &amp; 15 June 2026 &nbsp;·&nbsp; 08:30 onwards
+        </p>
+        <p style="margin:.9rem 0 0;font-size:.9rem;color:var(--fg-dim)">
+          <a href="mailto:ieeesb@vjec.ac.in" style="color:var(--gold-1)">ieeesb@vjec.ac.in</a>
+          &nbsp;·&nbsp;
+          <a href="tel:+919000000000" style="color:var(--gold-1)">+91 90000 00000</a>
         </p>
       </div>
+    </div>
+  </section>
 
-      <div class="grid g-2-1">
-        <form class="card static reveal" id="regForm" novalidate style="--d:0ms">
-          <h3 style="margin-bottom:1.1rem" id="register-section">Reserve your seat</h3>
-          <div class="form-grid">
-            <div class="field">
-              <label for="f-name">Full name</label>
-              <input id="f-name" name="name" type="text" autocomplete="name" required>
-              <span class="err" data-err-for="f-name"></span>
-            </div>
-            <div class="field">
-              <label for="f-phone">Phone</label>
-              <input id="f-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" required>
-              <span class="err" data-err-for="f-phone"></span>
-            </div>
-            <div class="field full">
-              <label for="f-email">Email</label>
-              <input id="f-email" name="email" type="email" autocomplete="email" required>
-              <span class="err" data-err-for="f-email"></span>
-            </div>
-            <div class="field full">
-              <label for="f-track">Track</label>
-              <select id="f-track" name="track" required>
-                <option value="">Select a track…</option>
-                <option>Applied Machine Learning</option>
-                <option>Embedded &amp; IoT Systems</option>
-                <option>Modern Web Engineering</option>
-                <option>Cybersecurity Foundations</option>
-                <option>Robotics &amp; Control</option>
-              </select>
-              <span class="err" data-err-for="f-track"></span>
-            </div>
-            
-            <div class="field full" style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem;">
-              <label style="margin:0;">Are you an IEEE Member?</label>
-              <label style="display:flex; align-items:center; gap:0.3rem; font-size:0.8rem; cursor:pointer; color:var(--fg);">
-                <input type="radio" name="is_ieee_member" value="Yes" onchange="toggleIeeeId(true)"> Yes
-              </label>
-              <label style="display:flex; align-items:center; gap:0.3rem; font-size:0.8rem; cursor:pointer; color:var(--fg);">
-                <input type="radio" name="is_ieee_member" value="No" onchange="toggleIeeeId(false)" checked> No
-              </label>
-            </div>
-            
-            <div class="field full conditional-field" id="ieee-id-field" style="display:none;">
-              <label for="f-ieee-id">IEEE Membership ID</label>
-              <input id="f-ieee-id" name="ieee_id" type="text">
-              <span class="err" data-err-for="f-ieee-id"></span>
-            </div>
-            
-            <div class="field full">
-              <label for="f-payment-method">Payment Method</label>
-              <select id="f-payment-method" name="payment_method" required onchange="toggleUpiScreenshot()">
-                <option value="">Select payment method…</option>
-                <option value="upi">UPI Payment</option>
-                <option value="cash">Cash</option>
-                <option value="bank">Bank Transfer</option>
-              </select>
-              <span class="err" data-err-for="f-payment-method"></span>
-            </div>
-            
-            <div class="field full conditional-field" id="upi-screenshot-field" style="display:none;">
-              <label>Upload UPI Payment Screenshot</label>
-              <div class="upload-area" id="uploadArea" onclick="document.getElementById('f-screenshot').click()">
-                <div id="uploadPlaceholder">
-                  <span style="font-size: 1.5rem; display:block; margin-bottom: 0.5rem; color: var(--gold-1);">↑</span>
-                  Click to upload screenshot
-                </div>
-                <img id="uploadPreview" src="" alt="Screenshot Preview" style="display:none; max-width: 100%; max-height: 200px; border-radius: 8px; margin: 0 auto;">
-              </div>
-              <input id="f-screenshot" name="screenshot" type="file" accept="image/*" style="display:none;" onchange="previewImage(this)">
-              <span class="err" data-err-for="f-screenshot"></span>
-            </div>
+  <div class="rule"></div>
 
-            <div class="field full">
-              <label for="f-note">Anything we should know? (optional)</label>
-              <textarea id="f-note" name="note" rows="3"></textarea>
-            </div>
-          </div>
-          <button class="btn btn-gold" type="submit" style="margin-top:1.2rem; width:100%;">Submit Registration</button>
-          <p class="form-status" id="formStatus" role="status" hidden></p>
-        </form>
-
-        <aside class="card reveal" style="--d:140ms">
-          <h3>Venue &amp; contact</h3>
-          <ul class="contact-list" style="margin-top:1rem">
-            <li><b>Venue</b><span>Vimal Jyothi Engineering College, Chemperi, Kannur, Kerala 670632</span></li>
-            <li><b>Dates</b><span>14 – 15 June 2026 · 08:30 onwards</span></li>
-            <li><b>Email</b><a href="mailto:ieeesb@vjec.ac.in">ieeesb@vjec.ac.in</a></li>
-            <li><b>Student Branch Chair</b><a href="tel:+919000000000">+91 90000 00000</a></li>
-            <li><b>Registration Desk</b><a href="tel:+919111111111">+91 91111 11111</a></li>
-          </ul>
-          <div style="margin-top:1.4rem;display:flex;gap:.6rem;flex-wrap:wrap">
-            <a class="btn btn-ghost" href="mailto:ieeesb@vjec.ac.in">Email us</a>
-            <a class="btn btn-ghost" href="#home">Back to top</a>
-          </div>
-        </aside>
+  <!-- ============ 4. REGISTER ============ -->
+  <section class="section" id="register-section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Register</span>
+        <h2 class="display">Reserve your seat</h2>
+        <p class="lede">Seats are allotted per track on a first-come basis.</p>
       </div>
 
-      <div class="footer" style="margin-top:3rem">
+      <form class="card static reveal" id="regForm" novalidate style="--d:0ms;max-width:720px;margin:0 auto">
+        <div class="form-grid">
+          <div class="field">
+            <label for="f-name">Full name</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required>
+            <span class="err" data-err-for="f-name"></span>
+          </div>
+          <div class="field">
+            <label for="f-phone">Phone</label>
+            <input id="f-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" required>
+            <span class="err" data-err-for="f-phone"></span>
+          </div>
+          <div class="field full">
+            <label for="f-email">Email</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required>
+            <span class="err" data-err-for="f-email"></span>
+          </div>
+          <div class="field full">
+            <label for="f-track">Track</label>
+            <select id="f-track" name="track" required>
+              <option value="">Select a track…</option>
+              <option>Applied Machine Learning</option>
+              <option>Embedded &amp; IoT Systems</option>
+              <option>Modern Web Engineering</option>
+              <option>Cybersecurity Foundations</option>
+              <option>Robotics &amp; Control</option>
+            </select>
+            <span class="err" data-err-for="f-track"></span>
+          </div>
+
+          <div class="field full" style="display:flex;gap:1rem;align-items:center;margin-top:.35rem;">
+            <label style="margin:0;">IEEE Member?</label>
+            <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.8rem;cursor:pointer;color:var(--fg);">
+              <input type="radio" name="is_ieee_member" value="Yes" onchange="toggleIeeeId(true)"> Yes
+            </label>
+            <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.8rem;cursor:pointer;color:var(--fg);">
+              <input type="radio" name="is_ieee_member" value="No" onchange="toggleIeeeId(false)" checked> No
+            </label>
+          </div>
+
+          <div class="field full conditional-field" id="ieee-id-field" style="display:none;">
+            <label for="f-ieee-id">IEEE Membership ID</label>
+            <input id="f-ieee-id" name="ieee_id" type="text">
+            <span class="err" data-err-for="f-ieee-id"></span>
+          </div>
+
+          <div class="field full">
+            <label for="f-payment-method">Payment method</label>
+            <select id="f-payment-method" name="payment_method" required onchange="toggleUpiScreenshot()">
+              <option value="">Select payment method…</option>
+              <option value="upi">UPI</option>
+              <option value="cash">Cash on arrival</option>
+              <option value="bank">Bank transfer</option>
+            </select>
+            <span class="err" data-err-for="f-payment-method"></span>
+          </div>
+
+          <div class="field full conditional-field" id="upi-screenshot-field" style="display:none;">
+            <label>Upload UPI payment screenshot</label>
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('f-screenshot').click()">
+              <div id="uploadPlaceholder">
+                <span style="font-size:1.5rem;display:block;margin-bottom:0.5rem;color:var(--gold-1);">↑</span>
+                Click to upload screenshot
+              </div>
+              <img id="uploadPreview" src="" alt="Screenshot preview" style="display:none;max-width:100%;max-height:200px;border-radius:8px;margin:0 auto;">
+            </div>
+            <input id="f-screenshot" name="screenshot" type="file" accept="image/*" style="display:none;" onchange="previewImage(this)">
+            <span class="err" data-err-for="f-screenshot"></span>
+          </div>
+
+          <div class="field full">
+            <label for="f-note">Anything we should know? <span style="color:var(--fg-mute);text-transform:none;letter-spacing:0">(optional)</span></label>
+            <textarea id="f-note" name="note" rows="3"></textarea>
+          </div>
+        </div>
+        <button class="btn btn-gold" type="submit" style="margin-top:1.3rem;width:100%;">Submit registration</button>
+        <p class="form-status" id="formStatus" role="status" hidden></p>
+      </form>
+
+      <div class="footer" style="margin-top:3.5rem">
         <span>© 2026 IEEE Student Branch · Vimal Jyothi Engineering College</span>
-        <span>Built for IEEE Summer School 2026</span>
+        <span><a href="#home" style="color:var(--gold-1)">↑ Back to top</a></span>
       </div>
     </div>
   </section>
@@ -2151,21 +2031,8 @@ input[type="radio"] {
   }
 
   /* ----------------------------------------------------------
-     4. SCHEDULE TABS
+     4. SCHEDULE — single two-day grid, no tabs (simplified)
      ---------------------------------------------------------- */
-  const tabs = [...document.querySelectorAll('.day-switch [role="tab"]')];
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => {
-        const on = t === tab;
-        t.setAttribute('aria-selected', String(on));
-        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
-      });
-      // the newly shown panel was display:none, so its observer never fired
-      document.querySelectorAll('#' + tab.getAttribute('aria-controls') + ' .reveal')
-        .forEach(el => el.classList.add('in'));
-    });
-  });
 
   /* ----------------------------------------------------------
      6. REGISTRATION FORM (client-side validation only)
@@ -2614,10 +2481,6 @@ input[type="radio"] {
   const idCardTicket  = document.getElementById('idCardTicket');
   const idCardRegId   = document.getElementById('idCardRegId');
   const idCardQr      = document.getElementById('idCardQr');
-  const idCardBarcode = document.getElementById('idCardBarcode');
-  const idCardDownload= document.getElementById('idCardDownload');
-  const idCardShare   = document.getElementById('idCardShare');
-  const idCardHint    = document.getElementById('idCardHint');
 
   const STAGES = ['stage-initiate','stage-generate','stage-reveal','stage-enhance','stage-complete'];
   let sequenceRunning = false;
