@@ -703,6 +703,33 @@ main{position:relative;z-index:1}
 .conditional-field {
   transition: all 0.3s ease;
 }
+/* UPI-fixed payment display — payment method isn't a choice anymore */
+.upi-static{
+  display:flex;align-items:center;gap:.85rem;
+  padding:.8rem 1rem;border-radius:11px;
+  background:rgba(58,208,127,.06);border:1px solid rgba(58,208,127,.28);
+}
+.upi-badge{
+  font-size:.72rem;font-weight:800;letter-spacing:.14em;
+  background:linear-gradient(135deg,#3ad07f,#149a58);color:#04140c;
+  padding:.38rem .7rem;border-radius:8px;
+}
+.upi-sub{font-size:.78rem;color:var(--fg-dim);letter-spacing:.04em}
+.field-hint{font-size:.74rem;color:var(--fg-mute);margin:.25rem 0 .55rem;letter-spacing:.02em}
+.req{
+  font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:#ff9a9a;
+  border:1px solid rgba(255,107,107,.35);border-radius:6px;padding:.16rem .42rem;margin-left:.4rem;
+  vertical-align:middle;
+}
+/* Registration fee row — shows live price as IEEE member toggles */
+.price-box{
+  padding:.75rem 1rem;border-radius:11px;
+  background:var(--glass);border:1px solid var(--line-soft);
+  display:flex;flex-direction:column;gap:.3rem;
+}
+.price-line{font-size:1.05rem;font-weight:800;color:var(--gold-0)}
+.price-note{font-size:.74rem;color:var(--fg-mute);letter-spacing:.04em}
+.price-box .strike{text-decoration:line-through;opacity:.55;font-weight:600;color:var(--fg-mute)}
 input[type="radio"] {
   accent-color: var(--gold-1);
   width: 16px;
@@ -1470,9 +1497,220 @@ input[type="radio"] {
   .register::before,.scroll-cue i{animation:none}
   .btn::after{display:none}
 }
+
+/* ============================================================
+   ADMIN PANEL  (/​#admin — organising team only)
+   Reuses the gold / ink tokens so it reads as part of the site.
+   ============================================================ */
+.admin-app{min-height:100vh;background:var(--ink-0);color:var(--fg);font-size:15px}
+.admin-input{
+  width:100%;padding:.68rem .9rem;border-radius:10px;
+  background:var(--glass);border:1px solid var(--line);
+  color:var(--fg);outline:none;
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+.admin-input::placeholder{color:var(--fg-mute)}
+.admin-input:focus{border-color:var(--gold-2);box-shadow:0 0 0 3px rgba(232,194,122,.14)}
+.admin-input option{background:var(--ink-2);color:var(--fg)}
+
+/* --- login --- */
+.admin-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
+.admin-login[hidden]{display:none}
+.admin-login-card{
+  width:min(400px,100%);text-align:center;
+  background:var(--ink-1);border:1px solid var(--line);border-radius:20px;
+  padding:2.4rem 2rem;box-shadow:0 30px 80px -30px rgba(0,0,0,.8);
+  animation:adminPop .4s var(--ease-shutter);
+}
+@keyframes adminPop{from{opacity:0;transform:translateY(14px) scale(.98)}}
+.admin-lock{
+  width:56px;height:56px;margin:0 auto 1.1rem;border-radius:50%;
+  display:grid;place-items:center;color:var(--gold-1);
+  background:radial-gradient(circle at 30% 25%, var(--glass-2), var(--glass));
+  border:1px solid var(--line);
+}
+.admin-login-card h1{margin:0;font-size:1.5rem;font-weight:800;letter-spacing:.02em}
+.admin-login-card p{margin:.4rem 0 1.4rem;color:var(--fg-mute);font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
+.admin-err{color:var(--red-1);font-size:.8rem;min-height:1.2rem;margin-top:.7rem}
+.admin-login-card.shake{animation:adminShake .4s ease}
+@keyframes adminShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
+
+/* --- dashboard --- */
+.admin-dash{max-width:var(--maxw);margin:0 auto;padding:1.8rem 1.2rem 5rem}
+.admin-dash[hidden]{display:none}
+.admin-header{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
+.admin-title{font-size:1.7rem;font-weight:900;letter-spacing:.02em;line-height:1.1}
+.admin-sub{color:var(--fg-mute);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;margin-top:.3rem}
+.admin-header-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.admin-header .btn{padding:.6rem 1.05rem;font-size:.72rem}
+
+.admin-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:.8rem;margin-bottom:1.3rem}
+.admin-stat{background:var(--glass);border:1px solid var(--line-soft);border-radius:14px;padding:.9rem 1rem}
+.admin-stat b{display:block;font-size:1.45rem;font-weight:800;color:var(--gold-0);line-height:1.1}
+.admin-stat span{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--fg-mute)}
+@media (max-width:900px){.admin-stats{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:560px){.admin-stats{grid-template-columns:repeat(2,1fr)}}
+
+.admin-toolbar{display:grid;grid-template-columns:1fr 180px 160px;gap:.8rem;margin-bottom:1.2rem}
+@media (max-width:760px){.admin-toolbar{grid-template-columns:1fr}}
+
+.admin-list{display:grid;gap:.9rem}
+.admin-empty{
+  padding:3.4rem 1.5rem;text-align:center;color:var(--fg-mute);
+  border:1px dashed var(--line-soft);border-radius:16px;font-size:.9rem;
+}
+.admin-card{
+  display:grid;grid-template-columns:96px 1fr auto;gap:1.1rem;align-items:start;
+  background:var(--glass);border:1px solid var(--line-soft);border-radius:16px;
+  padding:1.1rem 1.2rem;
+  transition:border-color .2s ease;
+}
+.admin-card:hover{border-color:var(--line)}
+@media (max-width:640px){.admin-card{grid-template-columns:72px 1fr;gap:.9rem}.admin-card .admin-card-actions{grid-column:1/-1}}
+
+.admin-thumb{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid var(--line-soft);cursor:zoom-in;background:var(--ink-2)}
+@media (max-width:640px){.admin-thumb{width:72px;height:72px}}
+.admin-nothumb{
+  width:96px;height:96px;border-radius:10px;border:1px dashed var(--line-soft);
+  display:grid;place-items:center;color:var(--fg-mute);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;text-align:center;padding:.4rem;
+}
+@media (max-width:640px){.admin-nothumb{width:72px;height:72px}}
+
+.admin-card-name{font-weight:800;font-size:1.02rem;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+.admin-card-line{color:var(--fg-dim);font-size:.83rem;margin-top:.25rem;word-break:break-word}
+.admin-card-line a{color:var(--gold-1)}
+.admin-card-tags{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.6rem}
+.admin-chip{
+  font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  padding:.28rem .6rem;border-radius:999px;border:1px solid var(--line-soft);
+  background:var(--glass);color:var(--fg-dim);
+}
+.admin-chip.gold{border-color:var(--line);color:var(--gold-1)}
+.admin-chip.green{border-color:rgba(58,208,127,.4);color:var(--green-1)}
+.admin-chip.red{border-color:rgba(255,107,107,.4);color:var(--red-1)}
+.admin-card-note{color:var(--fg-mute);font-size:.78rem;font-style:italic;margin-top:.6rem;border-left:2px solid var(--line);padding-left:.7rem}
+.admin-card-time{color:var(--fg-mute);font-size:.68rem;margin-top:.6rem}
+
+.admin-card-actions{display:flex;flex-direction:column;gap:.5rem;align-items:stretch}
+@media (max-width:640px){.admin-card-actions{flex-direction:row;flex-wrap:wrap}}
+.admin-mini{
+  font:inherit;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+  padding:.5rem .8rem;border-radius:9px;cursor:pointer;
+  border:1px solid var(--line-soft);background:var(--glass);color:var(--fg-dim);
+  transition:all .2s ease;white-space:nowrap;
+}
+.admin-mini:hover{border-color:var(--line);color:var(--fg)}
+.admin-mini.verify{border-color:rgba(58,208,127,.4);color:var(--green-1)}
+.admin-mini.verify:hover{background:rgba(58,208,127,.14)}
+.admin-mini.unverify{border-color:rgba(232,194,122,.35);color:var(--gold-1)}
+.admin-mini.unverify:hover{background:rgba(232,194,122,.12)}
+.admin-mini.delete{border-color:rgba(255,107,107,.35);color:var(--red-1)}
+.admin-mini.delete:hover{background:rgba(255,107,107,.12)}
+.admin-mini.shot{color:var(--fg-dim)}
+
+/* --- lightbox --- */
+.admin-lightbox{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:1.2rem}
+.admin-lightbox[hidden]{display:none}
+.admin-lb-backdrop{position:absolute;inset:0;background:rgba(3,4,6,.9);backdrop-filter:blur(6px)}
+.admin-lb-card{
+  position:relative;z-index:1;width:min(860px,100%);max-height:92vh;display:flex;flex-direction:column;
+  background:var(--ink-1);border:1px solid var(--line);border-radius:18px;overflow:hidden;
+  box-shadow:0 40px 100px -30px rgba(0,0,0,.9);
+  animation:adminPop .3s var(--ease-shutter);
+}
+.admin-lb-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.2rem;border-bottom:1px solid var(--line-soft)}
+.admin-lb-meta{font-size:.85rem;color:var(--fg-dim)}
+.admin-lb-meta b{color:var(--gold-0)}
+.admin-lb-close{background:none;border:none;color:var(--fg-mute);font-size:1.7rem;cursor:pointer;line-height:1;padding:.1rem .4rem}
+.admin-lb-close:hover{color:var(--fg)}
+.admin-lb-body{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:var(--ink-0);padding:1rem}
+.admin-lb-body img{max-width:100%;max-height:62vh;object-fit:contain;border-radius:8px}
+.admin-lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:1.5rem;line-height:1;
+  border:1px solid var(--line);background:rgba(20,23,29,.85);color:var(--fg);
+  transition:background .2s ease;
+}
+.admin-lb-nav:hover{background:var(--ink-3)}
+.admin-lb-nav.prev{left:.8rem}
+.admin-lb-nav.next{right:.8rem}
+.admin-lb-nav:disabled{opacity:.3;cursor:default}
+.admin-lb-actions{display:flex;justify-content:center;gap:.8rem;padding:1rem;border-top:1px solid var(--line-soft)}
+.admin-lb-verify{
+  font:inherit;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;
+  padding:.7rem 1.6rem;border-radius:10px;cursor:pointer;
+  border:1px solid rgba(58,208,127,.45);color:var(--green-1);background:rgba(58,208,127,.1);
+  transition:all .2s ease;
+}
+.admin-lb-verify:hover{background:rgba(58,208,127,.2)}
+.admin-lb-verify.is-verified{border-color:rgba(232,194,122,.4);color:var(--gold-1);background:rgba(232,194,122,.1)}
+.admin-lb-verify.is-verified:hover{background:rgba(232,194,122,.18)}
 </style>
 </head>
 <body class="locked">
+
+<!-- ============ ADMIN PANEL (hidden; revealed only on /#admin) ============ -->
+<div id="adminApp" class="admin-app" hidden>
+
+  <!-- Login view -->
+  <div class="admin-login" id="adminLoginView">
+    <form class="admin-login-card" id="adminLoginForm" autocomplete="off">
+      <div class="admin-lock" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <h1>Admin access</h1>
+      <p>IEEE Summer School 2026 · Registrations</p>
+      <input type="password" id="adminPassInput" class="admin-input" placeholder="Passcode" aria-label="Admin passcode" autocomplete="off" spellcheck="false">
+      <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.9rem">Unlock</button>
+      <div class="admin-err" id="adminLoginErr" role="alert"></div>
+    </form>
+  </div>
+
+  <!-- Dashboard view -->
+  <div class="admin-dash" id="adminDashView" hidden>
+    <header class="admin-header">
+      <div>
+        <div class="admin-title">Registrations</div>
+        <div class="admin-sub">IEEE Summer School 2026 · Admin panel</div>
+      </div>
+      <div class="admin-header-actions">
+        <button class="btn" id="adminRefreshBtn" type="button">Refresh</button>
+        <button class="btn btn-gold" id="adminCsvBtn" type="button">Export CSV</button>
+        <button class="btn" id="adminLogoutBtn" type="button">Log out</button>
+      </div>
+    </header>
+
+    <div class="admin-stats" id="adminStats"></div>
+
+    <div class="admin-toolbar">
+      <input type="search" id="adminSearch" class="admin-input" placeholder="Search name, email or phone…" aria-label="Search registrations">
+    </div>
+
+    <div class="admin-list" id="adminList"></div>
+  </div>
+
+  <!-- Screenshot lightbox -->
+  <div class="admin-lightbox" id="adminLightbox" hidden role="dialog" aria-modal="true" aria-label="Payment screenshot">
+    <div class="admin-lb-backdrop" id="adminLbBackdrop"></div>
+    <div class="admin-lb-card">
+      <div class="admin-lb-head">
+        <div class="admin-lb-meta" id="adminLbMeta"></div>
+        <button class="admin-lb-close" id="adminLbClose" aria-label="Close viewer">&times;</button>
+      </div>
+      <div class="admin-lb-body">
+        <button class="admin-lb-nav prev" id="adminLbPrev" aria-label="Previous screenshot">‹</button>
+        <img id="adminLbImg" alt="Payment screenshot">
+        <button class="admin-lb-nav next" id="adminLbNext" aria-label="Next screenshot">›</button>
+      </div>
+      <div class="admin-lb-actions">
+        <!-- No verify button — verification happens at registration time -->
+      </div>
+    </div>
+  </div>
+
+</div>
 
 <!-- ============ NAV (fixed) ============ -->
 <header class="nav">
@@ -1674,19 +1912,27 @@ input[type="radio"] {
             <span class="err" data-err-for="f-ieee-id"></span>
           </div>
 
-          <div class="field full">
-            <label for="f-payment-method">Payment method</label>
-            <select id="f-payment-method" name="payment_method" required onchange="toggleUpiScreenshot()">
-              <option value="">Select payment method…</option>
-              <option value="upi">UPI</option>
-              <option value="cash">Cash on arrival</option>
-              <option value="bank">Bank transfer</option>
-            </select>
-            <span class="err" data-err-for="f-payment-method"></span>
+          <!-- Price summary — updates when IEEE yes/no changes -->
+          <div class="field full" id="price-row">
+            <label>Registration fee</label>
+            <div class="price-box">
+              <div class="price-line" id="priceDisplay"></div>
+              <div class="price-note" id="priceNote"></div>
+            </div>
           </div>
 
-          <div class="field full conditional-field" id="upi-screenshot-field" style="display:none;">
-            <label>Upload UPI payment screenshot</label>
+          <div class="field full">
+            <label>Payment method</label>
+            <div class="upi-static" aria-label="Payment method: UPI">
+              <span class="upi-badge">UPI</span>
+              <span class="upi-sub">UPI is the only accepted payment method</span>
+            </div>
+            <input type="hidden" id="f-payment-method" name="payment_method" value="upi">
+          </div>
+
+          <div class="field full" id="upi-screenshot-field">
+            <label>Upload UPI payment screenshot <span class="req">required</span></label>
+            <p class="field-hint">JPEG or PNG, up to 5MB — it's checked when you submit.</p>
             <div class="upload-area" id="uploadArea" onclick="document.getElementById('f-screenshot').click()">
               <div id="uploadPlaceholder">
                 <span style="font-size:1.5rem;display:block;margin-bottom:0.5rem;color:var(--gold-1);">↑</span>
@@ -1822,6 +2068,33 @@ input[type="radio"] {
 <script>
 (() => {
   'use strict';
+
+  /* ==========================================================
+     0. /ADMIN ROUTE — hidden organising-team panel.
+     Reachable only by visiting the site with #admin (or ?admin,
+     or a path ending /admin). Normal visitors never see it.
+     When active we hide the public site + shutter and hand the
+     page over to AdminApp (defined near the bottom of this
+     script), skipping every public-site listener and timer.
+     ========================================================== */
+  const isAdminRoute = (() => {
+    try {
+      if (location.hash.replace(/^#\/?/, '') === 'admin') return true;
+      if (/(^|[?&])admin([=&]|$)/.test(location.search)) return true;
+      return /\/admin\/?$/.test(location.pathname);
+    } catch (_) { return false; }
+  })();
+
+  if (isAdminRoute) {
+    document.documentElement.classList.remove('locked');
+    document.body.classList.remove('locked');
+    document.body.style.background = 'var(--ink-0)';
+    document.title = 'Admin · Registrations — IEEE Summer School 2026';
+    document.querySelectorAll('header.nav, .housing, #blood-bg, .shutter, main, .id-card-overlay')
+      .forEach(el => { el.style.display = 'none'; });
+    window.__adminActive = true;   // AdminApp boots itself right after its definition below
+    return;                                        // nothing below runs in admin mode
+  }
 
   const root      = document.documentElement;
   const body      = document.body;
@@ -2013,26 +2286,56 @@ input[type="radio"] {
       input.removeAttribute('required');
       input.value = '';
     }
+    updatePrice(isMember);
   };
 
-  window.toggleUpiScreenshot = function() {
-    const method = document.getElementById('f-payment-method').value;
-    const field = document.getElementById('upi-screenshot-field');
-    const input = document.getElementById('f-screenshot');
-    if(method === 'upi') {
-      field.style.display = 'block';
-      input.setAttribute('required', 'true');
+  /* ----------------------------------------------------------
+     IEEE member pricing — ₹599 vs ₹999 for non-members.
+     ---------------------------------------------------------- */
+  function updatePrice(isMember) {
+    const priceEl  = document.getElementById('priceDisplay');
+    const noteEl   = document.getElementById('priceNote');
+    if (!priceEl || !noteEl) return;
+    if (isMember) {
+      priceEl.innerHTML = `<span class="strike">₹999</span> ₹599`;
+      noteEl.textContent = 'IEEE member price';
     } else {
-      field.style.display = 'none';
-      input.removeAttribute('required');
-      input.value = '';
-      document.getElementById('uploadPreview').style.display = 'none';
-      document.getElementById('uploadPlaceholder').style.display = 'block';
+      priceEl.innerHTML = '₹999';
+      noteEl.textContent = 'General admission';
     }
-  };
+  }
+  // Show the general price on load so the section never looks empty.
+  updatePrice(false);
+
+  // UPI is the only payment method, so the screenshot field is always visible.
+  // toggleUpiScreenshot kept as a no-op so any leftover references don't break.
+  window.toggleUpiScreenshot = function() {};
+
+  // Screenshot is validated here at upload time AND at submit time — the
+  // registration cannot go through without a real, valid image file.
+  const SCREENSHOT_MAX = 5 * 1024 * 1024; // 5MB
+  function validateScreenshotFile(input) {
+    const file = input.files && input.files[0];
+    if (!file) return 'Payment screenshot is required — UPI is the only payment method.';
+    if (!file.type.startsWith('image/')) return 'Please upload an image file (JPEG or PNG).';
+    if (file.size > SCREENSHOT_MAX) return 'Screenshot is over 5MB — please compress it first.';
+    return true;
+  }
 
   window.previewImage = function(input) {
     if (input.files && input.files[0]) {
+      const errEl = document.querySelector('[data-err-for="f-screenshot"]');
+      const ok = validateScreenshotFile(input);
+      if (ok !== true) {
+        input.value = '';                       // reject: clear the bad pick
+        document.getElementById('uploadPlaceholder').style.display = 'block';
+        document.getElementById('uploadPreview').style.display = 'none';
+        if (errEl) errEl.textContent = ok;      // show why it was rejected
+        input.closest('.field').classList.add('invalid');
+        return;
+      }
+      if (errEl) errEl.textContent = '';
+      input.closest('.field').classList.remove('invalid');
       var reader = new FileReader();
       reader.onload = function(e) {
         document.getElementById('uploadPlaceholder').style.display = 'none';
@@ -2696,31 +2999,27 @@ input[type="radio"] {
     'f-phone'  : v => /^[0-9+\-\s]{10,15}$/.test(v.trim()) || 'Enter a valid phone number.',
     'f-email'  : v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || 'Enter a valid email address.',
     'f-track'  : v => !!v || 'Choose a track.',
-    'f-payment-method': v => !!v || 'Choose a payment method.',
+    'f-payment-method': v => true,  // UPI is enforced by the hidden input; no user choice to validate
     'f-ieee-id': v => {
       const radio = document.querySelector('input[name="is_ieee_member"]:checked');
       if(radio && radio.value === 'Yes') {
-         return v.trim().length > 0 || 'IEEE Membership ID is required.';
+         const id = v.trim();
+         if (!id) return 'IEEE Membership ID is required.';
+         if (!/^\d{10}$/.test(id)) return 'Membership ID must be exactly 10 digits.';
       }
       return true;
     },
-    'f-screenshot': v => {
-      if(document.getElementById('f-payment-method').value === 'upi') {
-         const input = document.getElementById('f-screenshot');
-         return (input.files && input.files.length > 0) || 'Screenshot is required for UPI payment.';
-      }
-      return true;
-    }
+    'f-screenshot': v => validateScreenshotFile(document.getElementById('f-screenshot'))
   };
 
   function validateField(id) {
     const el     = document.getElementById(id);
-    const result = rules[id](el.value);
     const wrap   = el.closest('.field');
-    const err    = wrap.querySelector('.err');
+    const err    = wrap ? wrap.querySelector('.err') : null;
+    const result = rules[id](el.value);
     const ok     = result === true;
-    wrap.classList.toggle('invalid', !ok);
-    err.textContent = ok ? '' : result;
+    if (wrap) wrap.classList.toggle('invalid', !ok);
+    if (err) err.textContent = ok ? '' : result;
     return ok;
   }
 
@@ -2739,8 +3038,6 @@ input[type="radio"] {
     const placeholder = document.getElementById('uploadPlaceholder');
     if (preview)     { preview.src = ''; preview.style.display = 'none'; }
     if (placeholder) { placeholder.style.display = ''; }
-    // conditional fields collapse back to their default state
-    toggleUpiScreenshot();
     toggleIeeeId(false);
   }
 
@@ -2754,20 +3051,338 @@ input[type="radio"] {
     }
     const data = Object.fromEntries(new FormData(form).entries());
 
-    // NOTE: there is no backend. The UPI screenshot is previewed client-side only
-    // and is NOT uploaded or stored anywhere — `data.screenshot` is a File object
-    // that is discarded here. Wire a fetch() to a real endpoint to persist it.
     console.log('Registration payload →', data);
 
-    status.hidden = false;
-    status.textContent = 'Thank you — your registration is being processed.';
+    const proceed = () => {
+      status.hidden = false;
+      status.textContent = 'Thank you — your registration is being processed.';
 
-    runIdCardSequence(data);
-    form.reset();
-    resetUpload();
+      runIdCardSequence(data);
+      form.reset();
+      resetUpload();
+    };
+
+    // Persist to localStorage so the /#admin panel can list & verify entries.
+    // Screenshot is downscaled first to stay inside the ~5MB storage budget.
+    const finishWithData = (shotDataUrl) => {
+      const rec = {
+        id: 'REG-' + Date.now().toString(36).toUpperCase(),
+        ts: new Date().toISOString(),
+        name: (data.name || '').trim(),
+        phone: (data.phone || '').trim(),
+        email: (data.email || '').trim(),
+        track: data.track || '',
+        ieeeMember: data.is_ieee_member === 'Yes',
+        ieeeId: data.is_ieee_member === 'Yes' ? (data.ieee_id || '').trim() : '',
+        paymentMethod: data.payment_method || '',
+        note: (data.note || '').trim(),
+        screenshot: shotDataUrl,
+        verified: false
+      };
+      try {
+        const list = JSON.parse(localStorage.getItem('registrations') || '[]');
+        list.push(rec);
+        localStorage.setItem('registrations', JSON.stringify(list));
+      } catch (err) {
+        console.warn('Registration could not be stored for the admin panel:', err);
+      }
+      proceed();
+    };
+
+    const file = (data.screenshot instanceof File && data.screenshot.size) ? data.screenshot : null;
+    if (!file) {
+      finishWithData(null);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1400;
+        const scale  = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.max(1, Math.round(img.width  * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        finishWithData(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = () => finishWithData(null);
+      img.src = reader.result;
+    };
+    reader.onerror = () => finishWithData(null);
+    reader.readAsDataURL(file);
   });
 
 })();
+
+/* ==========================================================
+   ADMIN APP — hidden organising-team panel, reachable via /#admin.
+   Reads the registrations the public form stored in localStorage
+   and lets the team review + verify UPI payment screenshots.
+   Runs only when the /admin route is detected (see the top of
+   the main IIFE); public visitors never touch this code.
+
+   DEFAULT PASSCODE: ieee2026admin
+   To change it: generate a SHA-256 hex digest of the new
+   passcode (e.g. `echo -n "newpass" | sha256sum`) and paste it
+   into PASS_HASH below. Never store the plain passcode here.
+   ========================================================== */
+window.AdminApp = (() => {
+  'use strict';
+
+  const PASS_HASH   = 'f1071b938bd3b8f26d153150f1addb37c28e0b63bed569cca955c9f68d2e1c76'; // sha-256 of 'ieee2026admin'
+  const SESSION_KEY = 'ieee-admin-authed';
+  const STORE_KEY   = 'registrations';
+
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+
+  const els = {};
+  let regs          = [];
+  let lbList        = [];   // screenshot-enabled entries, for lightbox navigation
+  let lbIndex       = -1;
+  let lightboxOpen  = false;
+
+  async function sha256Hex(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function load() {
+    try { const r = JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); return Array.isArray(r) ? r : []; }
+    catch (_) { return []; }
+  }
+  function save() { localStorage.setItem(STORE_KEY, JSON.stringify(regs)); }
+
+  const fmtTime = ts => {
+    try { return new Date(ts).toLocaleString(); } catch (_) { return ts || ''; }
+  };
+
+  const PAY_LABEL = { upi: 'UPI', cash: 'Cash on arrival', bank: 'Bank transfer' };
+  const payLabel = m => PAY_LABEL[m] || (m ? m.charAt(0).toUpperCase() + m.slice(1) : '—');
+
+  function renderStats() {
+    const total    = regs.length;
+    const shots    = regs.filter(r => r.screenshot).length;
+    const perTrack = {};
+    regs.forEach(r => { perTrack[r.track || '—'] = (perTrack[r.track || '—'] || 0) + 1; });
+    const topTrack = Object.entries(perTrack).sort((a, b) => b[1] - a[1])[0];
+    els.stats.innerHTML = `
+      <div class="admin-stat"><b>${total}</b><span>Registered</span></div>
+      <div class="admin-stat"><b>${shots}</b><span>Screenshots attached</span></div>
+      <div class="admin-stat"><b>${Object.keys(perTrack).length}</b><span>Tracks filled</span></div>
+      <div class="admin-stat"><b>${topTrack ? topTrack[1] : 0}</b><span>Top track${topTrack ? ' · ' + esc(topTrack[0]) : ''}</span></div>`;
+  }
+
+  function filtered() {
+    const q = (els.search.value || '').trim().toLowerCase();
+    return regs.filter(r => {
+      if (q) {
+        const hay = `${r.name} ${r.email} ${r.phone} ${r.track}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function cardHTML(r) {
+    const i = regs.indexOf(r);
+    const shot = r.screenshot
+      ? `<img class="admin-thumb" src="${r.screenshot}" alt="Payment screenshot" data-i="${i}" role="button" aria-label="Open payment screenshot">`
+      : `<div class="admin-nothumb">No screenshot</div>`;
+    return `
+      <article class="admin-card" data-i="${i}">
+        ${shot}
+        <div>
+          <div class="admin-card-name">${esc(r.name)}</div>
+          <div class="admin-card-line">
+            <a href="mailto:${esc(r.email)}">${esc(r.email)}</a> · <a href="tel:${esc(r.phone)}">${esc(r.phone)}</a>
+          </div>
+          <div class="admin-card-tags">
+            <span class="admin-chip gold">${esc(r.track)}</span>
+            <span class="admin-chip">${payLabel(r.paymentMethod)}</span>
+            ${r.ieeeMember ? `<span class="admin-chip gold">IEEE · ${esc(r.ieeeId)}</span>` : '<span class="admin-chip">Non-IEEE</span>'}
+            ${r.note ? `<span class="admin-chip red" style="border-color:rgba(232,194,122,.3)">Note</span>` : ''}
+          </div>
+          ${r.note ? `<div class="admin-card-note">${esc(r.note)}</div>` : ''}
+          <div class="admin-card-time">Registered ${esc(fmtTime(r.ts))} · ID ${esc(r.id)}</div>
+        </div>
+        <div class="admin-card-actions">
+          ${r.screenshot ? `<button class="admin-mini shot" data-i="${i}" type="button">View shot</button>` : ''}
+          <button class="admin-mini delete" data-i="${i}" type="button">Delete</button>
+        </div>
+      </article>`;
+  }
+
+  function renderList() {
+    const items = filtered();
+    lbList = regs.filter(r => r.screenshot);
+    if (!items.length) {
+      els.list.innerHTML = `<div class="admin-empty">${regs.length ? 'No registrations match the current filters.' : 'No registrations yet. They will appear here as students sign up.'}</div>`;
+      return;
+    }
+    els.list.innerHTML = items.slice().reverse().map(cardHTML).join('');
+  }
+
+  function render() { renderStats(); renderList(); }
+
+  function openLightbox(idx) {
+    const r = lbList[idx];
+    if (!r) return;
+    lbIndex = idx;
+    $('adminLbImg').src = r.screenshot;
+    $('adminLbMeta').innerHTML =
+      `<b>${esc(r.name)}</b> · ${esc(payLabel(r.paymentMethod))} · ${esc(r.track)} · ${esc(fmtTime(r.ts))}`;
+    $('adminLbPrev').disabled = idx <= 0;
+    $('adminLbNext').disabled = idx >= lbList.length - 1;
+    els.lightbox.hidden = false;
+    lightboxOpen = true;
+  }
+  function closeLightbox() { els.lightbox.hidden = true; lightboxOpen = false; }
+
+  function exportCSV() {
+    const header = ['ID','Registered','Name','Email','Phone','Track','IEEE member','IEEE ID','Payment method','Note'];
+    const rows = regs.map(r => [
+      r.id, fmtTime(r.ts), r.name, r.email, r.phone, r.track,
+      r.ieeeMember ? 'Yes' : 'No', r.ieeeId || '', payLabel(r.paymentMethod), r.note || ''
+    ]);
+    const csv = [header, ...rows]
+      .map(row => row.map(c => `"${String(c ?? '').replace(/"/g, '""')}`).join(','))
+      .join('\r\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `ieee-summer-school-registrations-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function showDash() {
+    els.loginView.hidden = true;
+    els.dashView.hidden = false;
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  function showLogin() {
+    els.dashView.hidden = true;
+    els.loginView.hidden = false;
+    setTimeout(() => els.passInput.focus(), 60);
+  }
+
+  function init() {
+    els.root         = $('adminApp');
+    els.loginView    = $('adminLoginView');
+    els.dashView     = $('adminDashView');
+    els.loginForm    = $('adminLoginForm');
+    els.passInput    = $('adminPassInput');
+    els.loginErr     = $('adminLoginErr');
+    els.logoutBtn    = $('adminLogoutBtn');
+    els.csvBtn       = $('adminCsvBtn');
+    els.refreshBtn   = $('adminRefreshBtn');
+    els.stats        = $('adminStats');
+    els.search       = $('adminSearch');
+    els.list         = $('adminList');
+    els.lightbox     = $('adminLightbox');
+
+    if (!els.root) return;
+    els.root.hidden = false;
+
+    /* ---- login ---- */
+    const attemptLogin = async () => {
+      els.loginErr.textContent = '';
+      try {
+        const h = await sha256Hex(els.passInput.value || '');
+        if (h === PASS_HASH) {
+          sessionStorage.setItem(SESSION_KEY, '1');
+          els.passInput.value = '';
+          showDash();
+        } else {
+          els.loginErr.textContent = 'Incorrect passcode.';
+          els.loginForm.classList.remove('shake');
+          void els.loginForm.offsetWidth;         // restart the shake animation
+          els.loginForm.classList.add('shake');
+          els.passInput.select();
+        }
+      } catch (_) {
+        els.loginErr.textContent = 'Login unavailable in this browser.';
+      }
+    };
+    els.loginForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      await attemptLogin();
+    });
+    // Pressing Enter anywhere in the login card submits even if the
+    // browser's native submit-on-Enter is flaky around password fields.
+    els.loginForm.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); attemptLogin(); }
+    });
+    els.logoutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      closeLightbox();
+      showLogin();
+    });
+
+    /* ---- toolbar ----
+       Search emits 'input' as you type. */
+    els.search.addEventListener('input', renderList);
+    els.refreshBtn.addEventListener('click', () => { regs = load(); render(); });
+    els.csvBtn.addEventListener('click', exportCSV);
+
+    /* ---- list interactions (delegated) ---- */
+    els.list.addEventListener('click', e => {
+      const btn = e.target.closest('button.admin-mini');
+      if (btn) {
+        const i = +btn.dataset.i;
+        if (btn.classList.contains('delete')) {
+          const r = regs[i];
+          if (r && confirm(`Delete registration for ${r.name}? This cannot be undone.`)) {
+            regs.splice(i, 1);
+            save();
+            render();
+          }
+        } else if (btn.classList.contains('shot')) {
+          const idx = lbList.indexOf(regs[i]);
+          if (idx !== -1) openLightbox(idx);
+        }
+        return;
+      }
+      const img = e.target.closest('.admin-thumb');
+      if (img) {
+        const idx = lbList.indexOf(regs[+img.dataset.i]);
+        if (idx !== -1) openLightbox(idx);
+      }
+    });
+
+    /* ---- lightbox ---- */
+    $('adminLbClose').addEventListener('click', closeLightbox);
+    $('adminLbBackdrop').addEventListener('click', closeLightbox);
+    $('adminLbPrev').addEventListener('click', () => { if (lbIndex > 0) openLightbox(lbIndex - 1); });
+    $('adminLbNext').addEventListener('click', () => { if (lbIndex < lbList.length - 1) openLightbox(lbIndex + 1); });
+    document.addEventListener('keydown', e => {
+      if (!lightboxOpen) return;
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowLeft'  && lbIndex > 0) openLightbox(lbIndex - 1);
+      else if (e.key === 'ArrowRight' && lbIndex < lbList.length - 1) openLightbox(lbIndex + 1);
+    });
+
+    /* ---- initial view ---- */
+    regs = load();
+    if (sessionStorage.getItem(SESSION_KEY) === '1') showDash();
+    else showLogin();
+  }
+
+  return { init };
+})();
+
+// Boot the admin panel when the /admin route fired the early-return above.
+// AdminApp is only defined after the IIFE finished parsing, so it must
+// self-boot here rather than being called from inside the early-return.
+if (window.__adminActive && window.AdminApp) window.AdminApp.init();
 </script>
 </body>
 </html>
