@@ -823,6 +823,11 @@ input[type="radio"] {
   top:-100vh;
   bottom:3px;            /* fabric drops to the ring's centerline */
   left:50%;transform:translateX(-50%);
+  /* the strap is an ELASTIC body: it pivots from far up its own run,
+     where it disappears past the screen top — JS drives this transform
+     every frame (elastic sway), so no CSS transition on transform */
+  transform-origin:50% calc(100vh + 100%);
+  will-change:transform;
   width:12px;            /* slightly narrower than the ring inner diameter */
   background:
     repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
@@ -1353,7 +1358,7 @@ input[type="radio"] {
   .id-card-lanyard{height:72px;overflow:visible}
   /* strap extends far above the lanyard box, past the top of the screen,
      and dips down through the O-ring so the fabric threads it */
-  .ly-strap{width:14px; top:-100vh; bottom:8px}
+  .ly-strap{width:14px; top:-100vh; bottom:8px; transform-origin:50% calc(100vh + 100%)}
   .ly-clip{bottom:-20px}
   .id-card{
     --card-w:clamp(145px,40vw,185px);
@@ -1397,6 +1402,7 @@ input[type="radio"] {
   .id-card,.id-card-container,.id-card-lanyard,#idCardWrapper{
     animation:none!important;opacity:1;transform:none!important;transition:none;
   }
+  .ly-strap{transform:none!important;transition:none}
   .id-card-header,.id-card-tagline,.id-card-avatar,
   .id-card-name,.id-card-subrole,.id-card-meta,.id-card-codes,
   .id-card-actions{
@@ -2716,45 +2722,77 @@ input[type="radio"] {
          overshoot and settles there, hanging slightly to the side
          the mouse is on. Leave, and gravity eases it back dead
          straight.
-       • Mobile — the phone itself. Tilting the phone (gamma) sets
-         the same bias, so tilt right → the card hangs right, tilt
-         left → it hangs left, exactly like a real badge on a
-         lanyard. Shake impulses (accelerometer) give it a kick
-         that then damps back to the current bias.
+       • Mobile — the phone itself. The raw sensor stream is noisy and
+         fires ~60Hz, so it is low-pass smoothed (τ ≈ 0.3 s) BEFORE it
+         becomes the bias: tilt right → the card hangs right, tilt left →
+         left, gliding — never twitching. A genuine physical shake
+         (accelerometer spike / fast roll) injects a velocity impulse
+         that both bodies kick with and then damp out.
 
-     θ̈ = (θ_target − θ)·k − c·ω      (critically-damped spring)
+     θ̈ = (θ_target − θ)·k − c·ω + shake      (spring + impulse)
 
-     which is just Hooke's law on the angle — the same physics a
-     damped pendulum shows for small angles, but never jittery:
-     no discrete force spikes, only one continuous smooth target.
+     TWO coupled springs, like a real lanyard: the badge runs the
+     stiffer one, and the strap runs a softer spring that LAGS the
+     badge (chases where the badge just was), so a tilt bends the
+     strap into a curve and a shake ripples up the fabric.
      The download button sits OUTSIDE this wrapper and never moves. */
   const idCardWrapper = document.getElementById('idCardWrapper');
+  const lyStrap = document.querySelector('.id-card-lanyard .ly-strap');
   const PENDULUM = (() => {
-    const k    = 14;     // spring pull toward the bias (1/s²) — sets glide speed
-    const damp = 5.5;    // damping (1/s) — just above critical ⇒ no oscillation
+    // ---- badge spring ----
+    const k    = 9;      // spring pull (1/s²) — softer than before: glides, doesn't snap
+    const damp = 4.6;    // damping (1/s) — slightly under critical ⇒ a gentle sway, never ringing
     const maxA = 10;     // hard clamp (deg) so the strap never looks broken
-    let theta = 0, omega = 0;          // angle (deg) & angular velocity (deg/s)
-    let target = 0;                    // current bias angle the card glides to
+    // ---- strap spring (the fabric is softer and lags the badge) ----
+    const kS    = 5.5;
+    const dampS = 3.2;
+    const maxS  = 7;     // strap never leans further than the badge
+    // ---- sensor smoothing ----
+    const TAU = 0.3;     // low-pass time constant (s): eats 60Hz sensor noise
+    let theta = 0, omega = 0;          // badge angle (deg) & angular velocity
+    let sTheta = 0, sOmega = 0;        // strap angle & velocity
+    let target = 0;                    // SMOOTHED bias the card glides to
     let last = performance.now();
+
+    // gravity tilt alone (deg, smoothed) — used to split sensor signal
+    // into "steady lean" (drives the target) vs "jerk" (drives impulses)
+    let prevLean = 0;
 
     function step(now) {
       // never simulate before the card has dropped in / when reduced motion
       const active = sequenceRunning && idCardOverlay.classList.contains('open') && !reduced;
-      const dt = Math.min((now - last) / 1000, 0.032) || 0.016;
+      let dt = (now - last) / 1000;
       last = now;
+      dt = Math.min(Math.max(dt || 0.016, 0.001), 0.05); // 60–1000fps safe
 
       if (active) {
+        // --- badge spring toward the smoothed bias ---
         const alpha = (target - theta) * k - damp * omega;
         omega += alpha * dt;
         theta += omega * dt;
-        if (theta >  maxA) { theta =  maxA; omega *= -0.3; }
-        if (theta < -maxA) { theta = -maxA; omega *= -0.3; }
+        if (theta >  maxA) { theta =  maxA; omega *= -0.25; }
+        if (theta < -maxA) { theta = -maxA; omega *= -0.25; }
         idCardWrapper.style.transform =
           `perspective(1000px) rotateZ(${theta.toFixed(3)}deg)`;
-      } else if (theta !== 0 || omega !== 0 || target !== 0) {
-        // reset state for the next reveal, keep wrapper transform clean
-        theta = 0; omega = 0; target = 0;
+
+        // --- strap spring: chases where the badge just was ---
+        // the lag makes the fabric visibly trail the badge — like cloth
+        const strapTarget = Math.max(-maxS, Math.min(maxS, theta * 0.85));
+        const sAlpha = (strapTarget - sTheta) * kS - dampS * sOmega;
+        sOmega += sAlpha * dt;
+        sTheta += sOmega * dt;
+        if (sTheta >  maxS) { sTheta =  maxS; sOmega *= -0.25; }
+        if (sTheta < -maxS) { sTheta = -maxS; sOmega *= -0.25; }
+        if (lyStrap) {
+          lyStrap.style.transform =
+            `translateX(-50%) rotate(${sTheta.toFixed(3)}deg)`;
+        }
+      } else if (theta !== 0 || omega !== 0 || target !== 0 ||
+                 sTheta !== 0 || sOmega !== 0) {
+        // reset state for the next reveal, keep transforms clean
+        theta = 0; omega = 0; target = 0; sTheta = 0; sOmega = 0;
         idCardWrapper.style.transform = '';
+        if (lyStrap) lyStrap.style.transform = '';
       }
       requestAnimationFrame(step);
     }
@@ -2782,22 +2820,39 @@ input[type="radio"] {
         target = 0;   // nothing holding → gravity glides the card back straight
       },
       // ---- mobile: device motion / orientation bridge ----
-      motion(gx) {                     // accelerometer X incl. gravity (m/s²)
+      // gx is RAW (noisy, ~60Hz). Two jobs fall out of one signal:
+      //   • the SLOW part (gravity lean) → the bias the badge glides to
+      //   • the FAST part (shake jerk)  → a one-shot velocity impulse
+      motion(gx) {
         if (!sequenceRunning) return;
-        // gravity leaning +X ⇒ phone tilted right ⇒ bias to that side;
-        // a shake's transient acceleration just perturbs the same spring.
-        // −sign: the badge hangs BELOW its pivot and rotateZ(+) swings a
-        // hanging body LEFT, so tilt-right must produce negative theta.
-        target = Math.max(-maxA, Math.min(maxA, -(gx / 9.81) * maxA * 0.85));
+        // −sign: badge hangs BELOW its pivot; rotateZ(+) swings it LEFT,
+        // so a rightward tilt must produce negative theta.
+        const lean = Math.max(-maxA, Math.min(maxA, -(gx / 9.81) * maxA * 0.85));
+        const jerk = lean - prevLean;
+        prevLean = lean;
+        // low-pass the bias — this is what kills the violent shaking
+        target += (lean - target) * (1 - Math.exp(-0.016 / TAU));
+        // only a real jerk (not sensor noise) kicks the badge; successive
+        // kicks PUMP the current swing (same sign as omega) so a back-and-
+        // forth shake visibly rattles the badge+strap instead of cancelling
+        if (Math.abs(jerk) > 1.2) {
+          const kick = Math.min(Math.abs(jerk) * 0.2, 8);
+          omega += (omega >= 0 ? 1 : -1) * kick;
+          if (omega >  30) omega =  30;
+          if (omega < -30) omega = -30;
+          sOmega += (sOmega >= 0 ? 1 : -1) * Math.min(kick * 0.6, 6);
+          if (sOmega >  20) sOmega =  20;
+          if (sOmega < -20) sOmega = -20;
+        }
       },
-      orientation(gamma) {             // left-right tilt of the phone (deg)
+      orientation(gamma) {
         if (!sequenceRunning) return;
         // gamma > 0 = the phone's right edge dips down ⇒ card hangs right.
-        // −gamma for the same pivot-below reason as motion(); the badge
-        // swings to whichever side gravity now pulls it (tilt right ⇒ right).
-        target = Math.max(-maxA, Math.min(maxA, -(gamma / 45) * maxA));
+        // low-pass here too: orientation events also arrive in bursts.
+        const lean = Math.max(-maxA, Math.min(maxA, -(gamma / 45) * maxA));
+        target += (lean - target) * (1 - Math.exp(-0.016 / TAU));
       },
-      dbg() { return { theta, omega, target }; }  // debug/tests
+      dbg() { return { theta, omega, target, strap: sTheta }; }
     };
   })();
 
