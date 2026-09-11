@@ -807,7 +807,7 @@ input[type="radio"] {
    a container that is exactly the lanyard's width. */
 .id-card-lanyard{
   position:relative;z-index:3;
-  width:80px;height:180px;
+  width:60px;height:135px;
   pointer-events:none;
   margin:0 auto;
   flex-shrink:0;
@@ -816,14 +816,14 @@ input[type="radio"] {
 
 /* --- the strap, running far above the screen and down THROUGH the ring ---
    The strap's bottom tip extends to the ring's centerline, so the ring
-   visibly loops around the fabric. Bottom:4px places the fabric end just
+   visibly loops around the fabric. Bottom:3px places the fabric end just
    past the ring's top edge — fabric goes through, ring surrounds it. */
 .ly-strap{
   position:absolute;
   top:-100vh;
-  bottom:4px;            /* fabric drops to the ring's centerline */
+  bottom:3px;            /* fabric drops to the ring's centerline */
   left:50%;transform:translateX(-50%);
-  width:16px;            /* slightly narrower than the ring inner diameter */
+  width:12px;            /* slightly narrower than the ring inner diameter */
   background:
     repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
     linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
@@ -845,8 +845,8 @@ input[type="radio"] {
   position:absolute;
   bottom:2px;
   left:50%;transform:translateX(-50%);
-  width:22px;height:22px;
-  border:3px solid #b8bcc2;
+  width:17px;height:17px;
+  border:2px solid #b8bcc2;
   border-radius:50%;
   background:transparent;
   background-clip:padding-box;
@@ -871,7 +871,7 @@ input[type="radio"] {
    appears to enter through the metal rim instead of just meeting it */
 .ly-ring::after{
   content:"";position:absolute;
-  top:-3px;left:-3px;right:-3px;height:14px;
+  top:-2px;left:-2px;right:-2px;height:11px;
   background:
     repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
     linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
@@ -884,15 +884,15 @@ input[type="radio"] {
    ring's bottom edge, with a thin J-curl into the card slot --- */
 .ly-clip{
   position:absolute;
-  bottom:-30px;left:50%;transform:translateX(-50%);
-  width:14px;height:32px;
+  bottom:-22px;left:50%;transform:translateX(-50%);
+  width:11px;height:24px;
   pointer-events:none;z-index:5;
 }
 
 /* small chrome block that the ring rests on */
 .ly-clip-body{
   position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:14px;height:14px;
+  width:11px;height:11px;
   background:
     linear-gradient(90deg,
       #5f6367 0%, #9aa0a5 20%, #d9dee2 40%,
@@ -907,8 +907,8 @@ input[type="radio"] {
 /* thin J-curl dropping from the body through the punch-slot */
 .ly-clip-body::after{
   content:"";
-  position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);
-  width:5px;height:12px;
+  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
+  width:4px;height:9px;
   background:linear-gradient(180deg,#3a3a3c,#161617);
   border-radius:0 0 2px 2px;
   box-shadow:inset 0 -1px 0 rgba(255,255,255,.10);
@@ -917,7 +917,7 @@ input[type="radio"] {
 .ly-clip-body::before{
   content:"";
   position:absolute;top:2px;right:-1px;
-  width:2px;height:10px;
+  width:2px;height:8px;
   background:linear-gradient(180deg,#dfe3e6,#90959b);
   border-radius:0 1px 1px 0;
   opacity:.9;
@@ -931,14 +931,20 @@ input[type="radio"] {
 /* ---------- CONTAINER (hanging + ground shadow) ---------- */
 .id-card-container{
   display:flex;flex-direction:column;
-  width:var(--card-w);max-width:440px;
+  width:var(--card-w);max-width:330px;
   margin:0 auto;position:relative;z-index:2;
   transform:translateY(-150vh);
   transform-style:preserve-3d;
   opacity: 1; /* always opaque, position hides it */
 }
 .stage-reveal .id-card-container, .stage-enhance .id-card-container, .stage-complete .id-card-container {
-  animation: cardDrop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, cardSwing 4s ease-in-out 0.8s infinite alternate;
+  animation: cardDrop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+/* the swing wrapper — the badge pivots from an anchor far above the
+   viewport (up the strap run), like a real lanyard held from the top */
+#idCardWrapper{
+  transform-origin:50% -85vh;
+  will-change:transform;
 }
 .id-card-container::after{
   content:"";position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);
@@ -952,12 +958,12 @@ input[type="radio"] {
 
 /* ---------- THE CARD (dark + gold, per reference) ---------- */
 .id-card{
-  --card-w:clamp(320px,86vw,380px);
+  --card-w:clamp(200px,56vw,240px);
   width:var(--card-w);
   position:relative;
   display:block;
-  padding:22px 22px 20px;
-  border-radius:20px;
+  padding:14px 14px 12px;
+  border-radius:15px;
   transform-origin:top center;
   background:
     linear-gradient(157deg, rgba(232,194,122,.10) 0%, transparent 34%),
@@ -1020,100 +1026,100 @@ input[type="radio"] {
 /* ---------- CARD HEADER ---------- */
 .id-card-header{
   display:flex;align-items:flex-start;justify-content:space-between;
-  gap:10px;margin-top:12px;
+  gap:8px;margin-top:9px;
 }
-.id-card-brandblock{display:flex;align-items:center;gap:8px}
+.id-card-brandblock{display:flex;align-items:center;gap:6px}
 .id-card-logo{color:var(--gold-1);display:flex}
 .id-card-brandtext{display:flex;flex-direction:column;line-height:1.15}
 .id-card-brand{
-  font-size:15px;font-weight:800;letter-spacing:.04em;color:var(--gold-0);
+  font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--gold-0);
 }
 .id-card-brandsub{
-  font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  font-size:7px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
   color:var(--fg-mute);
 }
 .id-card-eventtag{
-  text-align:right;font-size:9.5px;font-weight:700;line-height:1.35;
+  text-align:right;font-size:7px;font-weight:700;line-height:1.35;
   letter-spacing:.14em;text-transform:uppercase;color:var(--fg-dim);
 }
 
 /* ---------- TAGLINE ---------- */
 .id-card-tagline{
-  margin:20px 0 0;
-  font-size:22px;line-height:1.16;font-weight:800;letter-spacing:-.01em;
+  margin:15px 0 0;
+  font-size:16px;line-height:1.16;font-weight:800;letter-spacing:-.01em;
   color:var(--gold-0);
   text-shadow:0 0 20px rgba(232,194,122,.28);
 }
 .id-card-role{
-  display:block;margin-top:9px;
-  font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;
+  display:block;margin-top:7px;
+  font-size:7.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;
   color:var(--fg-dim);
 }
 
 /* ---------- PHOTO ---------- */
 .id-card-avatar{
-  width:112px;height:112px;margin:18px auto 0;
+  width:84px;height:84px;margin:14px auto 0;
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(180deg,#f3e9d6,#d9cbb2);
   border:2px solid rgba(232,194,122,.65);
   box-shadow:
-    0 0 0 5px rgba(232,194,122,.10),
+    0 0 0 4px rgba(232,194,122,.10),
     0 8px 22px rgba(0,0,0,.5),
     inset 0 -6px 14px rgba(0,0,0,.16);
   overflow:hidden;
 }
-.id-card-avatar svg{width:60px;height:60px;color:#8d7f66}
+.id-card-avatar svg{width:38px;height:38px;color:#8d7f66}
 
 /* ---------- NAME ---------- */
 .id-card-name{
-  margin:15px 0 0;text-align:center;
-  font-size:21px;font-weight:800;letter-spacing:.02em;
+  margin:11px 0 0;text-align:center;
+  font-size:16px;font-weight:800;letter-spacing:.02em;
   color:var(--gold-0);
   text-shadow:0 0 18px rgba(232,194,122,.22);
   overflow-wrap:anywhere;
 }
 .id-card-subrole{
-  display:block;margin-top:5px;text-align:center;
-  font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;
+  display:block;margin-top:4px;text-align:center;
+  font-size:7.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;
   color:var(--fg-mute);
 }
 
 /* ---------- META ROW ---------- */
 .id-card-meta{
-  display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
-  margin-top:14px;
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;
+  margin-top:10px;
 }
 .id-card-chip{
-  font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  font-size:7px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
   color:var(--gold-1);
-  padding:5px 10px;border-radius:999px;
+  padding:4px 8px;border-radius:999px;
   border:1px solid rgba(232,194,122,.28);
   background:rgba(232,194,122,.07);
 }
 
 /* ---------- CODES ---------- */
 .id-card-codes{
-  display:flex;align-items:center;gap:14px;
-  margin-top:18px;padding-top:16px;
+  display:flex;align-items:center;gap:10px;
+  margin-top:13px;padding-top:12px;
   border-top:1px solid rgba(232,194,122,.16);
 }
 .id-card-qr{
   flex-shrink:0;
-  width:76px;height:76px;padding:6px;border-radius:8px;
+  width:48px;height:48px;padding:4px;border-radius:6px;
   background:#fff;
   box-shadow:0 2px 10px rgba(0,0,0,.5);
 }
 .id-card-qr canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
-.id-card-codestack{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.id-card-codestack{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
 .id-card-barcode{
-  width:100%;height:44px;
+  width:100%;height:33px;
   background:#fff;border-radius:4px;padding:4px 6px;
   box-shadow:0 2px 10px rgba(0,0,0,.45);
 }
 .id-card-barcode canvas{display:block;width:100%;height:100%}
 .id-card-id{
-  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  font-size:8px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--fg-dim);font-weight:700;font-variant-numeric:tabular-nums;
   text-align:center;overflow-wrap:anywhere;
 }
@@ -1134,7 +1140,8 @@ input[type="radio"] {
   0%  {transform:translateY(-150vh)}
   100%{transform:translateY(0)}
 }
-/* gentle pendulum swing once settled */
+/* gentle pendulum swing once settled (kept for reference — real swing
+   is now a damped physical simulation on #idCardWrapper in JS) */
 @keyframes cardSwing{
   0%  {transform:translateY(0) rotate(-1.5deg)}
   100%{transform:translateY(0) rotate(1.5deg)}
@@ -1278,17 +1285,26 @@ input[type="radio"] {
    STAGE 5 — COMPLETE  (actions)
    ============================================================ */
 .id-card-actions{
-  display:flex;flex-direction:column;gap:10px;
-  width:clamp(320px,86vw,380px);
-  margin:34px auto 0;
+  display:flex;flex-direction:column;gap:8px;
+  width:clamp(200px,56vw,240px);
+  margin:26px auto 0;
   opacity:0;transform:translateY(10px);
   pointer-events:none;
+  /* stack above the 3D card wrapper — its projected hit-box would
+     otherwise swallow clicks on the download button */
+  position:relative;z-index:5;
 }
 .stage-complete .id-card-actions{
   animation:idFadeUp .5s ease .1s forwards;
   pointer-events:auto;
 }
 .id-card-actions .btn{width:100%;justify-content:center}
+.id-card-actions .btn{padding:.6rem 1rem;font-size:.68rem}
+/* Download button stays put — no lift or sheen on hover, unlike the
+   tilting ID card above it (which is intentional). */
+#downloadQrBtn:hover, #downloadQrBtn:active { transform:none }
+#downloadQrBtn::after { display:none }
+.qr-dl-note{font-size:.66rem;color:var(--fg-mute);letter-spacing:.06em;margin:.4rem 0 0;text-align:center}
 .id-card-hint{
   margin:2px 0 0;text-align:center;
   font-size:11px;color:var(--fg-mute);
@@ -1333,53 +1349,53 @@ input[type="radio"] {
       url('id card bg(mobile).png') center top / cover no-repeat;
     padding:12px;
   }
-  .id-card-container{max-width:340px}
-  .id-card-lanyard{height:96px;overflow:visible}
+  .id-card-container{max-width:225px}
+  .id-card-lanyard{height:72px;overflow:visible}
   /* strap extends far above the lanyard box, past the top of the screen,
      and dips down through the O-ring so the fabric threads it */
-  .ly-strap{width:19px; top:-100vh; bottom:11px}
-  .ly-clip{bottom:-26px}
+  .ly-strap{width:14px; top:-100vh; bottom:8px}
+  .ly-clip{bottom:-20px}
   .id-card{
-    --card-w:clamp(210px,60vw,272px);
-    padding:12px 14px 13px;border-radius:14px;
+    --card-w:clamp(145px,40vw,185px);
+    padding:9px 10px 10px;border-radius:11px;
   }
-  .id-card::before{top:5px;width:32px;height:8px}
-  .id-card-header{gap:6px;margin-top:8px}
-  .id-card-logo svg{width:20px;height:20px}
-  .id-card-brand{font-size:11px}
-  .id-card-brandsub{font-size:7px}
-  .id-card-eventtag{font-size:7px;line-height:1.3}
-  .id-card-tagline{margin:10px 0 0;font-size:13.5px}
-  .id-card-role{margin-top:5px;font-size:7px;letter-spacing:.18em}
-  .id-card-avatar{width:58px;height:58px;margin:10px auto 0}
-  .id-card-avatar svg{width:32px;height:32px}
-  .id-card-name{margin:8px 0 0;font-size:13px}
-  .id-card-subrole{margin-top:3px;font-size:7px;letter-spacing:.18em}
-  .id-card-meta{margin-top:8px;gap:5px}
-  .id-card-chip{font-size:7px;padding:3px 7px}
-  .id-card-codes{margin-top:10px;padding-top:10px;gap:8px}
-  .id-card-qr{width:48px;height:48px;padding:4px}
-  .id-card-id{font-size:7.5px}
-  .id-card-hint{font-size:10px}
-  .id-wireframe{width:clamp(210px,60vw,272px)}
-  .id-card-actions{width:clamp(210px,60vw,272px);margin-top:16px}
+  .id-card::before{top:4px;width:24px;height:6px}
+  .id-card-header{gap:5px;margin-top:6px}
+  .id-card-logo svg{width:15px;height:15px}
+  .id-card-brand{font-size:8px}
+  .id-card-brandsub{font-size:6px}
+  .id-card-eventtag{font-size:6px;line-height:1.3}
+  .id-card-tagline{margin:8px 0 0;font-size:10px}
+  .id-card-role{margin-top:4px;font-size:6px;letter-spacing:.18em}
+  .id-card-avatar{width:44px;height:44px;margin:8px auto 0}
+  .id-card-avatar svg{width:24px;height:24px}
+  .id-card-name{margin:6px 0 0;font-size:10px}
+  .id-card-subrole{margin-top:2px;font-size:6px;letter-spacing:.18em}
+  .id-card-meta{margin-top:6px;gap:4px}
+  .id-card-chip{font-size:6px;padding:2px 5px}
+  .id-card-codes{margin-top:8px;padding-top:8px;gap:6px}
+  .id-card-qr{width:36px;height:36px;padding:3px}
+  .id-card-id{font-size:6px}
+  .id-card-hint{font-size:8px}
+  .id-wireframe{width:clamp(145px,40vw,185px)}
+  .id-card-actions{width:clamp(145px,40vw,185px);margin-top:12px}
   .id-card-close{top:12px;right:12px;width:36px;height:36px}
 }
 @media (max-width:460px){
-  .id-card-lanyard{height:80px}
-  .id-card{--card-w:62vw;padding:11px 13px 12px}
-  .id-card-tagline{font-size:12.5px}
-  .id-card-avatar{width:52px;height:52px}
-  .id-card-name{font-size:12px}
-  .id-card-qr{width:44px;height:44px}
-  .id-card-actions{width:62vw}
+  .id-card-lanyard{height:60px}
+  .id-card{--card-w:43vw;padding:8px 10px 9px}
+  .id-card-tagline{font-size:9.5px}
+  .id-card-avatar{width:40px;height:40px}
+  .id-card-name{font-size:9px}
+  .id-card-qr{width:33px;height:33px}
+  .id-card-actions{width:43vw}
 }
 
 /* ---------- REDUCED MOTION ---------- */
 @media (prefers-reduced-motion:reduce){
   .id-card-overlay{transition:opacity .2s ease}
-  .id-card,.id-card-container,.id-card-lanyard{
-    animation:none!important;opacity:1;transform:none;transition:none;
+  .id-card,.id-card-container,.id-card-lanyard,#idCardWrapper{
+    animation:none!important;opacity:1;transform:none!important;transition:none;
   }
   .id-card-header,.id-card-tagline,.id-card-avatar,
   .id-card-name,.id-card-subrole,.id-card-meta,.id-card-codes,
@@ -1411,6 +1427,7 @@ input[type="radio"] {
   .id-card-bg,.id-particles,.id-card-close,.id-card-actions,
   .id-stage,.id-card-lanyard{display:none!important}
   .id-card-container{opacity:1!important;margin:0 auto!important;perspective:none!important}
+  #idCardWrapper{transform:none!important}
   .id-card-container::after{display:none!important}
   .id-card{
     opacity:1!important;transform:none!important;animation:none!important;
@@ -1498,219 +1515,9 @@ input[type="radio"] {
   .btn::after{display:none}
 }
 
-/* ============================================================
-   ADMIN PANEL  (/​#admin — organising team only)
-   Reuses the gold / ink tokens so it reads as part of the site.
-   ============================================================ */
-.admin-app{min-height:100vh;background:var(--ink-0);color:var(--fg);font-size:15px}
-.admin-input{
-  width:100%;padding:.68rem .9rem;border-radius:10px;
-  background:var(--glass);border:1px solid var(--line);
-  color:var(--fg);outline:none;
-  transition:border-color .2s ease,box-shadow .2s ease;
-}
-.admin-input::placeholder{color:var(--fg-mute)}
-.admin-input:focus{border-color:var(--gold-2);box-shadow:0 0 0 3px rgba(232,194,122,.14)}
-.admin-input option{background:var(--ink-2);color:var(--fg)}
-
-/* --- login --- */
-.admin-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem}
-.admin-login[hidden]{display:none}
-.admin-login-card{
-  width:min(400px,100%);text-align:center;
-  background:var(--ink-1);border:1px solid var(--line);border-radius:20px;
-  padding:2.4rem 2rem;box-shadow:0 30px 80px -30px rgba(0,0,0,.8);
-  animation:adminPop .4s var(--ease-shutter);
-}
-@keyframes adminPop{from{opacity:0;transform:translateY(14px) scale(.98)}}
-.admin-lock{
-  width:56px;height:56px;margin:0 auto 1.1rem;border-radius:50%;
-  display:grid;place-items:center;color:var(--gold-1);
-  background:radial-gradient(circle at 30% 25%, var(--glass-2), var(--glass));
-  border:1px solid var(--line);
-}
-.admin-login-card h1{margin:0;font-size:1.5rem;font-weight:800;letter-spacing:.02em}
-.admin-login-card p{margin:.4rem 0 1.4rem;color:var(--fg-mute);font-size:.82rem;letter-spacing:.08em;text-transform:uppercase}
-.admin-err{color:var(--red-1);font-size:.8rem;min-height:1.2rem;margin-top:.7rem}
-.admin-login-card.shake{animation:adminShake .4s ease}
-@keyframes adminShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(3px)}}
-
-/* --- dashboard --- */
-.admin-dash{max-width:var(--maxw);margin:0 auto;padding:1.8rem 1.2rem 5rem}
-.admin-dash[hidden]{display:none}
-.admin-header{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem}
-.admin-title{font-size:1.7rem;font-weight:900;letter-spacing:.02em;line-height:1.1}
-.admin-sub{color:var(--fg-mute);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;margin-top:.3rem}
-.admin-header-actions{display:flex;gap:.6rem;flex-wrap:wrap}
-.admin-header .btn{padding:.6rem 1.05rem;font-size:.72rem}
-
-.admin-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:.8rem;margin-bottom:1.3rem}
-.admin-stat{background:var(--glass);border:1px solid var(--line-soft);border-radius:14px;padding:.9rem 1rem}
-.admin-stat b{display:block;font-size:1.45rem;font-weight:800;color:var(--gold-0);line-height:1.1}
-.admin-stat span{font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--fg-mute)}
-@media (max-width:900px){.admin-stats{grid-template-columns:repeat(3,1fr)}}
-@media (max-width:560px){.admin-stats{grid-template-columns:repeat(2,1fr)}}
-
-.admin-toolbar{display:grid;grid-template-columns:1fr 180px 160px;gap:.8rem;margin-bottom:1.2rem}
-@media (max-width:760px){.admin-toolbar{grid-template-columns:1fr}}
-
-.admin-list{display:grid;gap:.9rem}
-.admin-empty{
-  padding:3.4rem 1.5rem;text-align:center;color:var(--fg-mute);
-  border:1px dashed var(--line-soft);border-radius:16px;font-size:.9rem;
-}
-.admin-card{
-  display:grid;grid-template-columns:96px 1fr auto;gap:1.1rem;align-items:start;
-  background:var(--glass);border:1px solid var(--line-soft);border-radius:16px;
-  padding:1.1rem 1.2rem;
-  transition:border-color .2s ease;
-}
-.admin-card:hover{border-color:var(--line)}
-@media (max-width:640px){.admin-card{grid-template-columns:72px 1fr;gap:.9rem}.admin-card .admin-card-actions{grid-column:1/-1}}
-
-.admin-thumb{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid var(--line-soft);cursor:zoom-in;background:var(--ink-2)}
-@media (max-width:640px){.admin-thumb{width:72px;height:72px}}
-.admin-nothumb{
-  width:96px;height:96px;border-radius:10px;border:1px dashed var(--line-soft);
-  display:grid;place-items:center;color:var(--fg-mute);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;text-align:center;padding:.4rem;
-}
-@media (max-width:640px){.admin-nothumb{width:72px;height:72px}}
-
-.admin-card-name{font-weight:800;font-size:1.02rem;display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
-.admin-card-line{color:var(--fg-dim);font-size:.83rem;margin-top:.25rem;word-break:break-word}
-.admin-card-line a{color:var(--gold-1)}
-.admin-card-tags{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.6rem}
-.admin-chip{
-  font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
-  padding:.28rem .6rem;border-radius:999px;border:1px solid var(--line-soft);
-  background:var(--glass);color:var(--fg-dim);
-}
-.admin-chip.gold{border-color:var(--line);color:var(--gold-1)}
-.admin-chip.green{border-color:rgba(58,208,127,.4);color:var(--green-1)}
-.admin-chip.red{border-color:rgba(255,107,107,.4);color:var(--red-1)}
-.admin-card-note{color:var(--fg-mute);font-size:.78rem;font-style:italic;margin-top:.6rem;border-left:2px solid var(--line);padding-left:.7rem}
-.admin-card-time{color:var(--fg-mute);font-size:.68rem;margin-top:.6rem}
-
-.admin-card-actions{display:flex;flex-direction:column;gap:.5rem;align-items:stretch}
-@media (max-width:640px){.admin-card-actions{flex-direction:row;flex-wrap:wrap}}
-.admin-mini{
-  font:inherit;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
-  padding:.5rem .8rem;border-radius:9px;cursor:pointer;
-  border:1px solid var(--line-soft);background:var(--glass);color:var(--fg-dim);
-  transition:all .2s ease;white-space:nowrap;
-}
-.admin-mini:hover{border-color:var(--line);color:var(--fg)}
-.admin-mini.verify{border-color:rgba(58,208,127,.4);color:var(--green-1)}
-.admin-mini.verify:hover{background:rgba(58,208,127,.14)}
-.admin-mini.unverify{border-color:rgba(232,194,122,.35);color:var(--gold-1)}
-.admin-mini.unverify:hover{background:rgba(232,194,122,.12)}
-.admin-mini.delete{border-color:rgba(255,107,107,.35);color:var(--red-1)}
-.admin-mini.delete:hover{background:rgba(255,107,107,.12)}
-.admin-mini.shot{color:var(--fg-dim)}
-
-/* --- lightbox --- */
-.admin-lightbox{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:1.2rem}
-.admin-lightbox[hidden]{display:none}
-.admin-lb-backdrop{position:absolute;inset:0;background:rgba(3,4,6,.9);backdrop-filter:blur(6px)}
-.admin-lb-card{
-  position:relative;z-index:1;width:min(860px,100%);max-height:92vh;display:flex;flex-direction:column;
-  background:var(--ink-1);border:1px solid var(--line);border-radius:18px;overflow:hidden;
-  box-shadow:0 40px 100px -30px rgba(0,0,0,.9);
-  animation:adminPop .3s var(--ease-shutter);
-}
-.admin-lb-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.9rem 1.2rem;border-bottom:1px solid var(--line-soft)}
-.admin-lb-meta{font-size:.85rem;color:var(--fg-dim)}
-.admin-lb-meta b{color:var(--gold-0)}
-.admin-lb-close{background:none;border:none;color:var(--fg-mute);font-size:1.7rem;cursor:pointer;line-height:1;padding:.1rem .4rem}
-.admin-lb-close:hover{color:var(--fg)}
-.admin-lb-body{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:var(--ink-0);padding:1rem}
-.admin-lb-body img{max-width:100%;max-height:62vh;object-fit:contain;border-radius:8px}
-.admin-lb-nav{
-  position:absolute;top:50%;transform:translateY(-50%);
-  width:42px;height:42px;border-radius:50%;cursor:pointer;font-size:1.5rem;line-height:1;
-  border:1px solid var(--line);background:rgba(20,23,29,.85);color:var(--fg);
-  transition:background .2s ease;
-}
-.admin-lb-nav:hover{background:var(--ink-3)}
-.admin-lb-nav.prev{left:.8rem}
-.admin-lb-nav.next{right:.8rem}
-.admin-lb-nav:disabled{opacity:.3;cursor:default}
-.admin-lb-actions{display:flex;justify-content:center;gap:.8rem;padding:1rem;border-top:1px solid var(--line-soft)}
-.admin-lb-verify{
-  font:inherit;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;
-  padding:.7rem 1.6rem;border-radius:10px;cursor:pointer;
-  border:1px solid rgba(58,208,127,.45);color:var(--green-1);background:rgba(58,208,127,.1);
-  transition:all .2s ease;
-}
-.admin-lb-verify:hover{background:rgba(58,208,127,.2)}
-.admin-lb-verify.is-verified{border-color:rgba(232,194,122,.4);color:var(--gold-1);background:rgba(232,194,122,.1)}
-.admin-lb-verify.is-verified:hover{background:rgba(232,194,122,.18)}
 </style>
 </head>
 <body class="locked">
-
-<!-- ============ ADMIN PANEL (hidden; revealed only on /#admin) ============ -->
-<div id="adminApp" class="admin-app" hidden>
-
-  <!-- Login view -->
-  <div class="admin-login" id="adminLoginView">
-    <form class="admin-login-card" id="adminLoginForm" autocomplete="off">
-      <div class="admin-lock" aria-hidden="true">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
-      </div>
-      <h1>Admin access</h1>
-      <p>IEEE Summer School 2026 · Registrations</p>
-      <input type="password" id="adminPassInput" class="admin-input" placeholder="Passcode" aria-label="Admin passcode" autocomplete="off" spellcheck="false">
-      <button type="submit" class="btn btn-gold" style="width:100%;margin-top:.9rem">Unlock</button>
-      <div class="admin-err" id="adminLoginErr" role="alert"></div>
-    </form>
-  </div>
-
-  <!-- Dashboard view -->
-  <div class="admin-dash" id="adminDashView" hidden>
-    <header class="admin-header">
-      <div>
-        <div class="admin-title">Registrations</div>
-        <div class="admin-sub">IEEE Summer School 2026 · Admin panel</div>
-      </div>
-      <div class="admin-header-actions">
-        <button class="btn" id="adminRefreshBtn" type="button">Refresh</button>
-        <button class="btn btn-gold" id="adminCsvBtn" type="button">Export CSV</button>
-        <button class="btn" id="adminLogoutBtn" type="button">Log out</button>
-      </div>
-    </header>
-
-    <div class="admin-stats" id="adminStats"></div>
-
-    <div class="admin-toolbar">
-      <input type="search" id="adminSearch" class="admin-input" placeholder="Search name, email or phone…" aria-label="Search registrations">
-    </div>
-
-    <div class="admin-list" id="adminList"></div>
-  </div>
-
-  <!-- Screenshot lightbox -->
-  <div class="admin-lightbox" id="adminLightbox" hidden role="dialog" aria-modal="true" aria-label="Payment screenshot">
-    <div class="admin-lb-backdrop" id="adminLbBackdrop"></div>
-    <div class="admin-lb-card">
-      <div class="admin-lb-head">
-        <div class="admin-lb-meta" id="adminLbMeta"></div>
-        <button class="admin-lb-close" id="adminLbClose" aria-label="Close viewer">&times;</button>
-      </div>
-      <div class="admin-lb-body">
-        <button class="admin-lb-nav prev" id="adminLbPrev" aria-label="Previous screenshot">‹</button>
-        <img id="adminLbImg" alt="Payment screenshot">
-        <button class="admin-lb-nav next" id="adminLbNext" aria-label="Next screenshot">›</button>
-      </div>
-      <div class="admin-lb-actions">
-        <!-- No verify button — verification happens at registration time -->
-      </div>
-    </div>
-  </div>
-
-</div>
 
 <!-- ============ NAV (fixed) ============ -->
 <header class="nav">
@@ -2012,7 +1819,7 @@ input[type="radio"] {
       <header class="id-card-header">
         <div class="id-card-brandblock">
           <div class="id-card-logo" aria-hidden="true">
-            <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
               <path d="M16 2 30 16 16 30 2 16Z" fill="currentColor" opacity=".18"/>
               <path d="M16 2 30 16 16 30 2 16Z" stroke="currentColor" stroke-width="1.6"/>
               <circle cx="16" cy="16" r="4" fill="currentColor"/>
@@ -2058,43 +1865,20 @@ input[type="radio"] {
 
     </article>
     </div>
-    <!-- ===== STAGE 5 — actions ===== -->
-    <div class="id-card-actions" style="flex-direction:column; gap:8px;">
-      <p class="id-card-hint" id="idCardHint">Show this badge at the registration desk.</p>
-    </div>
+  </div>
+  <!-- ===== STAGE 5 — actions (OUTSIDE the swinging wrapper, so the
+       download button never moves while the badge physically swings) ===== -->
+  <div class="id-card-actions" style="flex-direction:column; gap:8px;">
+    <p class="id-card-hint" id="idCardHint">Show this badge at the registration desk.</p>
+    <button class="btn btn-gold" id="downloadQrBtn" type="button" hidden>⬇&nbsp; Download QR ticket</button>
+    <p class="qr-dl-note" id="qrDlNote" hidden>Saves a PNG — the host scans it to verify your entry &amp; payment.</p>
   </div>
 </div>
 
+<script src="ticket.js"></script>
 <script>
 (() => {
   'use strict';
-
-  /* ==========================================================
-     0. /ADMIN ROUTE — hidden organising-team panel.
-     Reachable only by visiting the site with #admin (or ?admin,
-     or a path ending /admin). Normal visitors never see it.
-     When active we hide the public site + shutter and hand the
-     page over to AdminApp (defined near the bottom of this
-     script), skipping every public-site listener and timer.
-     ========================================================== */
-  const isAdminRoute = (() => {
-    try {
-      if (location.hash.replace(/^#\/?/, '') === 'admin') return true;
-      if (/(^|[?&])admin([=&]|$)/.test(location.search)) return true;
-      return /\/admin\/?$/.test(location.pathname);
-    } catch (_) { return false; }
-  })();
-
-  if (isAdminRoute) {
-    document.documentElement.classList.remove('locked');
-    document.body.classList.remove('locked');
-    document.body.style.background = 'var(--ink-0)';
-    document.title = 'Admin · Registrations — IEEE Summer School 2026';
-    document.querySelectorAll('header.nav, .housing, #blood-bg, .shutter, main, .id-card-overlay')
-      .forEach(el => { el.style.display = 'none'; });
-    window.__adminActive = true;   // AdminApp boots itself right after its definition below
-    return;                                        // nothing below runs in admin mode
-  }
 
   const root      = document.documentElement;
   const body      = document.body;
@@ -2753,7 +2537,10 @@ input[type="radio"] {
   let sequenceRunning = false;
   let lastFocused = null;
   let currentRegId = '';
+  let currentTicketUrl = null;   // signed QR payload, set when the card is populated
   const stageTimers = [];
+  const downloadQrBtn = document.getElementById('downloadQrBtn');
+  const qrDlNote      = document.getElementById('qrDlNote');
 
   function setStage(name) {
     idCardOverlay.classList.remove(...STAGES);
@@ -2779,7 +2566,8 @@ input[type="radio"] {
 
   function populateCard(data) {
     const name = data.name.trim();
-    currentRegId = generateRegId();
+    // One ID everywhere: admin-panel record, printed card and QR ticket.
+    currentRegId = data.__regId || generateRegId();
 
     idCardName.textContent    = name;
     idCardRole.textContent    = 'Event Participant';
@@ -2788,13 +2576,77 @@ input[type="radio"] {
     idCardTicket.textContent  = data.is_ieee_member === 'Yes' ? 'IEEE Member' : 'Non-Member';
     idCardRegId.textContent   = 'ID: ' + currentRegId;
 
-    // ID + name + event, so a scan identifies the holder offline
-    const payload = ['IEEE-SS26', currentRegId, name, 'IEEE Summer School 2026'].join('|');
+    // Signed, self-contained ticket URL (ticket.js) — the host's phone
+    // opens check.html and sees ✓ VERIFIED only for tickets issued by
+    // a completed (paid) registration.
+    currentTicketUrl = null;
+    downloadQrBtn.hidden = true;
+    qrDlNote.hidden = true;
+    window.Ticket.issue({ name, regId: currentRegId, track: data.track, isMember: data.is_ieee_member === 'Yes' })
+      .then(url => {
+        currentTicketUrl = url;
+        QR.render(idCardQr, url);
+      })
+      .catch(err => {
+        // Never block the card: fall back to the offline plain payload.
+        console.error('Ticket QR failed, falling back to plain payload', err);
+        try {
+          QR.render(idCardQr, ['IEEE-SS26', currentRegId, name, 'IEEE Summer School 2026'].join('|'));
+        } catch (_) { /* keep card without QR */ }
+      })
+      .finally(() => {
+        downloadQrBtn.hidden = false;
+        qrDlNote.hidden = false;
+      });
+  }
+
+  /** Export the ticket QR as a captioned PNG the student can save/print. */
+  function downloadQrTicket() {
+    if (!currentTicketUrl || !currentRegId) {
+      qrDlNote.textContent = 'Ticket not ready yet — try again in a moment.';
+      return;
+    }
     try {
-      QR.render(idCardQr, payload);
-      // Barcode removed
+      const grid = QR.encode(currentTicketUrl);
+      const n = grid.length, quiet = 3, px = 10;
+      const qrDim = (n + quiet * 2) * px;
+      const pad = 48, captionH = 150;
+      const W = qrDim + pad * 2, H = qrDim + pad * 2 + captionH;
+
+      const cv = document.createElement('canvas');
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#000000';
+      for (let r = 0; r < n; r++)
+        for (let c = 0; c < n; c++)
+          if (grid[r][c]) ctx.fillRect(pad + (c + quiet) * px, pad + (r + quiet) * px, px, px);
+
+      // caption block
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#8a6d1f'; ctx.font = 'bold 26px Georgia, serif';
+      ctx.fillText('IEEE SUMMER SCHOOL 2026', W / 2, pad + qrDim + 44);
+      ctx.fillStyle = '#111111'; ctx.font = 'bold 30px Georgia, serif';
+      ctx.fillText(idCardName.textContent, W / 2, pad + qrDim + 88);
+      ctx.fillStyle = '#555555'; ctx.font = '24px monospace';
+      ctx.fillText(currentRegId + '  ·  PAID · UPI', W / 2, pad + qrDim + 124);
+
+      // Blob + object URL — browsers reliably surface this as a download
+      // (data:-URL downloads are often swallowed silently).
+      cv.toBlob(blob => {
+        if (!blob) return;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'IEEE-SS26-ticket-' + currentRegId + '.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      }, 'image/png');
     } catch (err) {
-      console.error('Code generation failed', err);
+      console.error('QR download failed', err);
+      qrDlNote.textContent = 'Download failed — please screenshot the badge instead.';
     }
   }
 
@@ -2852,27 +2704,150 @@ input[type="radio"] {
      INITIATE → GENERATE → REVEAL (shutter down/up) → ENHANCE → COMPLETE */
   
   
+  /* ============================================================
+     ID-CARD PENDULUM PHYSICS  (smooth bias-following pendulum)
+     The badge is a rigid pendulum pivoting from an anchor far
+     above the viewport (up the strap run). It is STATIC at rest;
+     it only moves when something actively pushes or holds it:
+
+       • Desktop — the pointer. While hovering the badge area the
+         pointer's offset from the card's centre sets a *bias*
+         angle; the pendulum glides toward that bias with natural
+         overshoot and settles there, hanging slightly to the side
+         the mouse is on. Leave, and gravity eases it back dead
+         straight.
+       • Mobile — the phone itself. Tilting the phone (gamma) sets
+         the same bias, so tilt right → the card hangs right, tilt
+         left → it hangs left, exactly like a real badge on a
+         lanyard. Shake impulses (accelerometer) give it a kick
+         that then damps back to the current bias.
+
+     θ̈ = (θ_target − θ)·k − c·ω      (critically-damped spring)
+
+     which is just Hooke's law on the angle — the same physics a
+     damped pendulum shows for small angles, but never jittery:
+     no discrete force spikes, only one continuous smooth target.
+     The download button sits OUTSIDE this wrapper and never moves. */
   const idCardWrapper = document.getElementById('idCardWrapper');
-  let rotX = 0, rotY = 0;
-  let targetRotX = 0, targetRotY = 0;
-  
-  function updateCardRotation() {
-    rotX += (targetRotX - rotX) * 0.1;
-    rotY += (targetRotY - rotY) * 0.1;
-    if(idCardWrapper) {
-       idCardWrapper.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  const PENDULUM = (() => {
+    const k    = 14;     // spring pull toward the bias (1/s²) — sets glide speed
+    const damp = 5.5;    // damping (1/s) — just above critical ⇒ no oscillation
+    const maxA = 10;     // hard clamp (deg) so the strap never looks broken
+    let theta = 0, omega = 0;          // angle (deg) & angular velocity (deg/s)
+    let target = 0;                    // current bias angle the card glides to
+    let last = performance.now();
+
+    function step(now) {
+      // never simulate before the card has dropped in / when reduced motion
+      const active = sequenceRunning && idCardOverlay.classList.contains('open') && !reduced;
+      const dt = Math.min((now - last) / 1000, 0.032) || 0.016;
+      last = now;
+
+      if (active) {
+        const alpha = (target - theta) * k - damp * omega;
+        omega += alpha * dt;
+        theta += omega * dt;
+        if (theta >  maxA) { theta =  maxA; omega *= -0.3; }
+        if (theta < -maxA) { theta = -maxA; omega *= -0.3; }
+        idCardWrapper.style.transform =
+          `perspective(1000px) rotateZ(${theta.toFixed(3)}deg)`;
+      } else if (theta !== 0 || omega !== 0 || target !== 0) {
+        // reset state for the next reveal, keep wrapper transform clean
+        theta = 0; omega = 0; target = 0;
+        idCardWrapper.style.transform = '';
+      }
+      requestAnimationFrame(step);
     }
-    requestAnimationFrame(updateCardRotation);
-  }
-  updateCardRotation();
-  
+    requestAnimationFrame(step);
+    // Watchdog: some embedded/throttled views never fire rAF — keep the
+    // pendulum alive there. dt is clamped in step(), so occasional calls
+    // integrate correctly without exploding.
+    setInterval(() => step(performance.now()), 16);
+
+    return {
+      push(x, y) {
+        if (!sequenceRunning) { this.release(); return; }
+        // Pointer offset from the card's centre becomes the bias angle:
+        // hover right of the card → card leans right, hover left → left.
+        const r = idCardWrapper.getBoundingClientRect();
+        const cx = r.left + r.width / 2;
+        const halfW = r.width / 2 + 90;   // comfortable hover margin
+        const nx = Math.max(-1, Math.min(1, (x - cx) / halfW));
+        // −nx: the card hangs ~85vh BELOW its pivot, and CSS rotateZ(+)
+        // swings a hanging body to the LEFT — so following the pointer's
+        // side needs a NEGATIVE theta.
+        target = -nx * maxA * 0.8;
+      },
+      release() {
+        target = 0;   // nothing holding → gravity glides the card back straight
+      },
+      // ---- mobile: device motion / orientation bridge ----
+      motion(gx) {                     // accelerometer X incl. gravity (m/s²)
+        if (!sequenceRunning) return;
+        // gravity leaning +X ⇒ phone tilted right ⇒ bias to that side;
+        // a shake's transient acceleration just perturbs the same spring.
+        // −sign: the badge hangs BELOW its pivot and rotateZ(+) swings a
+        // hanging body LEFT, so tilt-right must produce negative theta.
+        target = Math.max(-maxA, Math.min(maxA, -(gx / 9.81) * maxA * 0.85));
+      },
+      orientation(gamma) {             // left-right tilt of the phone (deg)
+        if (!sequenceRunning) return;
+        // gamma > 0 = the phone's right edge dips down ⇒ card hangs right.
+        // −gamma for the same pivot-below reason as motion(); the badge
+        // swings to whichever side gravity now pulls it (tilt right ⇒ right).
+        target = Math.max(-maxA, Math.min(maxA, -(gamma / 45) * maxA));
+      },
+      dbg() { return { theta, omega, target }; }  // debug/tests
+    };
+  })();
+
   document.addEventListener('mousemove', (e) => {
-    if(!sequenceRunning) return;
-    const x = (e.clientX / window.innerWidth - 0.5) * 20; // max 10 deg
-    const y = -(e.clientY / window.innerHeight - 0.5) * 20;
-    targetRotX = y;
-    targetRotY = x;
+    if (!sequenceRunning) return;
+    PENDULUM.push(e.clientX, e.clientY);
   });
+  document.addEventListener('mouseleave', () => PENDULUM.release());
+  document.addEventListener('mouseout', (e) => {
+    // left the window entirely → let the card settle
+    if (!e.relatedTarget) PENDULUM.release();
+  });
+
+  // ---- MOBILE — device motion drives the same pendulum ----
+  // iOS 13+ only allows sensors after an explicit user permission, and the
+  // promise can reject when called outside a real gesture, so we retry on
+  // the first touch/click after arrival.
+  const onMotion = (e) => {
+    const a = e.accelerationIncludingGravity;
+    if (a && a.x != null) PENDULUM.motion(a.x);
+  };
+  const onOrientation = (e) => {
+    if (e.gamma != null) PENDULUM.orientation(e.gamma);
+  };
+  const attachSensors = () => {
+    window.addEventListener('devicemotion', onMotion);
+    window.addEventListener('deviceorientation', onOrientation);
+  };
+  const enableDevicePhysics = () => {
+    if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+      DeviceMotionEvent.requestPermission()
+        .then(state => { if (state === 'granted') attachSensors(); })
+        .catch(() => {});   // retried by the one-shot gesture listeners below
+    } else if (window.DeviceMotionEvent || window.DeviceOrientationEvent) {
+      attachSensors();
+    }
+  };
+  enableDevicePhysics();
+  const sensorRetry = () => {
+    enableDevicePhysics();
+    document.removeEventListener('touchend', sensorRetry);
+    document.removeEventListener('click', sensorRetry);
+  };
+  document.addEventListener('touchend', sensorRetry, { once: false });
+  document.addEventListener('click', sensorRetry, { once: false });
+  // Test/automation hook — lets QA drive the pendulum without the full
+  // registration flow. Harmless in production (window.__ieeeTest unused).
+  window.__ieeePendulum = { PENDULUM, isRunning: () => sequenceRunning,
+                            start() { sequenceRunning = true; },
+                            stop()  { sequenceRunning = false; } };
 
 
   function runIdCardSequence(data) {
@@ -2987,6 +2962,7 @@ input[type="radio"] {
 
   /* ---- stage 5 actions ---- */
   idCardClose.addEventListener('click', closeIdCard);
+  if (downloadQrBtn) downloadQrBtn.addEventListener('click', downloadQrTicket);
   idCardOverlay.addEventListener('click', e => {
     // only a click on the backdrop itself dismisses the badge
     if (e.target === idCardOverlay) closeIdCard();
@@ -3050,6 +3026,8 @@ input[type="radio"] {
       return;
     }
     const data = Object.fromEntries(new FormData(form).entries());
+    // One registration ID shared by the stored record, the ID card and the QR ticket.
+    data.__regId = generateRegId();
 
     console.log('Registration payload →', data);
 
@@ -3066,7 +3044,7 @@ input[type="radio"] {
     // Screenshot is downscaled first to stay inside the ~5MB storage budget.
     const finishWithData = (shotDataUrl) => {
       const rec = {
-        id: 'REG-' + Date.now().toString(36).toUpperCase(),
+        id: data.__regId,
         ts: new Date().toISOString(),
         name: (data.name || '').trim(),
         phone: (data.phone || '').trim(),
@@ -3115,274 +3093,6 @@ input[type="radio"] {
 
 })();
 
-/* ==========================================================
-   ADMIN APP — hidden organising-team panel, reachable via /#admin.
-   Reads the registrations the public form stored in localStorage
-   and lets the team review + verify UPI payment screenshots.
-   Runs only when the /admin route is detected (see the top of
-   the main IIFE); public visitors never touch this code.
-
-   DEFAULT PASSCODE: ieee2026admin
-   To change it: generate a SHA-256 hex digest of the new
-   passcode (e.g. `echo -n "newpass" | sha256sum`) and paste it
-   into PASS_HASH below. Never store the plain passcode here.
-   ========================================================== */
-window.AdminApp = (() => {
-  'use strict';
-
-  const PASS_HASH   = 'f1071b938bd3b8f26d153150f1addb37c28e0b63bed569cca955c9f68d2e1c76'; // sha-256 of 'ieee2026admin'
-  const SESSION_KEY = 'ieee-admin-authed';
-  const STORE_KEY   = 'registrations';
-
-  const $ = id => document.getElementById(id);
-  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
-
-  const els = {};
-  let regs          = [];
-  let lbList        = [];   // screenshot-enabled entries, for lightbox navigation
-  let lbIndex       = -1;
-  let lightboxOpen  = false;
-
-  async function sha256Hex(str) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  function load() {
-    try { const r = JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); return Array.isArray(r) ? r : []; }
-    catch (_) { return []; }
-  }
-  function save() { localStorage.setItem(STORE_KEY, JSON.stringify(regs)); }
-
-  const fmtTime = ts => {
-    try { return new Date(ts).toLocaleString(); } catch (_) { return ts || ''; }
-  };
-
-  const PAY_LABEL = { upi: 'UPI', cash: 'Cash on arrival', bank: 'Bank transfer' };
-  const payLabel = m => PAY_LABEL[m] || (m ? m.charAt(0).toUpperCase() + m.slice(1) : '—');
-
-  function renderStats() {
-    const total    = regs.length;
-    const shots    = regs.filter(r => r.screenshot).length;
-    const perTrack = {};
-    regs.forEach(r => { perTrack[r.track || '—'] = (perTrack[r.track || '—'] || 0) + 1; });
-    const topTrack = Object.entries(perTrack).sort((a, b) => b[1] - a[1])[0];
-    els.stats.innerHTML = `
-      <div class="admin-stat"><b>${total}</b><span>Registered</span></div>
-      <div class="admin-stat"><b>${shots}</b><span>Screenshots attached</span></div>
-      <div class="admin-stat"><b>${Object.keys(perTrack).length}</b><span>Tracks filled</span></div>
-      <div class="admin-stat"><b>${topTrack ? topTrack[1] : 0}</b><span>Top track${topTrack ? ' · ' + esc(topTrack[0]) : ''}</span></div>`;
-  }
-
-  function filtered() {
-    const q = (els.search.value || '').trim().toLowerCase();
-    return regs.filter(r => {
-      if (q) {
-        const hay = `${r.name} ${r.email} ${r.phone} ${r.track}`.toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
-    });
-  }
-
-  function cardHTML(r) {
-    const i = regs.indexOf(r);
-    const shot = r.screenshot
-      ? `<img class="admin-thumb" src="${r.screenshot}" alt="Payment screenshot" data-i="${i}" role="button" aria-label="Open payment screenshot">`
-      : `<div class="admin-nothumb">No screenshot</div>`;
-    return `
-      <article class="admin-card" data-i="${i}">
-        ${shot}
-        <div>
-          <div class="admin-card-name">${esc(r.name)}</div>
-          <div class="admin-card-line">
-            <a href="mailto:${esc(r.email)}">${esc(r.email)}</a> · <a href="tel:${esc(r.phone)}">${esc(r.phone)}</a>
-          </div>
-          <div class="admin-card-tags">
-            <span class="admin-chip gold">${esc(r.track)}</span>
-            <span class="admin-chip">${payLabel(r.paymentMethod)}</span>
-            ${r.ieeeMember ? `<span class="admin-chip gold">IEEE · ${esc(r.ieeeId)}</span>` : '<span class="admin-chip">Non-IEEE</span>'}
-            ${r.note ? `<span class="admin-chip red" style="border-color:rgba(232,194,122,.3)">Note</span>` : ''}
-          </div>
-          ${r.note ? `<div class="admin-card-note">${esc(r.note)}</div>` : ''}
-          <div class="admin-card-time">Registered ${esc(fmtTime(r.ts))} · ID ${esc(r.id)}</div>
-        </div>
-        <div class="admin-card-actions">
-          ${r.screenshot ? `<button class="admin-mini shot" data-i="${i}" type="button">View shot</button>` : ''}
-          <button class="admin-mini delete" data-i="${i}" type="button">Delete</button>
-        </div>
-      </article>`;
-  }
-
-  function renderList() {
-    const items = filtered();
-    lbList = regs.filter(r => r.screenshot);
-    if (!items.length) {
-      els.list.innerHTML = `<div class="admin-empty">${regs.length ? 'No registrations match the current filters.' : 'No registrations yet. They will appear here as students sign up.'}</div>`;
-      return;
-    }
-    els.list.innerHTML = items.slice().reverse().map(cardHTML).join('');
-  }
-
-  function render() { renderStats(); renderList(); }
-
-  function openLightbox(idx) {
-    const r = lbList[idx];
-    if (!r) return;
-    lbIndex = idx;
-    $('adminLbImg').src = r.screenshot;
-    $('adminLbMeta').innerHTML =
-      `<b>${esc(r.name)}</b> · ${esc(payLabel(r.paymentMethod))} · ${esc(r.track)} · ${esc(fmtTime(r.ts))}`;
-    $('adminLbPrev').disabled = idx <= 0;
-    $('adminLbNext').disabled = idx >= lbList.length - 1;
-    els.lightbox.hidden = false;
-    lightboxOpen = true;
-  }
-  function closeLightbox() { els.lightbox.hidden = true; lightboxOpen = false; }
-
-  function exportCSV() {
-    const header = ['ID','Registered','Name','Email','Phone','Track','IEEE member','IEEE ID','Payment method','Note'];
-    const rows = regs.map(r => [
-      r.id, fmtTime(r.ts), r.name, r.email, r.phone, r.track,
-      r.ieeeMember ? 'Yes' : 'No', r.ieeeId || '', payLabel(r.paymentMethod), r.note || ''
-    ]);
-    const csv = [header, ...rows]
-      .map(row => row.map(c => `"${String(c ?? '').replace(/"/g, '""')}`).join(','))
-      .join('\r\n');
-    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `ieee-summer-school-registrations-${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(a.href);
-  }
-
-  function showDash() {
-    els.loginView.hidden = true;
-    els.dashView.hidden = false;
-    render();
-    window.scrollTo(0, 0);
-  }
-
-  function showLogin() {
-    els.dashView.hidden = true;
-    els.loginView.hidden = false;
-    setTimeout(() => els.passInput.focus(), 60);
-  }
-
-  function init() {
-    els.root         = $('adminApp');
-    els.loginView    = $('adminLoginView');
-    els.dashView     = $('adminDashView');
-    els.loginForm    = $('adminLoginForm');
-    els.passInput    = $('adminPassInput');
-    els.loginErr     = $('adminLoginErr');
-    els.logoutBtn    = $('adminLogoutBtn');
-    els.csvBtn       = $('adminCsvBtn');
-    els.refreshBtn   = $('adminRefreshBtn');
-    els.stats        = $('adminStats');
-    els.search       = $('adminSearch');
-    els.list         = $('adminList');
-    els.lightbox     = $('adminLightbox');
-
-    if (!els.root) return;
-    els.root.hidden = false;
-
-    /* ---- login ---- */
-    const attemptLogin = async () => {
-      els.loginErr.textContent = '';
-      try {
-        const h = await sha256Hex(els.passInput.value || '');
-        if (h === PASS_HASH) {
-          sessionStorage.setItem(SESSION_KEY, '1');
-          els.passInput.value = '';
-          showDash();
-        } else {
-          els.loginErr.textContent = 'Incorrect passcode.';
-          els.loginForm.classList.remove('shake');
-          void els.loginForm.offsetWidth;         // restart the shake animation
-          els.loginForm.classList.add('shake');
-          els.passInput.select();
-        }
-      } catch (_) {
-        els.loginErr.textContent = 'Login unavailable in this browser.';
-      }
-    };
-    els.loginForm.addEventListener('submit', async e => {
-      e.preventDefault();
-      await attemptLogin();
-    });
-    // Pressing Enter anywhere in the login card submits even if the
-    // browser's native submit-on-Enter is flaky around password fields.
-    els.loginForm.addEventListener('keydown', e => {
-      if (e.key === 'Enter') { e.preventDefault(); attemptLogin(); }
-    });
-    els.logoutBtn.addEventListener('click', () => {
-      sessionStorage.removeItem(SESSION_KEY);
-      closeLightbox();
-      showLogin();
-    });
-
-    /* ---- toolbar ----
-       Search emits 'input' as you type. */
-    els.search.addEventListener('input', renderList);
-    els.refreshBtn.addEventListener('click', () => { regs = load(); render(); });
-    els.csvBtn.addEventListener('click', exportCSV);
-
-    /* ---- list interactions (delegated) ---- */
-    els.list.addEventListener('click', e => {
-      const btn = e.target.closest('button.admin-mini');
-      if (btn) {
-        const i = +btn.dataset.i;
-        if (btn.classList.contains('delete')) {
-          const r = regs[i];
-          if (r && confirm(`Delete registration for ${r.name}? This cannot be undone.`)) {
-            regs.splice(i, 1);
-            save();
-            render();
-          }
-        } else if (btn.classList.contains('shot')) {
-          const idx = lbList.indexOf(regs[i]);
-          if (idx !== -1) openLightbox(idx);
-        }
-        return;
-      }
-      const img = e.target.closest('.admin-thumb');
-      if (img) {
-        const idx = lbList.indexOf(regs[+img.dataset.i]);
-        if (idx !== -1) openLightbox(idx);
-      }
-    });
-
-    /* ---- lightbox ---- */
-    $('adminLbClose').addEventListener('click', closeLightbox);
-    $('adminLbBackdrop').addEventListener('click', closeLightbox);
-    $('adminLbPrev').addEventListener('click', () => { if (lbIndex > 0) openLightbox(lbIndex - 1); });
-    $('adminLbNext').addEventListener('click', () => { if (lbIndex < lbList.length - 1) openLightbox(lbIndex + 1); });
-    document.addEventListener('keydown', e => {
-      if (!lightboxOpen) return;
-      if (e.key === 'Escape') closeLightbox();
-      else if (e.key === 'ArrowLeft'  && lbIndex > 0) openLightbox(lbIndex - 1);
-      else if (e.key === 'ArrowRight' && lbIndex < lbList.length - 1) openLightbox(lbIndex + 1);
-    });
-
-    /* ---- initial view ---- */
-    regs = load();
-    if (sessionStorage.getItem(SESSION_KEY) === '1') showDash();
-    else showLogin();
-  }
-
-  return { init };
-})();
-
-// Boot the admin panel when the /admin route fired the early-return above.
-// AdminApp is only defined after the IIFE finished parsing, so it must
-// self-boot here rather than being called from inside the early-return.
-if (window.__adminActive && window.AdminApp) window.AdminApp.init();
 </script>
 </body>
 </html>

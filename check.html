@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ticket check — IEEE Summer School 2026</title>
+<style>
+/* theme tokens (mirrors index.html) */
+:root{
+  --gold-0:#fff6dd; --gold-1:#e8c27a; --gold-2:#c79c4d; --gold-3:#8c6626;
+  --ink-0:#06070a; --ink-1:#0d0f13; --ink-2:#14171d; --ink-3:#1e2229; --ink-4:#2b3038;
+  --fg:#e9ecf1; --fg-dim:#a8b0bb; --fg-mute:#6f7783;
+  --green-1:#3ad07f; --green-2:#149a58; --red-1:#ff6b6b;
+  --glass:rgba(255,255,255,.045); --glass-2:rgba(255,255,255,.075);
+  --line:rgba(232,194,122,.20); --line-soft:rgba(255,255,255,.08);
+  --ease-shutter:cubic-bezier(0.22, 1, 0.36, 1);
+  --maxw:1140px;
+}
+body{
+  margin:0; background:var(--ink-0); color:var(--fg);
+  font:16px/1.65 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+@keyframes adminPop{from{opacity:0;transform:translateY(14px) scale(.98)}}
+
+/* ============================================================
+   TICKET CHECKER — QR scan landing page for hosts
+   ============================================================ */
+.check-app{min-height:100vh;background:var(--ink-0);color:var(--fg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.4rem;font-size:15px}
+.check-wrap{width:min(460px,100%);display:flex;flex-direction:column;gap:1rem}
+.check-brand{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--fg-mute);text-align:center}
+.check-foot{font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-mute);text-align:center;margin-top:.2rem}
+.check-card{
+  background:var(--ink-1);border:1px solid var(--line);border-radius:20px;
+  padding:2rem 1.6rem;text-align:center;
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.8);
+  animation:adminPop .4s var(--ease-shutter);
+}
+.check-loading{color:var(--fg-mute);font-size:.9rem;letter-spacing:.06em}
+.check-icon{
+  width:84px;height:84px;border-radius:50%;margin:0 auto 1.1rem;
+  display:grid;place-items:center;font-size:2.6rem;font-weight:900;
+}
+.check-icon.ok{
+  color:#04140c;background:linear-gradient(135deg,#3ad07f,#149a58);
+  box-shadow:0 0 0 10px rgba(58,208,127,.12),0 0 60px rgba(58,208,127,.35);
+}
+.check-icon.bad{
+  color:#1c0505;background:linear-gradient(135deg,#ff6b6b,#c62828);
+  box-shadow:0 0 0 10px rgba(255,107,107,.1),0 0 60px rgba(255,107,107,.28);
+}
+.check-verdict{font-size:1.35rem;font-weight:900;letter-spacing:.04em}
+.check-verdict.ok{color:var(--green-1)}
+.check-verdict.bad{color:var(--red-1)}
+.check-sub{color:var(--fg-mute);font-size:.76rem;margin-top:.35rem}
+.check-details{
+  margin-top:1.3rem;text-align:left;display:grid;gap:.55rem;
+  border-top:1px solid var(--line-soft);padding-top:1.2rem;
+}
+.check-row{display:flex;justify-content:space-between;gap:1rem;font-size:.86rem}
+.check-row span:first-child{color:var(--fg-mute);font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;padding-top:.2rem;white-space:nowrap}
+.check-row span:last-child{color:var(--fg);font-weight:600;text-align:right;word-break:break-word}
+.check-paid{color:var(--green-1)!important;font-weight:800!important}
+</style>
+</head>
+<body>
+
+<div id="checkApp" class="check-app">
+  <div class="check-wrap">
+    <div class="check-brand">IEEE Summer School 2026 · VJEC</div>
+    <div class="check-card" id="checkResult">
+      <div class="check-loading">Checking ticket…</div>
+    </div>
+    <div class="check-foot">Organiser tool · tickets are signed at registration</div>
+  </div>
+</div>
+
+<script src="ticket.js"></script>
+<script>
+/* ==========================================================
+   CHECK APP — ticket verifier the event host lands on after
+   scanning a participant's QR (check.html?d=<payload>).
+   ========================================================== */
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+  const fmtDate = ms => { try { return new Date(ms).toLocaleString(); } catch (_) { return '—'; } };
+
+  function renderValid(t) {
+    $('checkResult').innerHTML = `
+      <div class="check-icon ok" aria-hidden="true">✓</div>
+      <div class="check-verdict ok">VALID TICKET</div>
+      <div class="check-sub">Registered &amp; payment confirmed</div>
+      <div class="check-details">
+        <div class="check-row"><span>Name</span><span>${esc(t.name)}</span></div>
+        <div class="check-row"><span>Reg ID</span><span>${esc(t.regId)}</span></div>
+        <div class="check-row"><span>Track</span><span>${esc(t.track)}</span></div>
+        <div class="check-row"><span>Member</span><span>${t.member ? 'IEEE Member' : 'Non-Member'}</span></div>
+        <div class="check-row"><span>Payment</span><span class="check-paid">PAID · UPI</span></div>
+        <div class="check-row"><span>Registered</span><span>${esc(fmtDate(t.ts))}</span></div>
+      </div>`;
+  }
+
+  function renderInvalid(reason) {
+    $('checkResult').innerHTML = `
+      <div class="check-icon bad" aria-hidden="true">✗</div>
+      <div class="check-verdict bad">INVALID TICKET</div>
+      <div class="check-sub">${esc(reason || 'This QR could not be verified.')}</div>
+      <div class="check-details">
+        <div class="check-row"><span>Advice</span><span>Ask the desk to look the student up in the admin panel</span></div>
+      </div>`;
+  }
+
+  // Accept ?d= in the query string (QR canonical form) or #check?d= (legacy hash form).
+  const d = new URLSearchParams(location.search).get('d')
+         || new URLSearchParams((location.hash.split('?')[1] || '')).get('d');
+
+  if (!d) { renderInvalid('No ticket data in this link.'); }
+  else {
+    window.Ticket.verify(d)
+      .then(res => res.ok ? renderValid(res.ticket) : renderInvalid(res.reason))
+      .catch(() => renderInvalid('Verification failed — please rescan.'));
+  }
+})();
+</script>
+</body>
+</html>
