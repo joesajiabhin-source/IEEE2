@@ -753,6 +753,7 @@ input[type="radio"] {
   --line:#ececec;
   --line-soft:#f4f4f4;
   --sp:8px;
+  --badge-drop:clamp(72px,12vh,110px);
   position:fixed;inset:0;z-index:65;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:16px;
@@ -800,144 +801,41 @@ input[type="radio"] {
   50%{transform:translateY(-18px) scale(1.06)}
 }
 
-/* ---------- LANYARD ----------
-   The strap exits the viewport top, threads through a polished
-   metal O-ring, then feeds a slim chrome J-hook that drops into
-   the card's punch-slot. The stack is absolutely stacked inside
-   a container that is exactly the lanyard's width. */
+/* ---------- LANYARD (SVG rope) ----------
+   Full-viewport overlay behind the card; the rope sim paints the
+   woven strands, O-ring and snap-hook into it every frame. */
 .id-card-lanyard{
-  position:relative;z-index:3;
-  width:60px;height:135px;
+  position:fixed;inset:0;z-index:3;
   pointer-events:none;
-  margin:0 auto;
-  flex-shrink:0;
   overflow:visible;
 }
+.ly-svg{
+  position:absolute;inset:0;width:100%;height:100%;
+  overflow:visible;
+  display:block;
+}
+/* woven cloth strands — layered strokes along the same centreline:
+   dark edge → mid cloth → light core → sheen → gold stitch */
+.ly-s{fill:none;stroke-linecap:round;stroke-linejoin:round}
+#lyStrandLEdge,#lyStrandREdge{stroke:#032f22}
+#lyStrandLMid, #lyStrandRMid {stroke:#075f43}
+#lyStrandLCore,#lyStrandRCore{stroke:#0b8d62}
+#lyStrandLSheen,#lyStrandRSheen{stroke:rgba(194,255,221,.22)}
+#lyStrandLStitch,#lyStrandRStitch{stroke:rgba(229,242,202,.48);stroke-dasharray:4 6}
+/* chrome O-ring rims + swivel snap-hook */
+.ly-ring-arc{fill:none;stroke:url(#lyChrome);stroke-width:3.6;filter:url(#lyMetal)}
+.ly-hook{stroke:url(#lyChrome);fill:none;filter:url(#lyMetal)}
+.ly-hook-fill{fill:url(#lyChrome);stroke:#2c2f33;stroke-width:.6;filter:url(#lyMetal)}
 
-/* --- the strap, running far above the screen and down THROUGH the ring ---
-   The strap's bottom tip extends to the ring's centerline, so the ring
-   visibly loops around the fabric. Bottom:3px places the fabric end just
-   past the ring's top edge — fabric goes through, ring surrounds it. */
-.ly-strap{
-  position:absolute;
-  top:-100vh;
-  bottom:3px;            /* fabric drops to the ring's centerline */
-  left:50%;transform:translateX(-50%);
-  /* the strap is an ELASTIC body: it pivots from far up its own run,
-     where it disappears past the screen top — JS drives this transform
-     every frame (elastic sway), so no CSS transition on transform */
-  transform-origin:50% calc(100vh + 100%);
-  will-change:transform;
-  width:12px;            /* slightly narrower than the ring inner diameter */
-  background:
-    repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
-    linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
-  box-shadow:2px 0 8px rgba(0,0,0,.35), -2px 0 8px rgba(0,0,0,.35);
-  border-radius:2px 2px 0 0;
-  z-index:1;
-}
-/* center ridge highlight on strap */
-.ly-strap::before{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.1) 50%,transparent);
-}
-
-/* --- the polished O-ring the strap loops around ---
-   The ring sits at the strap's ending point. Its bottom half (rendered by
-   border) is above the strap's z-index so the fabric looks tucked behind
-   the lower metal rim, while the upper half is hidden behind the strap. */
-.ly-ring{
-  position:absolute;
-  bottom:2px;
-  left:50%;transform:translateX(-50%);
-  width:17px;height:17px;
-  border:2px solid #b8bcc2;
-  border-radius:50%;
-  background:transparent;
-  background-clip:padding-box;
-  z-index:2;
-  /* clip top half so the strap appears to pass through the ring */
-  clip-path:polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,.55),
-    inset 0 -1px 1px rgba(0,0,0,.45),
-    0 1px 2px rgba(0,0,0,.5);
-}
-/* glint on the ring's lower-left instead of upper-left */
-.ly-ring::before{
-  content:"";position:absolute;
-  inset:auto -1px -1px -1px;height:60%;
-  border-radius:50%;
-  background:radial-gradient(ellipse 70% 100% at 30% 80%,
-    rgba(255,255,255,.55) 0%, transparent 60%);
-  pointer-events:none;
-}
-/* fabric patch re-drawn inside the ring's top half, so the strap
-   appears to enter through the metal rim instead of just meeting it */
-.ly-ring::after{
-  content:"";position:absolute;
-  top:-2px;left:-2px;right:-2px;height:11px;
-  background:
-    repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
-    linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
-  box-shadow:2px 0 8px rgba(0,0,0,.35), -2px 0 8px rgba(0,0,0,.35);
-  pointer-events:none;
-  z-index:4;
-}
-
-/* --- the chrome snap-hook: a small rectangular body at the
-   ring's bottom edge, with a thin J-curl into the card slot --- */
-.ly-clip{
-  position:absolute;
-  bottom:-22px;left:50%;transform:translateX(-50%);
-  width:11px;height:24px;
-  pointer-events:none;z-index:5;
-}
-
-/* small chrome block that the ring rests on */
-.ly-clip-body{
-  position:absolute;top:0;left:50%;transform:translateX(-50%);
-  width:11px;height:11px;
-  background:
-    linear-gradient(90deg,
-      #5f6367 0%, #9aa0a5 20%, #d9dee2 40%,
-      #f4f7f9 50%, #d9dee2 60%, #9aa0a5 80%, #5f6367 100%);
-  border-radius:2px;
-  box-shadow:
-    inset 0 1px 1px rgba(255,255,255,.55),
-    inset 0 -1px 1px rgba(0,0,0,.35),
-    0 2px 3px rgba(0,0,0,.4);
-  z-index:5;
-}
-/* thin J-curl dropping from the body through the punch-slot */
-.ly-clip-body::after{
-  content:"";
-  position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);
-  width:4px;height:9px;
-  background:linear-gradient(180deg,#3a3a3c,#161617);
-  border-radius:0 0 2px 2px;
-  box-shadow:inset 0 -1px 0 rgba(255,255,255,.10);
-}
-/* spring-gate highlight on the right edge of the body */
-.ly-clip-body::before{
-  content:"";
-  position:absolute;top:2px;right:-1px;
-  width:2px;height:8px;
-  background:linear-gradient(180deg,#dfe3e6,#90959b);
-  border-radius:0 1px 1px 0;
-  opacity:.9;
-}
-
-/* hidden slot-filler — kept only so the DOM matches the clip container.
-   All its rendering is moved to .ly-clip-body above. */
-.ly-clip-ring{display:none}
-.ly-ring{display:block}
-
-/* ---------- CONTAINER (hanging + ground shadow) ---------- */
+/* ---------- CONTAINER (in normal flow; rope drives the swing group) ----------
+   The container keeps its original flex-flow place inside the overlay
+   (cardDrop animation unchanged). The verlet rope instead drives the
+   inner .id-card-swing group: translate to the rope-tip + rotate about
+   the hook nose, so hook + punch-slot stay welded as one rigid body. */
 .id-card-container{
   display:flex;flex-direction:column;
   width:var(--card-w);max-width:330px;
-  margin:0 auto;position:relative;z-index:2;
+  margin:0 auto;position:relative;top:var(--badge-drop);z-index:2;
   transform:translateY(-150vh);
   transform-style:preserve-3d;
   opacity: 1; /* always opaque, position hides it */
@@ -945,10 +843,22 @@ input[type="radio"] {
 .stage-reveal .id-card-container, .stage-enhance .id-card-container, .stage-complete .id-card-container {
   animation: cardDrop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
-/* the swing wrapper — the badge pivots from an anchor far above the
-   viewport (up the strap run), like a real lanyard held from the top */
+@keyframes cardDrop{
+  0%  {transform:translateY(-150vh)}
+  100%{transform:translateY(0)}
+}
+/* the swing wrapper — a plain pass-through: the lanyard SVG is
+   position:fixed inside it, the card flow stays untouched */
 #idCardWrapper{
-  transform-origin:50% -85vh;
+  position:static;
+  pointer-events:none;
+}
+/* rope-driven rigid body: JS writes translate(tip) rotate(swingAng);
+   the pivot is the ring centre, PEND_LEN (16px) above the card top */
+.id-card-swing{
+  position:relative;
+  transform-origin:50% -16px;
+  transform-style:preserve-3d;
   will-change:transform;
 }
 .id-card-container::after{
@@ -957,9 +867,6 @@ input[type="radio"] {
   background:radial-gradient(ellipse at center, rgba(0,0,0,.55), transparent 70%);
   filter:blur(10px);opacity:0;transition:opacity .5s ease .2s;
 }
-.stage-reveal .id-card-container::after,
-.stage-enhance .id-card-container::after,
-.stage-complete .id-card-container::after{opacity:1}
 
 /* ---------- THE CARD (dark + gold, per reference) ---------- */
 .id-card{
@@ -975,6 +882,8 @@ input[type="radio"] {
     linear-gradient(200deg, rgba(232,194,122,.06) 0%, transparent 46%),
     linear-gradient(180deg,#15171d 0%,#0d0f13 52%,#090a0d 100%);
   border:1px solid rgba(232,194,122,.30);
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
   box-shadow:
     0 0 0 1px rgba(0,0,0,.6),
     0 18px 40px -14px rgba(0,0,0,.85),
@@ -1011,12 +920,16 @@ input[type="radio"] {
     0 50px 90px -30px rgba(0,0,0,.9);
 }
 .stage-complete .id-card:hover{
-  transform:translateY(-5px) rotateX(-1.5deg);
+  /* hover no longer lifts the badge with a canned transform — the
+     lanyard physics engine owns all card motion. Hovering the badge
+     now pushes the rope directly (LANYARD.hoverMove), so the card
+     SWINGS like a real badge poked by a finger. A faint glow hints
+     focus without fighting the physics. */
   box-shadow:
-    0 0 0 1px rgba(232,194,122,.34),
-    0 0 26px rgba(232,194,122,.22),
-    0 26px 52px -14px rgba(0,0,0,.88),
-    0 60px 100px -30px rgba(0,0,0,.92);
+    0 0 0 1px rgba(232,194,122,.28),
+    0 0 20px rgba(232,194,122,.16),
+    0 18px 40px -14px rgba(0,0,0,.85),
+    0 50px 90px -30px rgba(0,0,0,.9);
 }
 /* punch-hole slot at the top of the badge — sits where the chrome
    J-hook drops in. Sits flush with the card's top edge so there's
@@ -1140,13 +1053,10 @@ input[type="radio"] {
 .stage-reveal .id-card-meta    {animation-delay:.70s}
 .stage-reveal .id-card-codes   {animation-delay:.78s}
 
-/* card container drops from above the viewport */
-@keyframes cardDrop{
-  0%  {transform:translateY(-150vh)}
-  100%{transform:translateY(0)}
-}
+/* card container drops from above the viewport (defined next to
+   .id-card-container above — the old centered-flex variant removed) */
 /* gentle pendulum swing once settled (kept for reference — real swing
-   is now a damped physical simulation on #idCardWrapper in JS) */
+   is now a verlet rope simulation painting the strap + driving the card) */
 @keyframes cardSwing{
   0%  {transform:translateY(0) rotate(-1.5deg)}
   100%{transform:translateY(0) rotate(1.5deg)}
@@ -1297,7 +1207,7 @@ input[type="radio"] {
   pointer-events:none;
   /* stack above the 3D card wrapper — its projected hit-box would
      otherwise swallow clicks on the download button */
-  position:relative;z-index:5;
+  position:relative;top:var(--badge-drop);z-index:5;
 }
 .stage-complete .id-card-actions{
   animation:idFadeUp .5s ease .1s forwards;
@@ -1317,31 +1227,35 @@ input[type="radio"] {
 
 /* close button */
 .id-card-close{
-  position:fixed;top:20px;right:20px;z-index:120;
+  position:fixed;top:124px;right:20px;z-index:120;
   width:44px;height:44px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.10);
-  border:1.5px solid rgba(255,255,255,.30);
+  background:rgba(5,11,10,.82);
+  border:1.5px solid rgba(232,194,122,.68);
   color:#e9ecf1;cursor:pointer;
   opacity:0;pointer-events:none;
   transition:background .2s ease,transform .25s ease,opacity .4s ease;
-  box-shadow:0 2px 12px rgba(0,0,0,.45);
+  box-shadow:0 2px 18px rgba(0,0,0,.68),0 0 14px rgba(232,194,122,.16);
 }
 /* show from stage-reveal onwards (not just stage-complete) */
 .stage-reveal .id-card-close,
 .stage-enhance .id-card-close,
 .stage-complete .id-card-close{opacity:1;pointer-events:auto}
 .id-card-close:hover{background:rgba(255,80,80,.35);border-color:rgba(255,120,120,.5);transform:rotate(90deg) scale(1.1)}
+.id-card-overlay.is-retracted .id-card-container{
+  animation:none!important;
+  transform:translateY(-130vh)!important;
+  transition:transform .7s cubic-bezier(.5,0,.8,.25);
+}
+.id-card-overlay.is-retracted .id-card-lanyard{opacity:0!important;transition:opacity .28s ease}
+.id-card-container.phone-drop{animation:cardDrop .78s cubic-bezier(.22,.9,.3,1) both!important}
 .id-card-close:active{transform:rotate(90deg) scale(.95)}
 
-/* ---------- LANYARD RECOLOUR (teal, per reference) ---------- */
-.id-card-lanyard{opacity:1;transition:opacity .4s ease}
+/* ---------- LANYARD VISIBILITY ---------- */
+.id-card-lanyard{opacity:0;transition:opacity .4s ease}
 .stage-reveal .id-card-lanyard,
 .stage-enhance .id-card-lanyard,
 .stage-complete .id-card-lanyard{opacity:1}
-.ly-strap{
-  background:linear-gradient(90deg,#0b5c52 0%,#12897a 22%,#16a394 50%,#12897a 78%,#0b5c52 100%)!important;
-}
 
 /* ---------- RESPONSIVE ---------- */
 /* Phone: swap in the portrait ID-card backdrop and shrink the badge.
@@ -1353,13 +1267,9 @@ input[type="radio"] {
       radial-gradient(circle at 50% -16%, rgba(212,160,23,.07) 0%, transparent 46%),
       url('id card bg(mobile).png') center top / cover no-repeat;
     padding:12px;
+    --badge-drop:clamp(46px,8vh,72px);
   }
   .id-card-container{max-width:225px}
-  .id-card-lanyard{height:72px;overflow:visible}
-  /* strap extends far above the lanyard box, past the top of the screen,
-     and dips down through the O-ring so the fabric threads it */
-  .ly-strap{width:14px; top:-100vh; bottom:8px; transform-origin:50% calc(100vh + 100%)}
-  .ly-clip{bottom:-20px}
   .id-card{
     --card-w:clamp(145px,40vw,185px);
     padding:9px 10px 10px;border-radius:11px;
@@ -1387,7 +1297,6 @@ input[type="radio"] {
   .id-card-close{top:12px;right:12px;width:36px;height:36px}
 }
 @media (max-width:460px){
-  .id-card-lanyard{height:60px}
   .id-card{--card-w:43vw;padding:8px 10px 9px}
   .id-card-tagline{font-size:9.5px}
   .id-card-avatar{width:40px;height:40px}
@@ -1399,10 +1308,13 @@ input[type="radio"] {
 /* ---------- REDUCED MOTION ---------- */
 @media (prefers-reduced-motion:reduce){
   .id-card-overlay{transition:opacity .2s ease}
-  .id-card,.id-card-container,.id-card-lanyard,#idCardWrapper{
-    animation:none!important;opacity:1;transform:none!important;transition:none;
+  .id-card,.id-card-container,.id-card-swing,.id-card-lanyard,#idCardWrapper{
+    animation:none!important;opacity:1;transition:none;
   }
-  .ly-strap{transform:none!important;transition:none}
+  .id-card{transform:none!important}
+  /* The badge still needs a correct resting geometry. The physics loop is
+     user-requested, so avoid the legacy off-screen transform here. */
+  .id-card-container{transform:translateY(0)!important}
   .id-card-header,.id-card-tagline,.id-card-avatar,
   .id-card-name,.id-card-subrole,.id-card-meta,.id-card-codes,
   .id-card-actions{
@@ -1432,8 +1344,11 @@ input[type="radio"] {
   .id-card-overlay[hidden]{display:none!important}
   .id-card-bg,.id-particles,.id-card-close,.id-card-actions,
   .id-stage,.id-card-lanyard{display:none!important}
-  .id-card-container{opacity:1!important;margin:0 auto!important;perspective:none!important}
-  #idCardWrapper{transform:none!important}
+  .id-card-container{
+    opacity:1!important;margin:0 auto!important;perspective:none!important;
+    position:static!important;transform:none!important;animation:none!important;
+  }
+  #idCardWrapper{position:static!important;transform:none!important}
   .id-card-container::after{display:none!important}
   .id-card{
     opacity:1!important;transform:none!important;animation:none!important;
@@ -1809,17 +1724,58 @@ input[type="radio"] {
   </div>
 
 
-  <!-- lanyard — V-shape hanging from the neck -->
-  <div id="idCardWrapper" style="transform-style: preserve-3d; perspective: 1000px;">
+  <!-- lanyard — simulated rope (two woven strands) painted into SVG.
+       Sits BESIDE the card container (not inside it) so the full-viewport
+       SVG is never trapped by a transformed ancestor. -->
+  <div id="idCardWrapper">
+  <div class="id-card-lanyard" id="idCardLanyard" aria-hidden="true">
+    <svg class="ly-svg" id="lySvg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <!-- chrome for ring + hook -->
+        <linearGradient id="lyChrome" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0"   stop-color="#5f6367"/>
+          <stop offset=".2"  stop-color="#9aa0a5"/>
+          <stop offset=".4"  stop-color="#d9dee2"/>
+          <stop offset=".5"  stop-color="#f4f7f9"/>
+          <stop offset=".6"  stop-color="#d9dee2"/>
+          <stop offset=".8"  stop-color="#9aa0a5"/>
+          <stop offset="1"   stop-color="#5f6367"/>
+        </linearGradient>
+        <filter id="lyMetal" x="-60%" y="-60%" width="220%" height="220%">
+          <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity=".5"/>
+        </filter>
+      </defs>
+      <!-- back rim of the O-ring (strands painted over it) -->
+      <circle class="ly-ring-arc" id="lyRingBackC" r="9"/>
+      <!-- the two woven cloth strands, re-pathed every frame -->
+      <g id="lyStrands">
+        <path class="ly-s" id="lyStrandLEdge"   stroke-width="24"/>
+        <path class="ly-s" id="lyStrandREdge"   stroke-width="24"/>
+        <path class="ly-s" id="lyStrandLMid"    stroke-width="19"/>
+        <path class="ly-s" id="lyStrandRMid"    stroke-width="19"/>
+        <path class="ly-s" id="lyStrandLCore"   stroke-width="13"/>
+        <path class="ly-s" id="lyStrandRCore"   stroke-width="13"/>
+        <path class="ly-s" id="lyStrandLSheen"  stroke-width="3"/>
+        <path class="ly-s" id="lyStrandRSheen"  stroke-width="3"/>
+        <path class="ly-s" id="lyStrandLStitch" stroke-width="1.25"/>
+        <path class="ly-s" id="lyStrandRStitch" stroke-width="1.25"/>
+      </g>
+      <!-- front rim of the O-ring (painted over the strands) -->
+      <path class="ly-ring-arc" id="lyRingFrontC" d="M9,0 A9,9 0 0 1 -9,0"/>
+      <!-- swivel snap-hook: drawn around the card-top origin (the punch
+           slot centre). paint() translates it to the ring's underside and
+           rotates it with the swinging card body. -->
+      <g id="lyHookG">
+        <!-- barrel from the ring down to the card -->
+        <line class="ly-hook" x1="0" y1="-15.5" x2="0" y2="-8" stroke-width="2.4"/>
+        <rect class="ly-hook-fill" x="-3" y="-8" width="6" height="7.6" rx="1.8"/>
+        <!-- J-curl hooking through the punch slot -->
+        <path class="ly-hook" d="M-2.1,-0.6 v4.6 a2.6,2.6 0 1 0 2.6,-2.6" stroke-width="2.2"/>
+      </g>
+    </svg>
+  </div>
   <div class="id-card-container" id="idCardContainer">
-    <div class="id-card-lanyard" id="idCardLanyard" aria-hidden="true">
-      <div class="ly-strap ly-strap-main"></div>
-      <div class="ly-ring"></div>
-      <div class="ly-clip">
-        <div class="ly-clip-ring"></div>
-        <div class="ly-clip-body"></div>
-      </div>
-    </div>
+    <div class="id-card-swing" id="idCardSwing">
     <article class="id-card" id="idCard">
 
       <header class="id-card-header">
@@ -1870,14 +1826,13 @@ input[type="radio"] {
       </div>
 
     </article>
-    </div>
-  </div>
+    </div><!-- /id-card-swing -->
+  </div><!-- /id-card-container -->
+  </div><!-- /idCardWrapper -->
   <!-- ===== STAGE 5 — actions (OUTSIDE the swinging wrapper, so the
        download button never moves while the badge physically swings) ===== -->
   <div class="id-card-actions" style="flex-direction:column; gap:8px;">
-    <p class="id-card-hint" id="idCardHint">Show this badge at the registration desk.</p>
     <button class="btn btn-gold" id="downloadQrBtn" type="button" hidden>⬇&nbsp; Download QR ticket</button>
-    <p class="qr-dl-note" id="qrDlNote" hidden>Saves a PNG — the host scans it to verify your entry &amp; payment.</p>
   </div>
 </div>
 
@@ -2587,7 +2542,7 @@ input[type="radio"] {
     // a completed (paid) registration.
     currentTicketUrl = null;
     downloadQrBtn.hidden = true;
-    qrDlNote.hidden = true;
+    if (qrDlNote) qrDlNote.hidden = true;
     window.Ticket.issue({ name, regId: currentRegId, track: data.track, isMember: data.is_ieee_member === 'Yes' })
       .then(url => {
         currentTicketUrl = url;
@@ -2602,14 +2557,14 @@ input[type="radio"] {
       })
       .finally(() => {
         downloadQrBtn.hidden = false;
-        qrDlNote.hidden = false;
+        if (qrDlNote) qrDlNote.hidden = false;
       });
   }
 
   /** Export the ticket QR as a captioned PNG the student can save/print. */
   function downloadQrTicket() {
     if (!currentTicketUrl || !currentRegId) {
-      qrDlNote.textContent = 'Ticket not ready yet — try again in a moment.';
+      if (qrDlNote) qrDlNote.textContent = 'Ticket not ready yet — try again in a moment.';
       return;
     }
     try {
@@ -2652,14 +2607,15 @@ input[type="radio"] {
       }, 'image/png');
     } catch (err) {
       console.error('QR download failed', err);
-      qrDlNote.textContent = 'Download failed — please screenshot the badge instead.';
+      if (qrDlNote) qrDlNote.textContent = 'Download failed — please screenshot the badge instead.';
     }
   }
 
   function closeIdCard() {
     clearStageTimers();
     sequenceRunning = false;
-    idCardOverlay.classList.remove('open', ...STAGES);
+    phoneUpsideDown = false;
+    idCardOverlay.classList.remove('open', 'is-retracted', ...STAGES);
     document.removeEventListener('keydown', onEsc);
     const bloodBg = document.getElementById('blood-bg');
     if (bloodBg) {
@@ -2711,171 +2667,532 @@ input[type="radio"] {
   
   
   /* ============================================================
-     ID-CARD PENDULUM PHYSICS  (smooth bias-following pendulum)
-     The badge is a rigid pendulum pivoting from an anchor far
-     above the viewport (up the strap run). It is STATIC at rest;
-     it only moves when something actively pushes or holds it:
+     ID-CARD LANYARD PHYSICS  (verlet rope + rigid card body)
+     A real lanyard, not a bias-following spring:
 
-       • Desktop — the pointer. While hovering the badge area the
-         pointer's offset from the card's centre sets a *bias*
-         angle; the pendulum glides toward that bias with natural
-         overshoot and settles there, hanging slightly to the side
-         the mouse is on. Leave, and gravity eases it back dead
-         straight.
-       • Mobile — the phone itself. The raw sensor stream is noisy and
-         fires ~60Hz, so it is low-pass smoothed (τ ≈ 0.3 s) BEFORE it
-         becomes the bias: tilt right → the card hangs right, tilt left →
-         left, gliding — never twitching. A genuine physical shake
-         (accelerometer spike / fast roll) injects a velocity impulse
-         that both bodies kick with and then damp out.
+       • Two cloth strands hang from anchors just below the screen's
+         top edge, converge through an O-ring at the "neck point",
+         and the O-ring is the rope's heavy tip — the badge hangs
+         from it via a chrome snap-hook.
+       • Verlet integration + distance-constraint relaxation makes
+         the strands bend like woven fabric; a shake visibly RIPPLES
+         up the cloth.
+       • The badge is a rigid body welded to the rope tip: it
+         TRANSLATES with the tip and ROTATES with the last strand
+         segment — so it swings on a visible arc (real pendulum),
+         never slides sideways, and the snap-hook stays seated in
+         the card's punch-slot because hook + card are one body.
+       • Inputs: hovering the badge pushes it like a finger (torque
+         about the ring + ring deflection + flick kicks); pointer
+         motion near the card drags air into the rope; the phone's
+         accelerometer (two-stage low-pass, single tilt authority)
+         steadies the anchor frame; a real shake injects lateral
+         velocity into every rope point. Idle, it settles dead
+         straight — and renders nothing at all until touched. */
+  const idCardWrapper  = document.getElementById('idCardWrapper');
+  const idCardContainer= document.getElementById('idCardContainer');
+  const idCardSwing    = document.getElementById('idCardSwing');
+  const lySvg          = document.getElementById('lySvg');
+  const strandIds = ['lyStrandLEdge','lyStrandREdge','lyStrandLMid','lyStrandRMid',
+                     'lyStrandLCore','lyStrandRCore','lyStrandLSheen','lyStrandRSheen',
+                     'lyStrandLStitch','lyStrandRStitch'];
+  const strandEls = strandIds.map(id => document.getElementById(id));
 
-     θ̈ = (θ_target − θ)·k − c·ω + shake      (spring + impulse)
+  const LANYARD = (() => {
+    // ---------- configurable physics ----------
+    // Kept together so the interaction can be tuned without touching the
+    // rendering or card content. Values are deliberately conservative: the
+    // badge is heavy, while the woven strap is flexible and slightly delayed.
+    const PHYSICS = {
+      gravity: 2600,         // px/s² on the fabric particles
+      mass: 14,              // ring + card coupling mass
+      stiffness: 30,         // pendulum restoring force
+      damping: 3.35,         // angular air damping
+      friction: 0.978,       // cloth particle velocity retention
+      maxAngle: 0.9,         // radians; prevents the strap wrapping over itself
+      impulseStrength: 420,  // baseline tap impulse (px/s)
+      hoverForce: 32,        // sustained pointer pressure
+      idleForce: 1.6         // intentionally tiny, natural hanging sway
+    };
+    const PEND_LEN = 16;            // ring→card-top drop (px): the snap-hook span
+    const ITER = 8;                 // constraint relaxation passes per substep
+    const SUB = 1/120;              // fixed physics substep (s)
 
-     TWO coupled springs, like a real lanyard: the badge runs the
-     stiffer one, and the strap runs a softer spring that LAGS the
-     badge (chases where the badge just was), so a tilt bends the
-     strap into a curve and a shake ripples up the fabric.
-     The download button sits OUTSIDE this wrapper and never moves. */
-  const idCardWrapper = document.getElementById('idCardWrapper');
-  const lyStrap = document.querySelector('.id-card-lanyard .ly-strap');
-  const PENDULUM = (() => {
-    // ---- badge spring ----
-    const k    = 9;      // spring pull (1/s²) — softer than before: glides, doesn't snap
-    const damp = 4.6;    // damping (1/s) — slightly under critical ⇒ a gentle sway, never ringing
-    const maxA = 10;     // hard clamp (deg) so the strap never looks broken
-    // ---- strap spring (the fabric is softer and lags the badge) ----
-    const kS    = 5.5;
-    const dampS = 3.2;
-    const maxS  = 7;     // strap never leans further than the badge
-    // ---- sensor smoothing ----
-    const TAU = 0.3;     // low-pass time constant (s): eats 60Hz sensor noise
-    let theta = 0, omega = 0;          // badge angle (deg) & angular velocity
-    let sTheta = 0, sOmega = 0;        // strap angle & velocity
-    let target = 0;                    // SMOOTHED bias the card glides to
-    let last = performance.now();
+    // ---------- state ----------
+    let W = 0, H = 0;
+    let axL = 0, axR = 0;           // anchor xs (just below top edge)
+    const AY_OFF = -8;              // anchor y (slightly above top edge)
+    const NPT = 6;                  // points per strand (incl. anchor & tip)
+    let ptsL = [], ptsR = [];       // verlet points {x,y,px,py,m}
+    let segLens = { L: 0, R: 0 };   // rest length per segment
+    let tip = null;                 // shared tip point (the O-ring)
+    let started = false;
+    let fresh = false;               // true right after activation — seed a sway
+    let acc = 0, last = performance.now();
+    let winDX = 0;                  // anchor-frame lateral offset (device tilt)
+    let windX = 0;                  // pointer "air" force on cloth
+    let shakeVX = 0;                // velocity injected by shake jerks
+    let swingAng = 0, swingVel = 0; // rigid card body under the tip (rad)
+    let prevGX = 0;                  // previous medium-passed accel-x (g)
+    let leanF = 0, leanM = 0;        // heavy / medium low-passed accel lean (g)
+    let hover = null;                // pointer inside the card {px, py}
+    let hoverVX = 0;                 // smoothed pointer x-velocity while hovering
+    let hoverDef = 0;                // steady hold deflection force on the tip
+    let idleTime = 0;                // phase for the barely perceptible rest sway
 
-    // gravity tilt alone (deg, smoothed) — used to split sensor signal
-    // into "steady lean" (drives the target) vs "jerk" (drives impulses)
-    let prevLean = 0;
+    const makePt = (x, y, m) => ({ x, y, px: x, py: y, m });
 
-    function step(now) {
-      // never simulate before the card has dropped in / when reduced motion
-      const active = sequenceRunning && idCardOverlay.classList.contains('open') && !reduced;
-      let dt = (now - last) / 1000;
-      last = now;
-      dt = Math.min(Math.max(dt || 0.016, 0.001), 0.05); // 60–1000fps safe
-
-      if (active) {
-        // --- badge spring toward the smoothed bias ---
-        const alpha = (target - theta) * k - damp * omega;
-        omega += alpha * dt;
-        theta += omega * dt;
-        if (theta >  maxA) { theta =  maxA; omega *= -0.25; }
-        if (theta < -maxA) { theta = -maxA; omega *= -0.25; }
-        idCardWrapper.style.transform =
-          `perspective(1000px) rotateZ(${theta.toFixed(3)}deg)`;
-
-        // --- strap spring: chases where the badge just was ---
-        // the lag makes the fabric visibly trail the badge — like cloth
-        const strapTarget = Math.max(-maxS, Math.min(maxS, theta * 0.85));
-        const sAlpha = (strapTarget - sTheta) * kS - dampS * sOmega;
-        sOmega += sAlpha * dt;
-        sTheta += sOmega * dt;
-        if (sTheta >  maxS) { sTheta =  maxS; sOmega *= -0.25; }
-        if (sTheta < -maxS) { sTheta = -maxS; sOmega *= -0.25; }
-        if (lyStrap) {
-          lyStrap.style.transform =
-            `translateX(-50%) rotate(${sTheta.toFixed(3)}deg)`;
-        }
-      } else if (theta !== 0 || omega !== 0 || target !== 0 ||
-                 sTheta !== 0 || sOmega !== 0) {
-        // reset state for the next reveal, keep transforms clean
-        theta = 0; omega = 0; target = 0; sTheta = 0; sOmega = 0;
-        idCardWrapper.style.transform = '';
-        if (lyStrap) lyStrap.style.transform = '';
-      }
-      requestAnimationFrame(step);
+    // Where the swing group sits at REST, measured once, without the
+    // cardDrop animation or the rope's own transform polluting the rect:
+    // freeze animations, clear the rope transform, read, restore.
+    function measureRest(){
+      if (!idCardSwing) return { x: innerWidth / 2, top: innerHeight / 2 - 200 };
+      // Neutralise ancestor animation (cardDrop) AND the static
+      // translateY(-150vh) pre-drop transform: pin the container at its
+      // end-of-animation pose so the rect is the true resting position.
+      const swingCS = idCardSwing.style.transform;
+      const contAnim = idCardContainer.style.animation;
+      const contTrans = idCardContainer.style.transform;
+      idCardSwing.style.transform = 'none';
+      idCardContainer.style.animation = 'none';
+      idCardContainer.style.transform = 'translateY(0)';
+      const rect = idCardSwing.getBoundingClientRect();
+      idCardContainer.style.transform = contTrans;
+      idCardContainer.style.animation = contAnim;
+      idCardSwing.style.transform = swingCS;
+      return { x: rect.left + rect.width / 2, top: rect.top, h: rect.height, w: rect.width };
     }
-    requestAnimationFrame(step);
-    // Watchdog: some embedded/throttled views never fire rAF — keep the
-    // pendulum alive there. dt is clamped in step(), so occasional calls
-    // integrate correctly without exploding.
-    setInterval(() => step(performance.now()), 16);
+    let rest = { x: 0, top: 0, h: 0 };  // filled by build()
+    let restX = 0, restTop = 0;         // static flow position (same values)
+
+    function build(){
+      W = innerWidth; H = innerHeight;
+      axL = W / 2 - 46; axR = W / 2 + 46;
+      rest = measureRest();
+      restX = rest.x;
+      restTop = rest.top;
+      const ty = rest.top - PEND_LEN;   // O-ring hangs PEND_LEN above card top
+      tip = makePt(W / 2 + winDX, ty, PHYSICS.mass);
+      ptsL = [makePt(axL + winDX, AY_OFF, 1)];
+      ptsR = [makePt(axR + winDX, AY_OFF, 1)];
+      segLens.L = Math.hypot(tip.x - ptsL[0].x, tip.y - ptsL[0].y) / (NPT - 1);
+      segLens.R = Math.hypot(tip.x - ptsR[0].x, tip.y - ptsR[0].y) / (NPT - 1);
+      for (let i = 1; i < NPT - 1; i++){
+        const t = i / (NPT - 1);
+        ptsL.push(makePt(ptsL[0].x + (tip.x - ptsL[0].x) * t,
+                         ptsL[0].y + (tip.y - ptsL[0].y) * t, 1));
+        ptsR.push(makePt(ptsR[0].x + (tip.x - ptsR[0].x) * t,
+                         ptsR[0].y + (tip.y - ptsR[0].y) * t, 1));
+      }
+      ptsL.push(tip); ptsR.push(tip);
+      if (fresh){
+        // the drop just ended with a little bounce: let the rope inherit it
+        fresh = false;
+        tip.px = tip.x - 0.55;             // ≈ 66 px/s sideways drift
+        swingVel = 0.28;                    // card swings out from the landing
+      }
+    }
+
+    function reset(){
+      if (!started) return;
+      hover = null; hoverVX = 0; hoverDef = 0; leanF = 0; leanM = 0;
+      build(); swingAng = 0; swingVel = 0; windX = 0; shakeVX = 0; idleTime = 0;
+      paint(); driveCard();
+    }
+
+    // ---------- inputs ----------
+    function pushPointer(dx){
+      // pointer moving near the card drags a little "air" along
+      if (!started) return;
+      windX = Math.max(-28, Math.min(28, windX + dx * 0.008));
+    }
+
+    // HOVER — pointer gliding across the badge face. The card is pushed
+    // like a badge poked by a finger: a steady hold yields the ring
+    // toward the pointer, presses low on the card tilt it harder (lever
+    // arm about the ring pivot), and fast flicks kick the pendulum.
+    function hoverMove(px, py, vx){
+      if (!started) return;
+      hover = { px, py };
+      // Deliberately low-pass the pointer stream. The card should feel like
+      // a weight following a hand, not a cursor-sized vibration detector.
+      hoverVX += (Math.max(-1200, Math.min(1200, vx || 0)) - hoverVX) * 0.055;
+    }
+    function hoverEnd(){
+      // finger leaves the badge: pure pendulum + rope physics take over
+      hover = null; hoverVX = 0;
+    }
+
+    // A tap acts at the actual hit point. A quick pass across the badge
+    // becomes a slap: the incoming pointer velocity is converted into both
+    // linear momentum at the ring and angular momentum about the hook.
+    function strike(px, py, vx, vy, force = 1){
+      if (!started || !tip) return;
+      const half = Math.max(80, (rest.w || 240) * 0.5);
+      const hitX = Math.max(-1, Math.min(1, (px - tip.x) / half));
+      const topY = tip.y + PEND_LEN;
+      const lever = Math.max(0.16, Math.min(1, (py - topY) / Math.max(100, rest.h || 320)));
+      const speed = Math.min(2600, Math.hypot(vx || 0, vy || 0));
+      const direction = Math.abs(vx || 0) > 90 ? Math.sign(vx) : (Math.sign(hitX) || 1);
+      const energy = PHYSICS.impulseStrength * force * (1 + speed / 1200);
+      const kick = Math.min(1050, energy) * direction;
+
+      // Verlet velocity is current position minus previous position.
+      // Moving the previous position backwards preserves momentum instead of
+      // snapping toward a target on the next frame.
+      tip.px -= kick * SUB * 0.9;
+      tip.py += Math.min(180, Math.abs(vy || 0) * 0.11) * SUB;
+      windX = Math.max(-125, Math.min(125, windX + kick * 0.12));
+      swingVel = Math.max(-2.2, Math.min(2.2,
+        swingVel + direction * (0.34 + lever * 0.62) * force + hitX * 0.18));
+    }
+
+    function deviceTilt(gamma){
+      // FALLBACK tilt source only — honoured when devicemotion is
+      // silent (the plumbing gates it on accelerometer freshness), so
+      // the two sensors never double-drive the anchor frame.
+      if (!started) return;
+      const target = Math.max(-120, Math.min(120, -(gamma / 45) * 120));
+      winDX += (target - winDX) * 0.06;   // slow lerp = steadier hold
+    }
+    function motion(gx){
+      if (!started) return;
+      // ---- PHONE STABILISATION ----
+      // Raw accelerometer data is noisy: hand tremor and sensor jitter
+      // used to fire the shake path every few frames. Two cascaded
+      // exponential low-pass stages separate the signals:
+      //   leanF (heavy, tau~0.30s @60Hz) -> steady anchor tilt
+      //   leanM (medium, tau~0.07s)      -> fast enough for genuine
+      //                                     jerks, eats hf tremor
+      const lean = Math.max(-1.4, Math.min(1.4, gx / 9.81));
+      leanF += (lean - leanF) * 0.055;
+      leanM += (lean - leanM) * 0.22;
+      // slow part: steady tilt of the anchor frame
+      winDX += (-leanF * 120 - winDX) * 0.10;
+      // fast part: only real jerks cross the dead-zone and inject
+      // lateral velocity into the cloth; tremor never reaches 0.05
+      const jerk = leanM - prevGX; prevGX = leanM;
+      if (Math.abs(jerk) > 0.05){
+        shakeVX = Math.max(-560, Math.min(560, shakeVX - jerk * 5600));
+      }
+    }
+
+    // ---------- simulation ----------
+    function step(dt){
+      const axLc = axL + winDX, axRc = axR + winDX;
+      ptsL[0].x = axLc; ptsL[0].y = AY_OFF;
+      ptsR[0].x = axRc; ptsR[0].y = AY_OFF;
+
+      const wind = windX * dt * dt;
+      for (const pts of [ptsL, ptsR]){
+        for (let i = 1; i < pts.length; i++){
+          const p = pts[i];
+          const vx = (p.x - p.px) * PHYSICS.friction;
+          const vy = (p.y - p.py) * PHYSICS.friction;
+          p.px = p.x; p.py = p.y;
+          p.x += vx + wind / p.m;
+          p.y += vy + (PHYSICS.gravity / p.m) * dt * dt;
+        }
+      }
+      // shake: velocity injected along the strand, strongest at the tip
+      if (shakeVX){
+        const kick = shakeVX * dt;
+        for (const pts of [ptsL, ptsR]){
+          for (let i = 1; i < pts.length - 1; i++){
+            pts[i].px -= kick * (0.4 + 0.6 * i / pts.length) * 0.5;
+          }
+        }
+        tip.px -= kick * 0.5;
+        shakeVX *= Math.exp(-dt * 6);
+        if (Math.abs(shakeVX) < 2) shakeVX = 0;
+      }
+
+      for (let k = 0; k < ITER; k++){
+        relax(ptsL, segLens.L);
+        relax(ptsR, segLens.R);
+      }
+      windX *= Math.exp(-dt * 2.2);
+      if (Math.abs(windX) < 0.05) windX = 0;
+      // anchor tilt relaxes home when sensors go quiet (also lets the
+      // sim reach true rest so idle frames can be skipped entirely)
+      winDX *= Math.exp(-dt * 1.1);
+      if (Math.abs(winDX) < 0.02) winDX = 0;
+
+      // hover hold: the O-ring is springed toward the pointer side, so
+      // the badge physically yields and the strands bow around it
+      if (hover && tip){
+        const half = Math.max(80, (rest.w || 240) * 0.5);
+        const off  = Math.max(-1, Math.min(1, (hover.px - tip.x) / half));
+        const topY = tip.y + PEND_LEN;
+        const lev  = Math.max(0.15, Math.min(1, (hover.py - topY) / Math.max(120, rest.h || 320)));
+        const velocityBoost = 1 + Math.min(.38, Math.abs(hoverVX) / 1800);
+        hoverDef += (off * PHYSICS.hoverForce * lev * velocityBoost - hoverDef) * (1 - Math.exp(-dt * 4.5));
+      } else {
+        hoverDef *= Math.exp(-dt * 7);
+        if (Math.abs(hoverDef) < 0.02) hoverDef = 0;
+      }
+      if (hoverDef && tip){
+        // verlet force: accelerate the ring toward the held offset
+        tip.x += hoverDef * 90 * dt * dt;
+      }
+
+      // A low-frequency, deterministic micro-sway keeps the resting badge
+      // alive. Its force is dwarfed by a hover or strike and fades out while
+      // the user is interacting, so it never competes with user input.
+      idleTime += dt;
+      if (!hover && Math.abs(windX) < 8 && Math.abs(shakeVX) < 8){
+        const idle = (Math.sin(idleTime * 0.73) + Math.sin(idleTime * 1.19 + 0.8) * 0.36) * PHYSICS.idleForce;
+        tip.x += idle * dt * dt;
+      }
+
+      // rigid card body: pendulum on the ring, gravity-restored.
+      // Hover presses add torque about the pivot — pushing lower on
+      // the face tilts the card further, exactly like a real lanyard.
+      let hoverTorque = 0;
+      if (hover && tip){
+        const half = Math.max(80, (rest.w || 240) * 0.5);
+        const off  = Math.max(-1, Math.min(1, (hover.px - tip.x) / half));
+        const topY = tip.y + PEND_LEN;
+        const lev  = Math.max(0.15, Math.min(1, (hover.py - topY) / Math.max(120, rest.h || 320)));
+        hoverTorque = off * 2.7 * lev * (1 + Math.min(.20, Math.abs(hoverVX) / 1800));
+      }
+      const a = -Math.sin(swingAng) * PHYSICS.stiffness - PHYSICS.damping * swingVel + hoverTorque;
+      swingVel += a * dt;
+      swingAng += swingVel * dt;
+      // a lanyard can't wrap over the ring — the clamp keeps violent
+      // shakes or flicks from flipping the badge upside-down
+      if (swingAng > PHYSICS.maxAngle)  { swingAng = PHYSICS.maxAngle;  if (swingVel > 0) swingVel *= -0.16; }
+      if (swingAng < -PHYSICS.maxAngle) { swingAng = -PHYSICS.maxAngle; if (swingVel < 0) swingVel *= -0.16; }
+    }
+
+    function relax(pts, seg){
+      for (let i = 0; i < pts.length - 1; i++){
+        const a = pts[i], b = pts[i + 1];
+        let dx = b.x - a.x, dy = b.y - a.y;
+        const d = Math.hypot(dx, dy) || 1e-6;
+        const diff = (d - seg) / d * 0.5;
+        dx *= diff; dy *= diff;
+        if (i === 0){
+          b.x -= dx * 2; b.y -= dy * 2;          // anchor is pinned
+        } else {
+          const ma = a.m, mb = b.m, tot = ma + mb;
+          a.x += dx * 2 * (mb / tot); a.y += dy * 2 * (mb / tot);
+          b.x -= dx * 2 * (ma / tot); b.y -= dy * 2 * (ma / tot);
+        }
+      }
+    }
+
+    // ---------- painting ----------
+    function catmull(pts){
+      const P = [pts[0], ...pts, pts[pts.length - 1]];
+      let d = 'M' + P[1].x.toFixed(2) + ',' + P[1].y.toFixed(2);
+      for (let i = 1; i < P.length - 2; i++){
+        const p0 = P[i-1], p1 = P[i], p2 = P[i+1], p3 = P[i+2];
+        const c1x = p1.x + (p2.x - p0.x) / 6, c1y = p1.y + (p2.y - p0.y) / 6;
+        const c2x = p2.x - (p3.x - p1.x) / 6, c2y = p2.y - (p3.y - p1.y) / 6;
+        d += 'C' + c1x.toFixed(2) + ',' + c1y.toFixed(2) + ' ' +
+              c2x.toFixed(2) + ',' + c2y.toFixed(2) + ' ' +
+              p2.x.toFixed(2) + ',' + p2.y.toFixed(2);
+      }
+      return d;
+    }
+
+    function paint(){
+      if (!lySvg) return;
+      const dL = catmull(ptsL), dR = catmull(ptsR);
+      const order = [dL, dR, dL, dR, dL, dR, dL, dR, dL, dR];
+      for (let i = 0; i < strandEls.length; i++){
+        if (strandEls[i]) strandEls[i].setAttribute('d', order[i]);
+      }
+      // O-ring: full circle behind the strands, lower half in front —
+      // the fabric visibly passes through the metal
+      const t = 'translate(' + tip.x.toFixed(2) + ' ' + tip.y.toFixed(2) + ')';
+      const rb = document.getElementById('lyRingBackC');
+      const rf = document.getElementById('lyRingFrontC');
+      if (rb) rb.setAttribute('transform', t);
+      if (rf) rf.setAttribute('transform', t);
+      // snap-hook spans the tip→card-top link, drawn once at build
+      // and translated+rotated with the swinging card body
+      const hg = document.getElementById('lyHookG');
+      if (hg){
+        const nx = tip.x + Math.sin(swingAng) * PEND_LEN;
+        const ny = tip.y + Math.cos(swingAng) * PEND_LEN;
+        hg.setAttribute('transform',
+          'translate(' + nx.toFixed(2) + ' ' + ny.toFixed(2) + ') rotate(' +
+          (swingAng * 180 / Math.PI).toFixed(2) + ')');
+      }
+    }
+
+    // ---------- driving the card DOM ----------
+    function driveCard(){
+      if (!idCardSwing || !tip) return;
+      // rigid-body swing: the group rotates about the ring centre, and
+      // follows the rope tip. tip - restTip is how far the O-ring has
+      // wandered; the rotation pivots at 50% -16px (the ring).
+      const dx = tip.x - restX;
+      const dy = tip.y - (restTop - PEND_LEN);
+      const ang = swingAng * 180 / Math.PI;
+      idCardSwing.style.transform =
+        'translate(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px) ' +
+        'rotate(' + ang.toFixed(3) + 'deg)';
+    }
+
+    // ---------- main loop ----------
+    let lastBeat = performance.now();   // updated on every frame() call
+    let lastPose = null;                // last painted pose for diagnostics
+    function frame(now){
+      lastBeat = now;
+      // start only once the 0.8s cardDrop has finished (stage-enhance
+      // onward) — measuring the rest pose mid-drop would anchor the
+      // rope 150vh above where the card finally settles
+      const stage = idCardOverlay.classList;
+      // Prime and paint the woven strap as soon as the card reveal begins,
+      // rather than waiting for the later enhancement stage. The card's
+      // physics continues uninterrupted through enhance and completion.
+      const revealed = stage.contains('stage-reveal') ||
+                       stage.contains('stage-enhance') || stage.contains('stage-complete');
+      const active = sequenceRunning && revealed &&
+                     idCardOverlay.classList.contains('open');
+      let dt = (now - last) / 1000; last = now;
+      dt = Math.min(Math.max(dt || 0.016, 0.001), 0.05);
+
+      if (active){
+        if (!started){ started = true; fresh = true; build(); }
+        if (Math.abs(innerWidth - W) > 2 || Math.abs(innerHeight - H) > 2) build();
+        // Keep the solver alive at rest: the low-frequency idle sway is a
+        // real force in the same system, not a CSS animation layered on top.
+        acc += dt;
+        let guard = 0;
+        while (acc >= SUB && guard++ < 6){ step(SUB); acc -= SUB; }
+        paint();
+        driveCard();
+        lastPose = { x: tip.x, y: tip.y, ang: swingAng };
+      } else if (started){
+        started = false; acc = 0;
+        swingAng = 0; swingVel = 0; windX = 0; shakeVX = 0; winDX = 0; prevGX = 0;
+        leanF = 0; leanM = 0; hover = null; hoverVX = 0; hoverDef = 0;
+        lastPose = null; idleTime = 0;
+        if (idCardSwing) idCardSwing.style.transform = '';
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    // Watchdog: embedded/throttled webviews can freeze rAF entirely —
+    // pump frame() from a 16ms interval when rAF stalls >80ms. An alive
+    // rAF keeps lastBeat fresh and starves the watchdog; a frozen one
+    // lets it take over. frame()'s dt clamp keeps double-driving stable.
+    setInterval(() => {
+      if (performance.now() - lastBeat > 80) frame(performance.now());
+    }, 16);
 
     return {
-      push(x, y) {
-        if (!sequenceRunning) { this.release(); return; }
-        // Pointer offset from the card's centre becomes the bias angle:
-        // hover right of the card → card leans right, hover left → left.
-        const r = idCardWrapper.getBoundingClientRect();
-        const cx = r.left + r.width / 2;
-        const halfW = r.width / 2 + 90;   // comfortable hover margin
-        const nx = Math.max(-1, Math.min(1, (x - cx) / halfW));
-        // −nx: the card hangs ~85vh BELOW its pivot, and CSS rotateZ(+)
-        // swings a hanging body to the LEFT — so following the pointer's
-        // side needs a NEGATIVE theta.
-        target = -nx * maxA * 0.8;
+      pushPointer, hoverMove, hoverEnd, strike, motion, deviceTilt, reset,
+      physics: PHYSICS,
+      // live card geometry for the pointer plumbing — derived from sim
+      // state only, so the hot pointermove path never touches layout
+      cardGeom(){
+        if (!tip || !started) return null;
+        return { cx: tip.x, top: tip.y + PEND_LEN, w: rest.w || 240, h: rest.h || 320 };
       },
-      release() {
-        target = 0;   // nothing holding → gravity glides the card back straight
-      },
-      // ---- mobile: device motion / orientation bridge ----
-      // gx is RAW (noisy, ~60Hz). Two jobs fall out of one signal:
-      //   • the SLOW part (gravity lean) → the bias the badge glides to
-      //   • the FAST part (shake jerk)  → a one-shot velocity impulse
-      motion(gx) {
-        if (!sequenceRunning) return;
-        // −sign: badge hangs BELOW its pivot; rotateZ(+) swings it LEFT,
-        // so a rightward tilt must produce negative theta.
-        const lean = Math.max(-maxA, Math.min(maxA, -(gx / 9.81) * maxA * 0.85));
-        const jerk = lean - prevLean;
-        prevLean = lean;
-        // low-pass the bias — this is what kills the violent shaking
-        target += (lean - target) * (1 - Math.exp(-0.016 / TAU));
-        // only a real jerk (not sensor noise) kicks the badge; successive
-        // kicks PUMP the current swing (same sign as omega) so a back-and-
-        // forth shake visibly rattles the badge+strap instead of cancelling
-        if (Math.abs(jerk) > 1.2) {
-          const kick = Math.min(Math.abs(jerk) * 0.2, 8);
-          omega += (omega >= 0 ? 1 : -1) * kick;
-          if (omega >  30) omega =  30;
-          if (omega < -30) omega = -30;
-          sOmega += (sOmega >= 0 ? 1 : -1) * Math.min(kick * 0.6, 6);
-          if (sOmega >  20) sOmega =  20;
-          if (sOmega < -20) sOmega = -20;
-        }
-      },
-      orientation(gamma) {
-        if (!sequenceRunning) return;
-        // gamma > 0 = the phone's right edge dips down ⇒ card hangs right.
-        // low-pass here too: orientation events also arrive in bursts.
-        const lean = Math.max(-maxA, Math.min(maxA, -(gamma / 45) * maxA));
-        target += (lean - target) * (1 - Math.exp(-0.016 / TAU));
-      },
-      dbg() { return { theta, omega, target, strap: sTheta }; }
+      isStarted: () => started,
+      dbg(){ return { tip: tip && { x: tip.x, y: tip.y }, swingAng }; }
     };
   })();
 
-  document.addEventListener('mousemove', (e) => {
+  // ---------- input plumbing ----------
+  // Hot path: NO layout reads. The card's live position comes from
+  // LANYARD.cardGeom() (sim state), so pointermove never forces reflow.
+  //   pointer over the badge  -> finger-push physics (hover drive)
+  //   pointer near the badge  -> moving air nudges the rope (as before)
+  let lastPX = null, lastPY = null, lastPT = 0, lastVX = 0, lastVY = 0, hovering = false;
+  document.addEventListener('pointermove', (e) => {
+    if (!sequenceRunning){
+      lastPX = null;
+      if (hovering){ hovering = false; LANYARD.hoverEnd(); }
+      return;
+    }
+    const now = performance.now();
+    const dx  = lastPX !== null ? e.clientX - lastPX : 0;
+    const dy  = lastPY !== null ? e.clientY - lastPY : 0;
+    const dtms = now - (lastPT || (now - 16));
+    lastVX = dtms > 0 ? dx * 1000 / dtms : 0;
+    lastVY = dtms > 0 ? dy * 1000 / dtms : 0;
+    const g   = LANYARD.cardGeom();
+    if (g){
+      const overX = Math.abs(e.clientX - g.cx) <= g.w / 2 + 12;
+      const overY = e.clientY >= g.top - 14 && e.clientY <= g.top + g.h + 14;
+      if (overX && overY){
+        hovering = true;
+        LANYARD.hoverMove(e.clientX, e.clientY, lastVX);
+        lastPX = e.clientX; lastPY = e.clientY; lastPT = now;
+        return;
+      }
+      if (hovering){ hovering = false; LANYARD.hoverEnd(); }
+      if (lastPX !== null){
+        const cy    = g.top + g.h / 2;
+        const reach = Math.max(g.w, 320) + 130;
+        if (Math.hypot(e.clientX - g.cx, e.clientY - cy) < reach){
+          LANYARD.pushPointer(dx);
+        }
+      }
+    }
+    lastPX = e.clientX; lastPY = e.clientY; lastPT = now;
+  }, { passive: true });
+
+  document.addEventListener('pointerdown', (e) => {
     if (!sequenceRunning) return;
-    PENDULUM.push(e.clientX, e.clientY);
-  });
-  document.addEventListener('mouseleave', () => PENDULUM.release());
-  document.addEventListener('mouseout', (e) => {
-    // left the window entirely → let the card settle
-    if (!e.relatedTarget) PENDULUM.release();
+    const g = LANYARD.cardGeom();
+    if (!g) return;
+    const inside = Math.abs(e.clientX - g.cx) <= g.w / 2 + 8 &&
+                   e.clientY >= g.top - 8 && e.clientY <= g.top + g.h + 8;
+    if (!inside) return;
+    // Fast pointer travel is a deliberate hard slap; an ordinary click/tap
+    // still gets a firm, readable impulse in the hit direction.
+    const speed = Math.hypot(lastVX, lastVY);
+    const force = e.pointerType === 'touch' ? 1.05 : speed > 900 ? 2.35 : speed > 380 ? 1.55 : 1;
+    LANYARD.strike(e.clientX, e.clientY, lastVX, lastVY, force);
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => {
+    lastPX = null; lastPY = null; lastVX = 0; lastVY = 0;
+    if (hovering){ hovering = false; LANYARD.hoverEnd(); }
   });
 
-  // ---- MOBILE — device motion drives the same pendulum ----
+  // ---- MOBILE — device motion drives the rope ----
   // iOS 13+ only allows sensors after an explicit user permission, and the
   // promise can reject when called outside a real gesture, so we retry on
   // the first touch/click after arrival.
+  let lastMotionAt = 0;   // freshness stamp for the accelerometer
   const onMotion = (e) => {
     const a = e.accelerationIncludingGravity;
-    if (a && a.x != null) PENDULUM.motion(a.x);
+    if (a && a.x != null){ lastMotionAt = performance.now(); LANYARD.motion(a.x); }
   };
+  let phoneUpsideDown = false;
   const onOrientation = (e) => {
-    if (e.gamma != null) PENDULUM.orientation(e.gamma);
+    const upsideDown = e.beta != null && Math.abs(e.beta) > 115;
+    if (upsideDown !== phoneUpsideDown && sequenceRunning) {
+      phoneUpsideDown = upsideDown;
+      if (upsideDown) {
+        // Turning the phone over retracts the completed badge upward into
+        // the shutter. No backdrop click can dismiss it; this is purely a
+        // physical orientation response.
+        idCardOverlay.classList.add('is-retracted');
+      } else {
+        // Returning upright replays the same top-down arrival, then the
+        // rope solver takes over again from its resting connection point.
+        idCardOverlay.classList.remove('is-retracted');
+        idCardContainer.classList.remove('phone-drop');
+        void idCardContainer.offsetWidth;
+        idCardContainer.classList.add('phone-drop');
+        LANYARD.reset();
+      }
+    }
+    if (e.gamma == null || phoneUpsideDown) return;
+    // STABILISATION: the accelerometer is the single tilt authority.
+    // gamma is only honoured when devicemotion has been silent for
+    // 800ms, so the anchor frame is never double-driven by two
+    // disagreeing sensors (the historical wobble source).
+    if (performance.now() - lastMotionAt < 800) return;
+    LANYARD.deviceTilt(e.gamma);
   };
   const attachSensors = () => {
     window.addEventListener('devicemotion', onMotion);
@@ -2898,12 +3215,11 @@ input[type="radio"] {
   };
   document.addEventListener('touchend', sensorRetry, { once: false });
   document.addEventListener('click', sensorRetry, { once: false });
-  // Test/automation hook — lets QA drive the pendulum without the full
-  // registration flow. Harmless in production (window.__ieeeTest unused).
-  window.__ieeePendulum = { PENDULUM, isRunning: () => sequenceRunning,
-                            start() { sequenceRunning = true; },
-                            stop()  { sequenceRunning = false; } };
-
+  // Test/automation hook — lets QA drive the rope without the full
+  // registration flow. Harmless in production.
+  window.__ieeeLanyard = { LANYARD, isRunning: () => sequenceRunning,
+                           start() { sequenceRunning = true; },
+                           stop()  { sequenceRunning = false; } };
 
   function runIdCardSequence(data) {
     if (sequenceRunning) return;
@@ -3018,10 +3334,8 @@ input[type="radio"] {
   /* ---- stage 5 actions ---- */
   idCardClose.addEventListener('click', closeIdCard);
   if (downloadQrBtn) downloadQrBtn.addEventListener('click', downloadQrTicket);
-  idCardOverlay.addEventListener('click', e => {
-    // only a click on the backdrop itself dismisses the badge
-    if (e.target === idCardOverlay) closeIdCard();
-  });
+  // The badge is intentionally modal: only the visible × button can close
+  // it, so accidental backdrop clicks never exit the completed ticket.
 
   // Download / share buttons removed from UI — no handlers needed
 
