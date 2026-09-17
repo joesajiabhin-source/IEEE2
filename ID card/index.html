@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive ID Card & Lanyard Physics Demo</title>
+  <link rel="stylesheet" href="id-card.css">
+  <style>
+    /* Demo Playground Host Styles */
+    body {
+      margin: 0;
+      padding: 0;
+      background: #090a0d;
+      color: #e9ecf1;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow-x: hidden;
+    }
+
+    .demo-panel {
+      position: relative;
+      z-index: 10;
+      background: rgba(18, 20, 26, 0.88);
+      border: 1px solid rgba(232, 194, 122, 0.28);
+      border-radius: 20px;
+      padding: 2.2rem;
+      max-width: 580px;
+      width: 90%;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(16px);
+      text-align: center;
+    }
+
+    .demo-title {
+      margin: 0 0 0.5rem;
+      font-size: 1.75rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      background: linear-gradient(180deg, #fff6dd 0%, #e8c27a 50%, #c79c4d 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .demo-desc {
+      color: #a8b0bb;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 1.8rem;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .control-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .control-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #e8c27a;
+    }
+
+    .control-group input,
+    .control-group select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(232, 194, 122, 0.25);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #ffffff;
+      font-size: 0.88rem;
+    }
+
+    .demo-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-demo {
+      flex: 1;
+      padding: 0.85rem 1.2rem;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.25s ease;
+    }
+
+    .btn-demo-primary {
+      background: linear-gradient(135deg, #e8c27a 0%, #c79c4d 100%);
+      color: #0b0d10;
+      box-shadow: 0 4px 18px rgba(212, 160, 23, 0.35);
+    }
+    .btn-demo-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(212, 160, 23, 0.5);
+    }
+
+    .btn-demo-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #e8c27a;
+      border: 1px solid rgba(232, 194, 122, 0.3);
+    }
+    .btn-demo-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+      transform: translateY(-2px);
+    }
+
+    .instructions {
+      margin-top: 1.5rem;
+      padding-top: 1.2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      font-size: 0.82rem;
+      color: #6f7783;
+      line-height: 1.6;
+    }
+    .instructions strong {
+      color: #a8b0bb;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Demo Launcher Panel -->
+  <div class="demo-panel">
+    <h1 class="demo-title">IEEE ID Card & Lanyard Physics</h1>
+    <p class="demo-desc">
+      Interactive preview of the realistic Verlet rope lanyard, rigid body pendulum badge, 
+      5-stage cinematic reveal sequence, and signed QR/barcode generation.
+    </p>
+
+    <div class="control-grid">
+      <div class="control-group">
+        <label for="demoName">Full Name</label>
+        <input type="text" id="demoName" value="Abhinav Joe Saji">
+      </div>
+      <div class="control-group">
+        <label for="demoTrack">Track</label>
+        <select id="demoTrack">
+          <option value="Applied Machine Learning" selected>Applied Machine Learning</option>
+          <option value="Embedded & IoT Systems">Embedded & IoT Systems</option>
+          <option value="Modern Web Engineering">Modern Web Engineering</option>
+          <option value="Cybersecurity Foundations">Cybersecurity Foundations</option>
+          <option value="Robotics & Control">Robotics & Control</option>
+        </select>
+      </div>
+      <div class="control-group full">
+        <label for="demoMember">Membership</label>
+        <select id="demoMember">
+          <option value="Yes" selected>IEEE Member</option>
+          <option value="No">Non-Member</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="demo-actions">
+      <button class="btn-demo btn-demo-primary" id="btnLaunchSequence">
+        🎬 Run Full 5-Stage Reveal
+      </button>
+      <div class="action-row">
+        <button class="btn-demo btn-demo-secondary" id="btnJumpToComplete">
+          ⚡ Jump Directly to Badge
+        </button>
+        <button class="btn-demo btn-demo-secondary" id="btnStrike">
+          💥 Slap / Strike Badge
+        </button>
+      </div>
+    </div>
+
+    <div class="instructions">
+      <strong>Interactive Physics Tips:</strong><br>
+      • <strong>Hover:</strong> Move your mouse across the badge face to apply finger-push torque.<br>
+      • <strong>Slap:</strong> Quick mouse passes or clicks inject real angular and linear momentum.<br>
+      • <strong>Mobile:</strong> Tilt your phone or flip it upside down to see the badge retract!
+    </div>
+  </div>
+
+      <!-- ============================================================
+       NEW CYBERNETIC VYORA '26 ID CARD MODAL & LANYARD
+       ============================================================ -->
+  <div class="id-card-overlay" id="idCardOverlay" role="dialog" aria-modal="true" aria-labelledby="idCardName" hidden>
+
+    <!-- Ambient background bokeh -->
+    <div class="id-card-bg" aria-hidden="true">
+      <span class="bokeh b1"></span>
+      <span class="bokeh b2"></span>
+    </div>
+
+    <!-- Stage 4 particle motes -->
+    <div class="id-particles" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+
+    <!-- Close button (×) -->
+    <button class="id-card-close" id="idCardClose" aria-label="Close badge">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+
+    <!-- ===== STAGE 1 — INITIATE ===== -->
+    <div class="id-stage id-stage-initiate">
+      <div class="id-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 12.5 10 18.5 20 6.5"/>
+        </svg>
+      </div>
+      <h2 class="id-stage-title">Registration Confirmed</h2>
+      <p class="id-stage-sub">Preparing your event ID card…</p>
+    </div>
+
+    <!-- ===== STAGE 2 — GENERATE ===== -->
+    <div class="id-stage id-stage-generate">
+      <div class="id-wireframe">
+        <div class="id-wire-logo">
+          <span>VYORA '26</span>
+        </div>
+        <div class="id-wire-status">SYNTHESIZING PASS…</div>
+      </div>
+    </div>
+
+    <!-- Lanyard SVG & Rigid Card Swing Structure -->
+    <div id="idCardWrapper">
+      <div class="id-card-lanyard" id="idCardLanyard" aria-hidden="true">
+        <svg class="ly-svg" id="lySvg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="lyChrome" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0"   stop-color="#5f6367"/>
+              <stop offset=".2"  stop-color="#9aa0a5"/>
+              <stop offset=".4"  stop-color="#d9dee2"/>
+              <stop offset=".5"  stop-color="#f4f7f9"/>
+              <stop offset=".6"  stop-color="#d9dee2"/>
+              <stop offset=".8"  stop-color="#9aa0a5"/>
+              <stop offset="1"   stop-color="#5f6367"/>
+            </linearGradient>
+            <filter id="lyMetal" x="-60%" y="-60%" width="220%" height="220%">
+              <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity=".5"/>
+            </filter>
+          </defs>
+
+          <!-- Back rim of O-ring -->
+          <circle class="ly-ring-arc" id="lyRingBackC" r="9"/>
+
+          <!-- 2 Woven cloth strands -->
+          <g id="lyStrands">
+            <path class="ly-s" id="lyStrandLEdge"   stroke-width="24"/>
+            <path class="ly-s" id="lyStrandREdge"   stroke-width="24"/>
+            <path class="ly-s" id="lyStrandLMid"    stroke-width="19"/>
+            <path class="ly-s" id="lyStrandRMid"    stroke-width="19"/>
+            <path class="ly-s" id="lyStrandLCore"   stroke-width="13"/>
+            <path class="ly-s" id="lyStrandRCore"   stroke-width="13"/>
+            <path class="ly-s" id="lyStrandLSheen"  stroke-width="3"/>
+            <path class="ly-s" id="lyStrandRSheen"  stroke-width="3"/>
+            <path class="ly-s" id="lyStrandLStitch" stroke-width="1.25"/>
+            <path class="ly-s" id="lyStrandRStitch" stroke-width="1.25"/>
+          </g>
+
+          <!-- Front rim of O-ring -->
+          <path class="ly-ring-arc" id="lyRingFrontC" d="M9,0 A9,9 0 0 1 -9,0"/>
+
+          <!-- Chrome Swivel Lobster-Claw Snap-Hook (clasp loops through slot hole) -->
+          <g id="lyHookG">
+            <line class="ly-hook" x1="0" y1="-20" x2="0" y2="-9" stroke-width="2.8"/>
+            <rect class="ly-hook-fill" x="-4.5" y="-9" width="9" height="9.5" rx="2.5"/>
+            <path class="ly-hook" d="M-3,-1 v12 a4,4 0 1 0 7,-3.5" stroke-width="2.8"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- Container with rigid pendulum swing group -->
+      <div class="id-card-container" id="idCardContainer">
+        <div class="id-card-swing" id="idCardSwing">
+          <article class="id-card" id="idCard">
+
+            <!-- Inside Interior Container (100% contained within yellow area) -->
+            <div class="vy-card-interior">
+              <div class="vy-card-gloss"></div>
+
+              <!-- 1. Top Brand Row -->
+              <div class="vy-top-row">
+                <div class="vy-brand">
+                  <svg class="vy-diamond" width="18" height="18" viewBox="0 0 32 32" fill="none">
+                    <path d="M16 2 30 16 16 30 2 16Z" fill="#000" opacity=".2"/>
+                    <path d="M16 2 30 16 16 30 2 16Z" stroke="#000" stroke-width="2.5"/>
+                    <circle cx="16" cy="16" r="3.5" fill="#000"/>
+                    <line x1="16" y1="2" x2="16" y2="30" stroke="#000" stroke-width="2"/>
+                    <line x1="6" y1="16" x2="26" y2="16" stroke="#000" stroke-width="2"/>
+                  </svg>
+                  <div class="vy-brand-labels">
+                    <span>IEEE</span>
+                    <span>VJEC SB</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Big Pixel Header: VYORA 26 -->
+              <div class="vy-title-block">
+                <div class="vy-title-text">
+                  <span class="vy-char">V</span><span class="vy-char">Y</span><span class="vy-black-hole" aria-label="O"></span><span class="vy-char">R</span><span class="vy-char">A</span>
+                </div>
+                <div class="vy-year-text">26</div>
+                <div class="vy-slogan">IDEAS • PEOPLE • TECH • A BIGGER TOMORROW</div>
+              </div>
+
+              <!-- 3. Middle Section -->
+              <div class="vy-mid-section">
+                <div class="vy-left-side">
+                  <div class="vy-side-quote">
+                    <span>NOT</span>
+                    <span>JUST</span>
+                    <span>AN</span>
+                    <span>EVENT</span>
+                    <span>A</span>
+                    <span>MOVEMENT</span>
+                  </div>
+                  <div class="vy-quote-bar"></div>
+                </div>
+
+                <div class="vy-center-avatar">
+                  <div class="vy-avatar-frame-border">
+                    <div class="vy-avatar-inner">
+                      <div class="vy-avatar-circle" id="idCardAvatar">
+                        <svg viewBox="0 0 48 48" fill="none">
+                          <circle cx="24" cy="18" r="8.5" fill="#1b1b1b"/>
+                          <ellipse cx="24" cy="41" rx="14" ry="12.5" fill="#1b1b1b"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="vy-right-side">
+                  <div class="vy-slashes">///</div>
+                  <div class="vy-vertical-pill" id="idCardRole">PARTICIPANT</div>
+                </div>
+              </div>
+
+              <!-- 4. Name Box -->
+              <div class="vy-name-box">
+                <h3 class="vy-name" id="idCardName">Abhin Joe Saji</h3>
+                <span class="vy-subrole" id="idCardSubrole">PARTICIPANT</span>
+              </div>
+
+              <!-- 5. Bottom Grid -->
+              <div class="vy-bottom-grid">
+                <div class="vy-info-panel">
+                  <div class="vy-info-row">
+                    <svg class="vy-icon" viewBox="0 0 24 24" fill="none" stroke="#eaff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                      <path d="M6 12v5c0 3 6 3 6 3s6 0 6-3v-5"/>
+                    </svg>
+                    <span class="vy-info-text">VIMAL JYOTHI<br>ENGINEERING COLLEGE</span>
+                  </div>
+                  <div class="vy-info-row">
+                    <svg class="vy-icon" viewBox="0 0 24 24" fill="none" stroke="#eaff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span class="vy-info-text" id="idCardTrack">APPLIED MACHINE<br>LEARNING</span>
+                  </div>
+                  <div class="vy-info-row">
+                    <div class="vy-icon-box">#</div>
+                    <span class="vy-info-text vy-id-highlight" id="idCardRegId">ID: VYORA26-PT-0137</span>
+                  </div>
+                </div>
+
+                <div class="vy-qr-panel">
+                  <div class="vy-qr-bracket-frame">
+                    <div class="vy-qr-container" id="idCardQr"></div>
+                  </div>
+                  <div class="vy-qr-subtext">[ SCAN TO VERIFY ]</div>
+                </div>
+              </div>
+
+              <!-- 6. Footer Slogan -->
+              <div class="vy-footer-bar">
+                <span class="vy-bracket-l">[&gt;</span>
+                <span class="vy-footer-txt">BE A PART OF SOMETHING BIGGER</span>
+                <span class="vy-bracket-r">&lt;]</span>
+              </div>
+
+            </div> <!-- end .vy-card-interior -->
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 5 Actions (Positioned cleanly at screen bottom) -->
+    <div class="id-card-actions">
+      <button class="btn-gold" id="downloadQrBtn" type="button">⬇&nbsp; Download Ticket</button>
+      <p class="id-card-hint">Show this badge at the registration desk.</p>
+    </div>
+  </div>
+
+  <script src="id-card.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const controller = new IDCard.Controller();
+
+      function getFormData() {
+        return {
+          name: document.getElementById('demoName').value || 'Abhinav Joe Saji',
+          track: document.getElementById('demoTrack').value,
+          is_ieee_member: document.getElementById('demoMember').value
+        };
+      }
+
+      // Launch full sequence
+      document.getElementById('btnLaunchSequence').addEventListener('click', () => {
+        controller.runSequence(getFormData());
+      });
+
+      // Jump directly to complete stage
+      document.getElementById('btnJumpToComplete').addEventListener('click', () => {
+        controller.populateCard(getFormData());
+        const overlay = document.getElementById('idCardOverlay');
+        overlay.hidden = false;
+        overlay.classList.add('open');
+        controller.setStage('stage-complete');
+      });
+
+      // Strike / Slap badge
+      document.getElementById('btnStrike').addEventListener('click', () => {
+        const geom = controller.lanyard.cardGeom();
+        if (geom) {
+          controller.lanyard.strike(geom.cx + 50, geom.top + 100, 800, 200, 2.2);
+        } else {
+          // If closed, open first then strike
+          controller.populateCard(getFormData());
+          const overlay = document.getElementById('idCardOverlay');
+          overlay.hidden = false;
+          overlay.classList.add('open');
+          controller.setStage('stage-complete');
+          setTimeout(() => {
+            const g = controller.lanyard.cardGeom();
+            if (g) controller.lanyard.strike(g.cx + 50, g.top + 100, 800, 200, 2.2);
+          }, 300);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

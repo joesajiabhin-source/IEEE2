@@ -6,6 +6,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ID card/id-card.css">
 <title>IEEE Summer School 2026 — IEEE SB VJEC</title>
 <meta name="description" content="IEEE Summer School 2026, hosted by IEEE Student Branch, Vimal Jyothi Engineering College — two days of hands-on tracks, workshops and industry talks.">
 <style>
@@ -877,637 +878,6 @@ input[type="radio"] {
 }
 
 /* ============================================================
-   ID CARD — PREMIUM EVENT BADGE
-   ============================================================ */
-.id-card-overlay{
-  --badge-gold:#d4a017;
-  --badge-gold-soft:#e6be4e;
-  --ink-900:#1c1c1e;
-  --ink-700:#3a3a3c;
-  --ink-500:#8a8a8e;
-  --line:#ececec;
-  --line-soft:#f4f4f4;
-  --sp:8px;
-  position:fixed;inset:0;z-index:110;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:16px;
-  overflow-y:auto;
-  pointer-events:none;
-  background: 
-    radial-gradient(circle at 50% -20%, rgba(212,160,23,.15) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 50%, #15161a 0%, #08090a 100%);
-  perspective:1000px;
-  opacity:0;transition:opacity .3s ease, transform 1s ease-out;
-}
-.id-card-overlay.open{opacity:1;pointer-events:auto}
-.id-card-overlay::before {
-  content: ""; position: fixed; top: 0; left: 50%; transform: translateX(-50%);
-  width: 100vw; max-width: 800px; height: 100vh;
-  background: radial-gradient(ellipse at top, rgba(232,194,122,0.06) 0%, transparent 70%);
-  pointer-events: none; z-index: -1;
-}
-.id-card-overlay[hidden]{display:none}
-
-/* white flash */
-.id-card-flash{
-  position:fixed;inset:0;z-index:1;
-  background:#fff;opacity:0;pointer-events:none;
-  transition:opacity .12s ease;
-}
-.id-card-flash.active{opacity:1}
-
-/* ---------- AMBIENT BACKGROUND ---------- */
-.id-card-bg{
-  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
-}
-.id-card-bg .bokeh{
-  position:absolute;border-radius:50%;
-  filter:blur(40px);opacity:.5;
-  background:radial-gradient(circle at 30% 30%, rgba(212,160,23,.55), transparent 70%);
-  animation:bokehFloat 9s ease-in-out infinite;
-}
-.id-card-bg .b1{width:220px;height:220px;top:8%;left:12%;animation-delay:0s}
-.id-card-bg .b2{width:160px;height:160px;top:65%;left:18%;opacity:.35;animation-delay:1.5s}
-.id-card-bg .b3{width:260px;height:260px;top:20%;right:8%;opacity:.3;animation-delay:.8s}
-.id-card-bg .b4{width:140px;height:140px;bottom:12%;right:20%;opacity:.4;animation-delay:2.2s}
-@keyframes bokehFloat{
-  0%,100%{transform:translateY(0) scale(1)}
-  50%{transform:translateY(-18px) scale(1.06)}
-}
-
-/* ---------- LANYARD ---------- */
-.id-card-lanyard{
-  position:relative;z-index:3;
-  width:80px;height:220px;
-  pointer-events:none;
-  margin:0 auto;
-  flex-shrink:0;
-  overflow:visible;
-}
-
-/* Strap: fills from top of lanyard container down to just above the ring */
-.ly-strap{
-  position:absolute;
-  top:0;bottom:32px;
-  left:50%;transform:translateX(-50%);
-  width:38px;
-  background:
-    repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
-    linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
-  box-shadow: 2px 0 8px rgba(0,0,0,0.35), -2px 0 8px rgba(0,0,0,0.35);
-  border-radius:2px 2px 0 0;
-}
-/* Center ridge highlight on strap */
-.ly-strap::before{
-  content:"";
-  position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.06) 44%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.06) 56%,transparent 100%);
-  pointer-events:none;
-}
-
-/* --- Left strap: goes up-left at ~16deg, extends above container --- */
-
-
-/* --- Right strap: goes up-right at ~16deg --- */
-
-
-/* --- Printed text running along the strap --- */
-
-.ly-strap-l .ly-label{
-  transform:translateX(-50%) rotate(0deg);
-}
-.ly-strap-r .ly-label{
-  transform:translateX(-50%) rotate(180deg);
-  top:30px;
-}
-
-/* --- Breakaway buckle on left strap --- */
-
-.ly-breakaway::before{
-  content:"";
-  position:absolute;top:0;left:0;right:0;height:12px;
-  background:linear-gradient(180deg,#555 0%,#3a3a3a 50%,#2a2a2a 100%);
-  border-radius:3px 3px 2px 2px;
-  box-shadow:0 2px 4px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);
-}
-.ly-breakaway::after{
-  content:"";
-  position:absolute;bottom:0;left:2px;right:2px;height:14px;
-  background:linear-gradient(180deg,#3a3a3a 0%,#4a4a4a 50%,#3a3a3a 100%);
-  border-radius:2px 2px 3px 3px;
-  box-shadow:0 2px 4px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-/* --- Metal D-ring where both straps converge --- */
-.ly-ring{
-  position:absolute;
-  bottom:0;left:50%;transform:translateX(-50%);
-  width:22px;height:16px;
-  border:3px solid #b0b0b0;
-  border-radius:4px;
-  background:transparent;
-  z-index:5;
-  box-shadow:
-    0 1px 3px rgba(0,0,0,.25),
-    inset 0 1px 1px rgba(255,255,255,.4),
-    inset 0 -1px 1px rgba(0,0,0,.15);
-}
-
-/* --- Lobster claw clip connecting to card --- */
-.ly-clip{
-  position:absolute;
-  bottom:-34px;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;
-  z-index:5;
-}
-.ly-clip-ring{
-  width:10px;height:8px;
-  border:2.5px solid #a0a0a0;
-  border-radius:3px 3px 0 0;
-  border-bottom:none;
-  box-shadow:inset 0 1px 2px rgba(255,255,255,.3);
-}
-.ly-clip-body{
-  width:16px;height:28px;
-  background:linear-gradient(90deg,
-    #a8a8a8 0%,#d0d0d0 12%,#e8e8e8 28%,#f2f2f2 40%,
-    #dcdcdc 52%,#c8c8c8 65%,#d8d8d8 78%,#e8e8e8 90%,#a8a8a8 100%);
-  border-radius:3px 3px 6px 6px;
-  position:relative;
-  box-shadow:
-    0 4px 10px rgba(0,0,0,.35),
-    inset 0 1px 0 rgba(255,255,255,.7),
-    inset 0 -1px 0 rgba(0,0,0,.12);
-}
-/* gate arm */
-.ly-clip-body::before{
-  content:"";
-  position:absolute;top:6px;right:-3px;
-  width:3px;height:16px;
-  background:linear-gradient(90deg,#b0b0b0,#d0d0d0,#b0b0b0);
-  border-radius:0 2px 2px 0;
-  box-shadow:1px 0 3px rgba(0,0,0,.15);
-}
-/* hook tip */
-.ly-clip-body::after{
-  content:"";
-  position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);
-  width:10px;height:6px;
-  background:linear-gradient(180deg,#c0c0c0,#999);
-  border-radius:0 0 4px 4px;
-  box-shadow:0 2px 4px rgba(0,0,0,.2);
-}
-
-/* ---------- CONTAINER (hanging + ground shadow) ---------- */
-.id-card-container{
-  display:flex;flex-direction:column;
-  width:var(--card-w);max-width:330px;
-  margin:0 auto;position:relative;top:0;z-index:2;
-  transform:translateY(-150vh);
-  transform-style:preserve-3d;
-  opacity: 1; /* always opaque, position hides it */
-}
-.stage-reveal .id-card-container, .stage-enhance .id-card-container, .stage-complete .id-card-container {
-  /* The lanyard solver owns arrival; a second drop makes the hook detach. */
-  animation:none;
-  transform:translateY(0);
-}
-.id-card-container::after{
-  content:"";position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);
-  width:66%;height:26px;border-radius:50%;
-  background:radial-gradient(ellipse at center, rgba(0,0,0,.55), transparent 70%);
-  filter:blur(10px);opacity:0;transition:opacity .5s ease .2s;
-}
-.stage-reveal .id-card-container::after,
-.stage-enhance .id-card-container::after,
-.stage-complete .id-card-container::after{opacity:1}
-
-/* ---------- THE CARD (dark + gold, per reference) ---------- */
-.id-card{
-  --card-w:clamp(320px,86vw,380px);
-  width:var(--card-w);
-  position:relative;
-  display:block;
-  padding:22px 22px 20px;
-  border-radius:20px;
-  transform-origin:top center;
-  background:
-    linear-gradient(157deg, rgba(232,194,122,.10) 0%, transparent 34%),
-    linear-gradient(200deg, rgba(232,194,122,.06) 0%, transparent 46%),
-    linear-gradient(180deg,#15171d 0%,#0d0f13 52%,#090a0d 100%);
-  border:1px solid rgba(232,194,122,.30);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.6),
-    0 18px 40px -14px rgba(0,0,0,.85),
-    0 50px 90px -30px rgba(0,0,0,.9),
-    inset 0 1px 0 rgba(255,255,255,.06);
-  opacity:0;
-  transform:translateY(-30px) scale(.95) rotateX(8deg);
-  transition:box-shadow .6s ease, transform .5s cubic-bezier(.4,0,.2,1);
-}
-/* stage 3 — the card drops in on the lanyard */
-.stage-reveal .id-card{opacity:1;transform:none;animation:none}
-@keyframes idCardDrop{
-  0%  {opacity:0;transform:translateY(-46px) scale(.94) rotateX(10deg)}
-  55% {opacity:1;transform:translateY(7px)  scale(1.008) rotateX(-2deg)}
-  78% {opacity:1;transform:translateY(-3px) scale(.998) rotateX(1deg)}
-  100%{opacity:1;transform:translateY(0)    scale(1) rotateX(0)}
-}
-/* stage 4 — rim-glow bloom */
-.stage-enhance .id-card,
-.stage-complete .id-card{opacity:1;transform:none}
-.stage-enhance .id-card{
-  animation:idCardBloom 1.15s ease forwards;
-}
-@keyframes idCardBloom{
-  0%  {box-shadow:0 0 0 1px rgba(0,0,0,.6),0 18px 40px -14px rgba(0,0,0,.85),0 50px 90px -30px rgba(0,0,0,.9)}
-  45% {box-shadow:0 0 0 1px rgba(232,194,122,.5),0 0 34px rgba(232,194,122,.42),0 0 78px rgba(232,194,122,.2),0 18px 40px -14px rgba(0,0,0,.85)}
-  100%{box-shadow:0 0 0 1px rgba(232,194,122,.22),0 0 18px rgba(232,194,122,.16),0 18px 40px -14px rgba(0,0,0,.85),0 50px 90px -30px rgba(0,0,0,.9)}
-}
-.stage-complete .id-card{
-  box-shadow:
-    0 0 0 1px rgba(232,194,122,.20),
-    0 0 16px rgba(232,194,122,.13),
-    0 18px 40px -14px rgba(0,0,0,.85),
-    0 50px 90px -30px rgba(0,0,0,.9);
-}
-.stage-complete .id-card:hover{
-  transform:translateY(-5px) rotateX(-1.5deg);
-  box-shadow:
-    0 0 0 1px rgba(232,194,122,.34),
-    0 0 26px rgba(232,194,122,.22),
-    0 26px 52px -14px rgba(0,0,0,.88),
-    0 60px 100px -30px rgba(0,0,0,.92);
-}
-/* punch-hole slot at the top of the badge */
-.id-card::before{
-  content:"";position:absolute;top:11px;left:50%;transform:translateX(-50%);
-  width:52px;height:9px;border-radius:5px;
-  background:#05060a;
-  box-shadow:inset 0 1px 2px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.05);
-}
-
-/* ---------- CARD HEADER ---------- */
-.id-card-header{
-  display:flex;align-items:flex-start;justify-content:space-between;
-  gap:10px;margin-top:12px;
-}
-.id-card-brandblock{display:flex;align-items:center;gap:8px}
-.id-card-logo{color:var(--gold-1);display:flex}
-.id-card-brandtext{display:flex;flex-direction:column;line-height:1.15}
-.id-card-brand{
-  font-size:15px;font-weight:800;letter-spacing:.04em;color:var(--gold-0);
-}
-.id-card-brandsub{
-  font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--fg-mute);
-}
-.id-card-eventtag{
-  text-align:right;font-size:9.5px;font-weight:700;line-height:1.35;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--fg-dim);
-}
-
-/* ---------- TAGLINE ---------- */
-.id-card-tagline{
-  margin:20px 0 0;
-  font-size:22px;line-height:1.16;font-weight:800;letter-spacing:-.01em;
-  color:var(--gold-0);
-  text-shadow:0 0 20px rgba(232,194,122,.28);
-}
-.id-card-role{
-  display:block;margin-top:9px;
-  font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--fg-dim);
-}
-
-/* ---------- PHOTO ---------- */
-.id-card-avatar{
-  width:112px;height:112px;margin:18px auto 0;
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,#f3e9d6,#d9cbb2);
-  border:2px solid rgba(232,194,122,.65);
-  box-shadow:
-    0 0 0 5px rgba(232,194,122,.10),
-    0 8px 22px rgba(0,0,0,.5),
-    inset 0 -6px 14px rgba(0,0,0,.16);
-  overflow:hidden;
-}
-.id-card-avatar svg{width:60px;height:60px;color:#8d7f66}
-
-/* ---------- NAME ---------- */
-.id-card-name{
-  margin:15px 0 0;text-align:center;
-  font-size:21px;font-weight:800;letter-spacing:.02em;
-  color:var(--gold-0);
-  text-shadow:0 0 18px rgba(232,194,122,.22);
-  overflow-wrap:anywhere;
-}
-.id-card-subrole{
-  display:block;margin-top:5px;text-align:center;
-  font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;
-  color:var(--fg-mute);
-}
-
-/* ---------- META ROW ---------- */
-.id-card-meta{
-  display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
-  margin-top:14px;
-}
-.id-card-chip{
-  font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
-  color:var(--gold-1);
-  padding:5px 10px;border-radius:999px;
-  border:1px solid rgba(232,194,122,.28);
-  background:rgba(232,194,122,.07);
-}
-
-/* ---------- CODES ---------- */
-.id-card-codes{
-  display:flex;align-items:center;gap:14px;
-  margin-top:18px;padding-top:16px;
-  border-top:1px solid rgba(232,194,122,.16);
-}
-.id-card-qr{
-  flex-shrink:0;
-  width:76px;height:76px;padding:6px;border-radius:8px;
-  background:#fff;
-  box-shadow:0 2px 10px rgba(0,0,0,.5);
-}
-.id-card-qr canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
-.id-card-codestack{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
-.id-card-barcode{
-  width:100%;height:44px;
-  background:#fff;border-radius:4px;padding:4px 6px;
-  box-shadow:0 2px 10px rgba(0,0,0,.45);
-}
-.id-card-barcode canvas{display:block;width:100%;height:100%}
-.id-card-id{
-  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--fg-dim);font-weight:700;font-variant-numeric:tabular-nums;
-  text-align:center;overflow-wrap:anywhere;
-}
-
-/* card inner content fades in just after the drop */
-.id-card-header,.id-card-tagline,.id-card-avatar,.id-card-name,.id-card-subrole,.id-card-meta,.id-card-codes{opacity:1;}
-
-.stage-reveal .id-card-header  {animation-delay:.34s}
-.stage-reveal .id-card-tagline {animation-delay:.42s}
-.stage-reveal .id-card-avatar  {animation-delay:.50s}
-.stage-reveal .id-card-name    {animation-delay:.58s}
-.stage-reveal .id-card-subrole {animation-delay:.64s}
-.stage-reveal .id-card-meta    {animation-delay:.70s}
-.stage-reveal .id-card-codes   {animation-delay:.78s}
-
-/* card container drops from above the viewport */
-@keyframes cardDrop{
-  0%  {transform:translateY(-150vh)}
-  100%{transform:translateY(0)}
-}
-/* gentle pendulum swing once settled */
-@keyframes cardSwing{
-  0%  {transform:translateY(0) rotate(-1.5deg)}
-  100%{transform:translateY(0) rotate(1.5deg)}
-}
-/* actions fade up into place */
-@keyframes idFadeUp{
-  from{opacity:0;transform:translateY(10px)}
-  to  {opacity:1;transform:translateY(0)}
-}
-
-/* ============================================================
-   STAGE 1 — INITIATE  (registration confirmed)
-   ============================================================ */
-.id-stage{
-  position:absolute;inset:0;z-index:4;
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:16px;padding:24px;text-align:center;pointer-events:none;
-}
-.stage-initiate .id-stage-initiate{display:flex}
-.stage-generate .id-stage-generate{display:flex}
-
-.id-check{
-  width:96px;height:96px;border-radius:50%;
-  border:2px solid rgba(232,194,122,.3);
-  display:flex;align-items:center;justify-content:center;
-  position:relative;
-  box-shadow:0 0 32px rgba(232,194,122,.22),inset 0 0 24px rgba(232,194,122,.10);
-}
-.id-check::before{
-  content:"";position:absolute;inset:-2px;border-radius:50%;
-  border:2px solid transparent;border-top-color:var(--gold-1);border-right-color:var(--gold-1);
-  animation:checkRing .9s cubic-bezier(.4,0,.2,1) forwards;
-}
-@keyframes checkRing{
-  0%{transform:rotate(-90deg);opacity:0}
-  30%{opacity:1}
-  100%{transform:rotate(270deg);opacity:1}
-}
-.id-check svg{
-  width:44px;height:44px;color:var(--gold-0);
-  stroke-dasharray:40;stroke-dashoffset:40;
-  animation:checkDraw .45s ease .45s forwards;
-}
-@keyframes checkDraw{to{stroke-dashoffset:0}}
-.id-stage-title{
-  font-size:19px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;
-  color:var(--gold-0);margin:0;
-}
-.id-stage-sub{
-  font-size:13px;color:var(--fg-dim);margin:0;max-width:30ch;
-}
-
-/* ============================================================
-   STAGE 2 — GENERATE  (glowing wireframe + scanline)
-   ============================================================ */
-.id-wireframe{
-  position:relative;
-  width:clamp(320px,86vw,380px);
-  aspect-ratio:340/470;
-  border-radius:20px;
-  border:1.5px solid rgba(232,194,122,.75);
-  background:
-    linear-gradient(180deg,rgba(232,194,122,.05),transparent 60%),
-    rgba(10,11,15,.6);
-  box-shadow:
-    0 0 26px rgba(232,194,122,.42),
-    0 0 62px rgba(232,194,122,.20),
-    inset 0 0 34px rgba(232,194,122,.10);
-  overflow:hidden;
-  animation:wirePulse 1.5s ease-in-out infinite;
-}
-@keyframes wirePulse{
-  0%,100%{box-shadow:0 0 26px rgba(232,194,122,.42),0 0 62px rgba(232,194,122,.20),inset 0 0 34px rgba(232,194,122,.10)}
-  50%    {box-shadow:0 0 38px rgba(232,194,122,.62),0 0 92px rgba(232,194,122,.30),inset 0 0 46px rgba(232,194,122,.16)}
-}
-/* faint construction grid */
-.id-wireframe::before{
-  content:"";position:absolute;inset:0;
-  background:
-    repeating-linear-gradient(90deg,rgba(232,194,122,.10) 0 1px,transparent 1px 26px),
-    repeating-linear-gradient(180deg,rgba(232,194,122,.10) 0 1px,transparent 1px 26px);
-  opacity:.6;
-}
-/* scanline sweep */
-.id-wireframe::after{
-  content:"";position:absolute;left:0;right:0;height:36%;
-  background:linear-gradient(180deg,transparent,rgba(232,194,122,.28),transparent);
-  animation:wireScan 1.25s ease-in-out infinite;
-}
-@keyframes wireScan{
-  0%  {top:-36%}
-  100%{top:100%}
-}
-.id-wire-logo{
-  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:10px;
-  font-size:34px;font-weight:800;letter-spacing:.1em;color:var(--gold-0);
-  text-shadow:0 0 26px rgba(232,194,122,.65);
-}
-.id-wire-status{
-  position:absolute;left:0;right:0;bottom:34px;
-  font-size:11px;font-weight:700;letter-spacing:.34em;text-transform:uppercase;
-  color:var(--gold-1);
-  animation:wireBlink 1.1s ease-in-out infinite;
-}
-@keyframes wireBlink{50%{opacity:.35}}
-
-/* ============================================================
-   STAGE 4 — ENHANCE  (particle motes)
-   ============================================================ */
-.id-particles{
-  position:absolute;inset:0;z-index:1;pointer-events:none;
-  opacity:0;
-}
-.stage-enhance .id-particles{animation:partFade 1.6s ease forwards}
-@keyframes partFade{0%{opacity:0}35%{opacity:1}100%{opacity:.5}}
-.id-particles i{
-  position:absolute;bottom:22%;
-  width:3px;height:3px;border-radius:50%;
-  background:var(--gold-0);
-  box-shadow:0 0 7px rgba(232,194,122,.9);
-  opacity:0;
-}
-.stage-enhance .id-particles i,
-.stage-complete .id-particles i{animation:mote 2.6s ease-out infinite}
-@keyframes mote{
-  0%  {opacity:0;transform:translateY(0) scale(.5)}
-  20% {opacity:1}
-  100%{opacity:0;transform:translateY(-160px) scale(1.15)}
-}
-.id-particles i:nth-child(1){left:14%;animation-delay:0s}
-.id-particles i:nth-child(2){left:28%;animation-delay:.45s}
-.id-particles i:nth-child(3){left:41%;animation-delay:.9s}
-.id-particles i:nth-child(4){left:57%;animation-delay:.25s}
-.id-particles i:nth-child(5){left:70%;animation-delay:1.2s}
-.id-particles i:nth-child(6){left:84%;animation-delay:.68s}
-.id-particles i:nth-child(7){left:48%;animation-delay:1.7s}
-.id-particles i:nth-child(8){left:22%;animation-delay:2.05s}
-
-/* ============================================================
-   STAGE 5 — COMPLETE  (actions)
-   ============================================================ */
-.id-card-actions{
-  display:flex;flex-direction:column;gap:10px;
-  width:clamp(320px,86vw,380px);
-  margin:34px auto 0;
-  opacity:0;transform:translateY(10px);
-  pointer-events:none;
-}
-.stage-complete .id-card-actions{
-  animation:idFadeUp .5s ease .1s forwards;
-  pointer-events:auto;
-}
-.id-card-actions .btn{width:100%;justify-content:center}
-.id-card-hint{
-  margin:2px 0 0;text-align:center;
-  font-size:11px;color:var(--fg-mute);
-}
-
-/* close button */
-.id-card-close{
-  position:fixed;top:16px;right:16px;z-index:8;
-  width:42px;height:42px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.16);
-  color:var(--fg);cursor:pointer;
-  opacity:0;pointer-events:none;
-  transition:background .2s ease,transform .2s ease,opacity .3s ease;
-}
-.stage-complete .id-card-close{opacity:1;pointer-events:auto}
-.id-card-close:hover{background:rgba(255,255,255,.15);transform:rotate(90deg)}
-
-/* ---------- LANYARD RECOLOUR (teal, per reference) ---------- */
-.id-card-lanyard{opacity:1;transition:opacity .4s ease}
-.stage-reveal .id-card-lanyard,
-.stage-enhance .id-card-lanyard,
-.stage-complete .id-card-lanyard{opacity:1}
-.ly-strap{
-  background:linear-gradient(90deg,#0b5c52 0%,#12897a 22%,#16a394 50%,#12897a 78%,#0b5c52 100%)!important;
-}
-
-/* ---------- RESPONSIVE ---------- */
-@media (max-width:460px){
-  .id-card{--card-w:90vw;padding:18px 18px 18px}
-  .id-card-tagline{font-size:20px}
-  .id-card-avatar{width:96px;height:96px}
-  .id-card-name{font-size:19px}
-  .id-card-qr{width:66px;height:66px}
-  .id-card-actions{width:90vw}
-}
-
-/* ---------- REDUCED MOTION ---------- */
-@media (prefers-reduced-motion:reduce){
-  .id-card-overlay{transition:opacity .2s ease}
-  .id-card,.id-card-container,.id-card-lanyard{
-    animation:none!important;opacity:1;transform:none;transition:none;
-  }
-  .id-card-header,.id-card-tagline,.id-card-avatar,
-  .id-card-name,.id-card-subrole,.id-card-meta,.id-card-codes,
-  .id-card-actions{
-    animation:none!important;opacity:1;transform:none;
-  }
-  .id-card-actions{pointer-events:auto}
-  .id-card-container::after{opacity:1;transition:none}
-  .id-particles,.id-particles i,.id-wireframe,
-  .id-wireframe::after,.id-check::before,.id-check svg,
-  .id-wire-status,.id-card-bg .bokeh{animation:none!important}
-  .id-check svg{stroke-dashoffset:0}
-  .id-card-close{transition:none}
-}
-
-/* ---------- PRINT / DOWNLOAD (badge only) ---------- */
-@media print{
-  @page{margin:12mm}
-  body{background:#fff!important}
-  /* hide everything except the badge */
-  body>*:not(.id-card-overlay){display:none!important}
-  .id-card-overlay{
-    position:static!important;display:block!important;
-    background:none!important;backdrop-filter:none!important;
-    -webkit-backdrop-filter:none!important;
-    opacity:1!important;padding:0!important;overflow:visible!important;
-  }
-  .id-card-overlay[hidden]{display:none!important}
-  .id-card-bg,.id-particles,.id-card-close,.id-card-actions,
-  .id-stage,.id-card-lanyard{display:none!important}
-  .id-card-container{opacity:1!important;margin:0 auto!important;perspective:none!important}
-  .id-card-container::after{display:none!important}
-  .id-card{
-    opacity:1!important;transform:none!important;animation:none!important;
-    box-shadow:none!important;border:1px solid #999!important;
-    margin:0 auto;break-inside:avoid;
-    /* force the dark badge to actually render on paper */
-    -webkit-print-color-adjust:exact;print-color-adjust:exact;
-  }
-  .id-card-header,.id-card-tagline,.id-card-avatar,.id-card-name,
-  .id-card-subrole,.id-card-meta,.id-card-codes{
-    opacity:1!important;transform:none!important;animation:none!important;
-  }
-}
-
-/* ============================================================
    7. SLOW-REVEAL  (IntersectionObserver driven)
    ============================================================ */
 .reveal{
@@ -1976,108 +1346,227 @@ input[type="radio"] {
   <span>VIMAL JYOTHI ENGINEERING COLLEGE<br>KANNUR, KERALA • 2026</span>
 </footer>
 
-<!-- ============ EVENT ID CARD — 5-STAGE REVEAL ============ -->
-<div class="id-card-overlay" id="idCardOverlay" role="dialog" aria-modal="true" aria-labelledby="idCardName" hidden>
+    <!-- ============================================================
+       NEW CYBERNETIC VYORA '26 ID CARD MODAL & LANYARD
+       ============================================================ -->
+  <div class="id-card-overlay" id="idCardOverlay" role="dialog" aria-modal="true" aria-labelledby="idCardName" hidden>
 
-  <!-- ambient background -->
-  <div class="id-card-bg" aria-hidden="true">
-    <span class="bokeh b1"></span>
-    <span class="bokeh b2"></span>
-    <span class="bokeh b3"></span>
-    <span class="bokeh b4"></span>
-  </div>
-
-  <!-- stage 4 particle motes -->
-  <div class="id-particles" aria-hidden="true">
-    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-  </div>
-
-  <button class="id-card-close" id="idCardClose" aria-label="Close badge">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
-      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-    </svg>
-  </button>
-
-  <!-- ===== STAGE 1 — INITIATE ===== -->
-  <div class="id-stage id-stage-initiate">
-    <div class="id-check">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M4 12.5 10 18.5 20 6.5"/>
-      </svg>
+    <!-- Ambient background bokeh -->
+    <div class="id-card-bg" aria-hidden="true">
+      <span class="bokeh b1"></span>
+      <span class="bokeh b2"></span>
     </div>
-    <h2 class="id-stage-title">Registration Confirmed</h2>
-    <p class="id-stage-sub">Preparing your event ID card…</p>
-  </div>
 
+    <!-- Stage 4 particle motes -->
+    <div class="id-particles" aria-hidden="true">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
 
-  <!-- lanyard — V-shape hanging from the neck -->
-  <div id="idCardWrapper" style="transform-style: preserve-3d; perspective: 1000px;">
-  <div class="id-card-container" id="idCardContainer">
-    <div class="id-card-lanyard" id="idCardLanyard" aria-hidden="true">
-      <div class="ly-strap ly-strap-main"></div>
-      <div class="ly-ring"></div>
-      <div class="ly-clip">
-        <div class="ly-clip-ring"></div>
-        <div class="ly-clip-body"></div>
+    <!-- Close button (×) -->
+    <button class="id-card-close" id="idCardClose" aria-label="Close badge">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+
+    <!-- ===== STAGE 1 — INITIATE ===== -->
+    <div class="id-stage id-stage-initiate">
+      <div class="id-check">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 12.5 10 18.5 20 6.5"/>
+        </svg>
+      </div>
+      <h2 class="id-stage-title">Registration Confirmed</h2>
+      <p class="id-stage-sub">Preparing your event ID card…</p>
+    </div>
+
+    <!-- ===== STAGE 2 — GENERATE ===== -->
+    <div class="id-stage id-stage-generate">
+      <div class="id-wireframe">
+        <div class="id-wire-logo">
+          <span>VYORA '26</span>
+        </div>
+        <div class="id-wire-status">SYNTHESIZING PASS…</div>
       </div>
     </div>
-    <article class="id-card" id="idCard">
 
-      <header class="id-card-header">
-        <div class="id-card-brandblock">
-          <div class="id-card-logo" aria-hidden="true">
-            <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
-              <path d="M16 2 30 16 16 30 2 16Z" fill="currentColor" opacity=".18"/>
-              <path d="M16 2 30 16 16 30 2 16Z" stroke="currentColor" stroke-width="1.6"/>
-              <circle cx="16" cy="16" r="4" fill="currentColor"/>
-            </svg>
-          </div>
-          <div class="id-card-brandtext">
-            <span class="id-card-brand">IEEE</span>
-            <span class="id-card-brandsub">VJEC</span>
-          </div>
-        </div>
-        <div class="id-card-eventtag">
-          Summer<br>School<br>2026
-        </div>
-      </header>
+    <!-- Lanyard SVG & Rigid Card Swing Structure -->
+    <div id="idCardWrapper">
+      <div class="id-card-lanyard" id="idCardLanyard" aria-hidden="true">
+        <svg class="ly-svg" id="lySvg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="lyChrome" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0"   stop-color="#5f6367"/>
+              <stop offset=".2"  stop-color="#9aa0a5"/>
+              <stop offset=".4"  stop-color="#d9dee2"/>
+              <stop offset=".5"  stop-color="#f4f7f9"/>
+              <stop offset=".6"  stop-color="#d9dee2"/>
+              <stop offset=".8"  stop-color="#9aa0a5"/>
+              <stop offset="1"   stop-color="#5f6367"/>
+            </linearGradient>
+            <filter id="lyMetal" x="-60%" y="-60%" width="220%" height="220%">
+              <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity=".5"/>
+            </filter>
+          </defs>
 
-      <h2 class="id-card-tagline">
-        Build. Learn.<br>Innovate.
-        <span class="id-card-role" id="idCardRole">Event Participant</span>
-      </h2>
+          <!-- Back rim of O-ring -->
+          <circle class="ly-ring-arc" id="lyRingBackC" r="9"/>
 
-      <div class="id-card-avatar" id="idCardAvatar">
-        <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
-          <circle cx="24" cy="18" r="8" fill="currentColor"/>
-          <ellipse cx="24" cy="41" rx="14" ry="12" fill="currentColor"/>
+          <!-- 2 Woven cloth strands -->
+          <g id="lyStrands">
+            <path class="ly-s" id="lyStrandLEdge"   stroke-width="24"/>
+            <path class="ly-s" id="lyStrandREdge"   stroke-width="24"/>
+            <path class="ly-s" id="lyStrandLMid"    stroke-width="19"/>
+            <path class="ly-s" id="lyStrandRMid"    stroke-width="19"/>
+            <path class="ly-s" id="lyStrandLCore"   stroke-width="13"/>
+            <path class="ly-s" id="lyStrandRCore"   stroke-width="13"/>
+            <path class="ly-s" id="lyStrandLSheen"  stroke-width="3"/>
+            <path class="ly-s" id="lyStrandRSheen"  stroke-width="3"/>
+            <path class="ly-s" id="lyStrandLStitch" stroke-width="1.25"/>
+            <path class="ly-s" id="lyStrandRStitch" stroke-width="1.25"/>
+          </g>
+
+          <!-- Front rim of O-ring -->
+          <path class="ly-ring-arc" id="lyRingFrontC" d="M9,0 A9,9 0 0 1 -9,0"/>
+
+          <!-- Chrome Swivel Lobster-Claw Snap-Hook (clasp loops through slot hole) -->
+          <g id="lyHookG">
+            <line class="ly-hook" x1="0" y1="-20" x2="0" y2="-9" stroke-width="2.8"/>
+            <rect class="ly-hook-fill" x="-4.5" y="-9" width="9" height="9.5" rx="2.5"/>
+            <path class="ly-hook" d="M-3,-1 v12 a4,4 0 1 0 7,-3.5" stroke-width="2.8"/>
+          </g>
         </svg>
       </div>
 
-      <h3 class="id-card-name" id="idCardName">—</h3>
-      <span class="id-card-subrole" id="idCardSubrole">Participant</span>
+      <!-- Container with rigid pendulum swing group -->
+      <div class="id-card-container" id="idCardContainer">
+        <div class="id-card-swing" id="idCardSwing">
+          <article class="id-card" id="idCard">
 
-      <div class="id-card-meta">
-        <span class="id-card-chip" id="idCardTrack">—</span>
-        <span class="id-card-chip" id="idCardTicket">—</span>
-      </div>
+            <!-- Inside Interior Container (100% contained within yellow area) -->
+            <div class="vy-card-interior">
+              <div class="vy-card-gloss"></div>
 
-      <div class="id-card-codes">
-        <div class="id-card-qr" id="idCardQr" aria-label="Participant QR code" role="img"></div>
-        <div class="id-card-codestack">
-          
-          <div class="id-card-id" id="idCardRegId">—</div>
+              <!-- 1. Top Brand Row -->
+              <div class="vy-top-row">
+                <div class="vy-brand">
+                  <svg class="vy-diamond" width="18" height="18" viewBox="0 0 32 32" fill="none">
+                    <path d="M16 2 30 16 16 30 2 16Z" fill="#000" opacity=".2"/>
+                    <path d="M16 2 30 16 16 30 2 16Z" stroke="#000" stroke-width="2.5"/>
+                    <circle cx="16" cy="16" r="3.5" fill="#000"/>
+                    <line x1="16" y1="2" x2="16" y2="30" stroke="#000" stroke-width="2"/>
+                    <line x1="6" y1="16" x2="26" y2="16" stroke="#000" stroke-width="2"/>
+                  </svg>
+                  <div class="vy-brand-labels">
+                    <span>IEEE</span>
+                    <span>VJEC SB</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2. Big Pixel Header: VYORA 26 -->
+              <div class="vy-title-block">
+                <div class="vy-title-text">
+                  <span class="vy-char">V</span><span class="vy-char">Y</span><span class="vy-black-hole" aria-label="O"></span><span class="vy-char">R</span><span class="vy-char">A</span>
+                </div>
+                <div class="vy-year-text">26</div>
+                <div class="vy-slogan">IDEAS • PEOPLE • TECH • A BIGGER TOMORROW</div>
+              </div>
+
+              <!-- 3. Middle Section -->
+              <div class="vy-mid-section">
+                <div class="vy-left-side">
+                  <div class="vy-side-quote">
+                    <span>NOT</span>
+                    <span>JUST</span>
+                    <span>AN</span>
+                    <span>EVENT</span>
+                    <span>A</span>
+                    <span>MOVEMENT</span>
+                  </div>
+                  <div class="vy-quote-bar"></div>
+                </div>
+
+                <div class="vy-center-avatar">
+                  <div class="vy-avatar-frame-border">
+                    <div class="vy-avatar-inner">
+                      <div class="vy-avatar-circle" id="idCardAvatar">
+                        <svg viewBox="0 0 48 48" fill="none">
+                          <circle cx="24" cy="18" r="8.5" fill="#1b1b1b"/>
+                          <ellipse cx="24" cy="41" rx="14" ry="12.5" fill="#1b1b1b"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="vy-right-side">
+                  <div class="vy-slashes">///</div>
+                  <div class="vy-vertical-pill" id="idCardRole">PARTICIPANT</div>
+                </div>
+              </div>
+
+              <!-- 4. Name Box -->
+              <div class="vy-name-box">
+                <h3 class="vy-name" id="idCardName">Abhin Joe Saji</h3>
+                <span class="vy-subrole" id="idCardSubrole">PARTICIPANT</span>
+              </div>
+
+              <!-- 5. Bottom Grid -->
+              <div class="vy-bottom-grid">
+                <div class="vy-info-panel">
+                  <div class="vy-info-row">
+                    <svg class="vy-icon" viewBox="0 0 24 24" fill="none" stroke="#eaff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                      <path d="M6 12v5c0 3 6 3 6 3s6 0 6-3v-5"/>
+                    </svg>
+                    <span class="vy-info-text">VIMAL JYOTHI<br>ENGINEERING COLLEGE</span>
+                  </div>
+                  <div class="vy-info-row">
+                    <svg class="vy-icon" viewBox="0 0 24 24" fill="none" stroke="#eaff00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span class="vy-info-text" id="idCardTrack">APPLIED MACHINE<br>LEARNING</span>
+                  </div>
+                  <div class="vy-info-row">
+                    <div class="vy-icon-box">#</div>
+                    <span class="vy-info-text vy-id-highlight" id="idCardRegId">ID: VYORA26-PT-0137</span>
+                  </div>
+                </div>
+
+                <div class="vy-qr-panel">
+                  <div class="vy-qr-bracket-frame">
+                    <div class="vy-qr-container" id="idCardQr"></div>
+                  </div>
+                  <div class="vy-qr-subtext">[ SCAN TO VERIFY ]</div>
+                </div>
+              </div>
+
+              <!-- 6. Footer Slogan -->
+              <div class="vy-footer-bar">
+                <span class="vy-bracket-l">[&gt;</span>
+                <span class="vy-footer-txt">BE A PART OF SOMETHING BIGGER</span>
+                <span class="vy-bracket-r">&lt;]</span>
+              </div>
+
+            </div> <!-- end .vy-card-interior -->
+
+          </article>
         </div>
       </div>
-
-    </article>
     </div>
-    <!-- ===== STAGE 5 — actions ===== -->
-    <div class="id-card-actions" style="flex-direction:column; gap:8px;">
-      <p class="id-card-hint" id="idCardHint">Show this badge at the registration desk.</p>
+
+    <!-- STAGE 5 Actions (Positioned cleanly at screen bottom) -->
+    <div class="id-card-actions">
+      <button class="btn-gold" id="downloadQrBtn" type="button">⬇&nbsp; Download Ticket</button>
+      <p class="id-card-hint">Show this badge at the registration desk.</p>
     </div>
   </div>
-</div>
+
+<script src="ID card/id-card.js"></script>
 
 <script>
 (() => {
@@ -2342,646 +1831,37 @@ input[type="radio"] {
   const form   = document.getElementById('regForm');
   const status = document.getElementById('formStatus');
 
-  /* ==========================================================
-     QR CODE — self-contained byte-mode encoder (ECC level M)
-     Reed–Solomon over GF(256), primitive polynomial 0x11d.
-     Supports versions 1–10 (up to 213 bytes) which is ample
-     for the badge payload. Kept inline so the site stays
-     dependency-free and works offline.
-     ========================================================== */
-  const QR = (() => {
-    // ---- GF(256) log/antilog tables ----
-    const EXP = new Uint8Array(512), LOG = new Uint8Array(256);
-    for (let i = 0, x = 1; i < 255; i++) {
-      EXP[i] = x; LOG[x] = i;
-      x <<= 1; if (x & 0x100) x ^= 0x11d;
-    }
-    for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+  /* ============================================================
+     ID CARD INITIALIZATION & CONTROLLER
+     ============================================================ */
+  const idCardController = new IDCard.Controller();
 
-    const mul = (a, b) => (a === 0 || b === 0) ? 0 : EXP[LOG[a] + LOG[b]];
-
-    // ---- Reed–Solomon generator polynomial of given degree ----
-    function rsPoly(deg) {
-      let poly = [1];
-      for (let i = 0; i < deg; i++) {
-        const next = new Array(poly.length + 1).fill(0);
-        for (let j = 0; j < poly.length; j++) {
-          next[j]     ^= poly[j];
-          next[j + 1] ^= mul(poly[j], EXP[i]);
-        }
-        poly = next;
-      }
-      return poly;
-    }
-
-    function rsEncode(data, ecLen) {
-      const gen = rsPoly(ecLen);
-      const res = new Array(ecLen).fill(0);
-      for (const byte of data) {
-        const factor = byte ^ res[0];
-        res.shift(); res.push(0);
-        for (let i = 0; i < ecLen; i++) res[i] ^= mul(gen[i + 1], factor);
-      }
-      return res;
-    }
-
-    // ---- ECC level M block structure, versions 1..10 ----
-    // [ecPerBlock, blocksG1, dataG1, blocksG2, dataG2]
-    const SPEC = [
-      null,
-      [10, 1, 16, 0,  0], [16, 1, 28, 0,  0], [26, 1, 44, 0,  0],
-      [18, 2, 32, 0,  0], [24, 2, 43, 0,  0], [16, 4, 27, 0,  0],
-      [18, 4, 31, 0,  0], [22, 2, 38, 2, 39], [22, 3, 36, 2, 37],
-      [26, 4, 43, 1, 44],
-    ];
-    const ALIGN = [
-      null, [], [6,18], [6,22], [6,26], [6,30],
-      [6,34], [6,22,38], [6,24,42], [6,26,46], [6,28,50],
-    ];
-    const capacity = v => SPEC[v][1] * SPEC[v][2] + SPEC[v][3] * SPEC[v][4];
-
-    // ---- build the codeword stream ----
-    function buildCodewords(bytes, version) {
-      const total = capacity(version);
-      const bits  = [];
-      const push  = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >> i) & 1); };
-
-      push(0b0100, 4);                                   // byte mode
-      push(bytes.length, version < 10 ? 8 : 16);         // character count
-      for (const b of bytes) push(b, 8);
-
-      // terminator + byte alignment
-      for (let i = 0; i < 4 && bits.length < total * 8; i++) bits.push(0);
-      while (bits.length % 8) bits.push(0);
-
-      const cw = [];
-      for (let i = 0; i < bits.length; i += 8) {
-        let byte = 0;
-        for (let j = 0; j < 8; j++) byte = (byte << 1) | bits[i + j];
-        cw.push(byte);
-      }
-      // pad alternately with 0xEC / 0x11
-      const PAD = [0xec, 0x11];
-      for (let i = 0; cw.length < total; i++) cw.push(PAD[i % 2]);
-      return cw;
-    }
-
-    // ---- interleave data + ecc across blocks ----
-    function interleave(cw, version) {
-      const [ecLen, b1, d1, b2, d2] = SPEC[version];
-      const blocks = [], eccs = [];
-      let pos = 0;
-      for (let i = 0; i < b1 + b2; i++) {
-        const len = i < b1 ? d1 : d2;
-        const block = cw.slice(pos, pos + len);
-        pos += len;
-        blocks.push(block);
-        eccs.push(rsEncode(block, ecLen));
-      }
-      const out = [];
-      const maxData = Math.max(d1, d2);
-      for (let i = 0; i < maxData; i++)
-        for (const b of blocks) if (i < b.length) out.push(b[i]);
-      for (let i = 0; i < ecLen; i++)
-        for (const e of eccs) out.push(e[i]);
-      return out;
-    }
-
-    // ---- matrix construction ----
-    function buildMatrix(version, codewords) {
-      const size = version * 4 + 17;
-      const mod  = Array.from({length: size}, () => new Array(size).fill(null));
-      const res  = Array.from({length: size}, () => new Array(size).fill(false)); // reserved
-
-      const setF = (r, c, v) => { mod[r][c] = v; res[r][c] = true; };
-
-      // finder patterns + separators
-      const finder = (row, col) => {
-        for (let r = -1; r <= 7; r++)
-          for (let c = -1; c <= 7; c++) {
-            const rr = row + r, cc = col + c;
-            if (rr < 0 || rr >= size || cc < 0 || cc >= size) continue;
-            const inRing = (r >= 0 && r <= 6 && (c === 0 || c === 6)) ||
-                           (c >= 0 && c <= 6 && (r === 0 || r === 6));
-            const inCore = r >= 2 && r <= 4 && c >= 2 && c <= 4;
-            setF(rr, cc, inRing || inCore);
-          }
-      };
-      finder(0, 0); finder(0, size - 7); finder(size - 7, 0);
-
-      // timing patterns
-      for (let i = 8; i < size - 8; i++) {
-        setF(6, i, i % 2 === 0);
-        setF(i, 6, i % 2 === 0);
-      }
-
-      // alignment patterns
-      const centers = ALIGN[version];
-      for (const r of centers)
-        for (const c of centers) {
-          if ((r <= 8 && c <= 8) || (r <= 8 && c >= size - 9) || (r >= size - 9 && c <= 8)) continue;
-          for (let dr = -2; dr <= 2; dr++)
-            for (let dc = -2; dc <= 2; dc++)
-              setF(r + dr, c + dc, Math.max(Math.abs(dr), Math.abs(dc)) !== 1);
-        }
-
-      // dark module
-      setF(size - 8, 8, true);
-
-      // reserve format areas
-      for (let i = 0; i < 9; i++) {
-        if (!res[8][i])        { res[8][i] = true; mod[8][i] = false; }
-        if (!res[i][8])        { res[i][8] = true; mod[i][8] = false; }
-      }
-      for (let i = 0; i < 8; i++) {
-        if (!res[8][size - 1 - i]) { res[8][size - 1 - i] = true; mod[8][size - 1 - i] = false; }
-        if (!res[size - 1 - i][8]) { res[size - 1 - i][8] = true; mod[size - 1 - i][8] = false; }
-      }
-      // reserve version info (v >= 7)
-      if (version >= 7) {
-        for (let i = 0; i < 6; i++)
-          for (let j = 0; j < 3; j++) {
-            res[size - 11 + j][i] = true; mod[size - 11 + j][i] = false;
-            res[i][size - 11 + j] = true; mod[i][size - 11 + j] = false;
-          }
-      }
-
-      // place data in the zig-zag pattern
-      let bitIdx = 0, dir = -1, row = size - 1;
-      for (let col = size - 1; col > 0; col -= 2) {
-        if (col === 6) col--;                       // skip vertical timing column
-        for (;;) {
-          for (let i = 0; i < 2; i++) {
-            const c = col - i;
-            if (!res[row][c]) {
-              const byte = codewords[bitIdx >> 3];
-              const bit  = byte === undefined ? 0 : (byte >> (7 - (bitIdx & 7))) & 1;
-              mod[row][c] = bit === 1;
-              bitIdx++;
-            }
-          }
-          row += dir;
-          if (row < 0 || row >= size) { row -= dir; dir = -dir; break; }
-        }
-      }
-      return { mod, res, size };
-    }
-
-    const MASKS = [
-      (r, c) => (r + c) % 2 === 0,
-      (r, c) => r % 2 === 0,
-      (r, c) => c % 3 === 0,
-      (r, c) => (r + c) % 3 === 0,
-      (r, c) => (Math.floor(r / 2) + Math.floor(c / 3)) % 2 === 0,
-      (r, c) => (r * c) % 2 + (r * c) % 3 === 0,
-      (r, c) => ((r * c) % 2 + (r * c) % 3) % 2 === 0,
-      (r, c) => ((r + c) % 2 + (r * c) % 3) % 2 === 0,
-    ];
-
-    // format information — BCH(15,5), ECC level M = 0b00
-    function formatBits(mask) {
-      let data = (0b00 << 3) | mask;
-      let rem  = data;
-      for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >> 9) * 0x537);
-      return ((data << 10) | rem) ^ 0x5412;
-    }
-    // version information — BCH(18,6)
-    function versionBits(v) {
-      let rem = v;
-      for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >> 11) * 0x1f25);
-      return (v << 12) | rem;
-    }
-
-    function applyMaskAndFormat(m, maskIdx) {
-      const { mod, res, size } = m;
-      const grid = mod.map(r => r.slice());
-      for (let r = 0; r < size; r++)
-        for (let c = 0; c < size; c++)
-          if (!res[r][c] && MASKS[maskIdx](r, c)) grid[r][c] = !grid[r][c];
-
-      // format info, both copies
-      const fmt = formatBits(maskIdx);
-      for (let i = 0; i < 15; i++) {
-        const bit = ((fmt >> i) & 1) === 1;
-        if (i < 6)       grid[i][8] = bit;
-        else if (i < 8)  grid[i + 1][8] = bit;
-        else if (i === 8) grid[8][7] = bit;
-        else              grid[8][14 - i] = bit;
-
-        if (i < 8)       grid[8][size - 1 - i] = bit;
-        else             grid[size - 15 + i][8] = bit;
-      }
-      return grid;
-    }
-
-    // penalty scoring, so we pick the most scannable mask
-    function penalty(grid, size) {
-      let score = 0;
-      // rule 1 — runs of 5+
-      for (let i = 0; i < size; i++) {
-        for (const isRow of [true, false]) {
-          let run = 1;
-          for (let j = 1; j < size; j++) {
-            const a = isRow ? grid[i][j]     : grid[j][i];
-            const b = isRow ? grid[i][j - 1] : grid[j - 1][i];
-            if (a === b) run++;
-            else { if (run >= 5) score += run - 2; run = 1; }
-          }
-          if (run >= 5) score += run - 2;
-        }
-      }
-      // rule 2 — 2x2 blocks
-      for (let r = 0; r < size - 1; r++)
-        for (let c = 0; c < size - 1; c++) {
-          const v = grid[r][c];
-          if (v === grid[r][c + 1] && v === grid[r + 1][c] && v === grid[r + 1][c + 1]) score += 3;
-        }
-      // rule 3 — finder-like patterns
-      const P1 = [true,false,true,true,true,false,true,false,false,false,false];
-      const P2 = [false,false,false,false,true,false,true,true,true,false,true];
-      const match = (arr, pat) => pat.every((p, k) => arr[k] === p);
-      for (let i = 0; i < size; i++)
-        for (let j = 0; j <= size - 11; j++) {
-          const rowSeg = [], colSeg = [];
-          for (let k = 0; k < 11; k++) { rowSeg.push(grid[i][j + k]); colSeg.push(grid[j + k][i]); }
-          if (match(rowSeg, P1) || match(rowSeg, P2)) score += 40;
-          if (match(colSeg, P1) || match(colSeg, P2)) score += 40;
-        }
-      // rule 4 — dark/light balance
-      let dark = 0;
-      for (let r = 0; r < size; r++) for (let c = 0; c < size; c++) if (grid[r][c]) dark++;
-      const pct = (dark * 100) / (size * size);
-      score += Math.floor(Math.abs(pct - 50) / 5) * 10;
-      return score;
-    }
-
-    /** Encode `text` and return a square boolean matrix. */
-    function encode(text) {
-      const bytes = Array.from(new TextEncoder().encode(text));
-      let version = 0;
-      for (let v = 1; v <= 10; v++) {
-        const overhead = 4 + (v < 10 ? 8 : 16);
-        if (bytes.length * 8 + overhead <= capacity(v) * 8) { version = v; break; }
-      }
-      if (!version) throw new Error('QR payload too long');
-
-      const cw = interleave(buildCodewords(bytes, version), version);
-      const m  = buildMatrix(version, cw);
-
-      // version info blocks for v >= 7
-      if (version >= 7) {
-        const vb = versionBits(version);
-        for (let i = 0; i < 18; i++) {
-          const bit = ((vb >> i) & 1) === 1;
-          const r = Math.floor(i / 3), c = i % 3;
-          m.mod[m.size - 11 + c][r] = bit;
-          m.mod[r][m.size - 11 + c] = bit;
-        }
-      }
-
-      let best = null, bestScore = Infinity;
-      for (let mask = 0; mask < 8; mask++) {
-        const grid = applyMaskAndFormat(m, mask);
-        const s = penalty(grid, m.size);
-        if (s < bestScore) { bestScore = s; best = grid; }
-      }
-      return best;
-    }
-
-    /** Render the matrix into `el` as a crisp canvas. */
-    function render(el, text) {
-      const grid = encode(text);
-      const n = grid.length;
-      const quiet = 2;
-      const px = 4;                                  // module size in canvas pixels
-      const dim = (n + quiet * 2) * px;
-
-      const cv = document.createElement('canvas');
-      cv.width = cv.height = dim;
-      const ctx = cv.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, dim, dim);
-      ctx.fillStyle = '#000000';
-      for (let r = 0; r < n; r++)
-        for (let c = 0; c < n; c++)
-          if (grid[r][c]) ctx.fillRect((c + quiet) * px, (r + quiet) * px, px, px);
-
-      el.textContent = '';
-      el.appendChild(cv);
-    }
-
-    return { encode, render };
-  })();
-
-  /* ==========================================================
-     CODE 128 (subset B) — real, scannable barcode
-     ========================================================== */
-  const Code128 = (() => {
-    const PATTERNS = [
-      '212222','222122','222221','121223','121322','131222','122213','122312','132212','221213',
-      '221312','231212','112232','122132','122231','113222','123122','123221','223211','221132',
-      '221231','213212','223112','312131','311222','321122','321221','312212','322112','322211',
-      '212123','212321','232121','111323','131123','131321','112313','132113','132311','211313',
-      '231113','231311','112133','112331','132131','113123','113321','133121','313121','211331',
-      '231131','213113','213311','213131','311123','311321','331121','312113','312311','332111',
-      '314111','221411','431111','111224','111422','121124','121421','141122','141221','112214',
-      '112412','122114','122411','142112','142211','241211','221114','413111','241112','134111',
-      '111242','121142','121241','114212','124112','124211','411212','421112','421211','212141',
-      '214121','412121','111143','111341','131141','114113','114311','411113','411311','113141',
-      '114131','311141','411131','211412','211214','211232','2331112',
-    ];
-    const START_B = 104, STOP = 106;
-
-    /** Render `text` into `el` as a canvas barcode. */
-    function render(el, text) {
-      const values = [START_B];
-      for (const ch of text) {
-        const v = ch.charCodeAt(0) - 32;
-        values.push(v >= 0 && v < 95 ? v : 0);       // fall back to space
-      }
-      let sum = START_B;
-      for (let i = 1; i < values.length; i++) sum += values[i] * i;
-      values.push(sum % 103, STOP);
-
-      // expand to bar widths — patterns alternate bar/space
-      const bars = [];
-      for (const v of values) {
-        const pat = PATTERNS[v];
-        for (let i = 0; i < pat.length; i++) bars.push({ w: +pat[i], dark: i % 2 === 0 });
-      }
-      const totalUnits = bars.reduce((a, b) => a + b.w, 0);
-
-      const unit = 2, height = 80, quiet = 10;
-      const cv = document.createElement('canvas');
-      cv.width  = (totalUnits + quiet * 2) * unit;
-      cv.height = height;
-      const ctx = cv.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, cv.width, cv.height);
-      ctx.fillStyle = '#000000';
-      let x = quiet * unit;
-      for (const b of bars) {
-        if (b.dark) ctx.fillRect(x, 0, b.w * unit, height);
-        x += b.w * unit;
-      }
-      el.textContent = '';
-      el.appendChild(cv);
-    }
-    return { render };
-  })();
-
-  // ---- ID card elements ----
+  // Backdrop click dismisses badge modal
+  const idCardCloseBtn = document.getElementById('idCardClose');
+  if (idCardCloseBtn) {
+    idCardCloseBtn.addEventListener('click', () => {
+      const initView = document.getElementById('shutter-initial-view');
+      const procView = document.getElementById('shutter-processing-view');
+      const tyView   = document.getElementById('shutter-thankyou-view');
+      if (initView) initView.style.display = 'block';
+      if (procView) procView.style.display = 'none';
+      if (tyView)   tyView.style.display   = 'none';
+    });
+  }
   const idCardOverlay = document.getElementById('idCardOverlay');
-  const idCardClose   = document.getElementById('idCardClose');
-  const idCardName    = document.getElementById('idCardName');
-  const idCardSubrole = document.getElementById('idCardSubrole');
-  const idCardRole    = document.getElementById('idCardRole');
-  const idCardTrack   = document.getElementById('idCardTrack');
-  const idCardTicket  = document.getElementById('idCardTicket');
-  const idCardRegId   = document.getElementById('idCardRegId');
-  const idCardQr      = document.getElementById('idCardQr');
-  const idCardBarcode = document.getElementById('idCardBarcode');
-  const idCardDownload= document.getElementById('idCardDownload');
-  const idCardShare   = document.getElementById('idCardShare');
-  const idCardHint    = document.getElementById('idCardHint');
-
-  const STAGES = ['stage-initiate','stage-generate','stage-reveal','stage-enhance','stage-complete'];
-  let sequenceRunning = false;
-  let lastFocused = null;
-  let currentRegId = '';
-  const stageTimers = [];
-
-  // A reload (including the browser back-forward cache) must always begin on
-  // the landing page, never midway through a previously generated ID card.
-  // The card sequence is started only by a successful form submission.
-  function resetIdCardOnPageLoad() {
-    clearStageTimers();
-    sequenceRunning = false;
-    idCardOverlay.classList.remove('open', ...STAGES);
-    idCardOverlay.hidden = true;
-    idCardOverlay.style.transform = '';
-    idCardOverlay.style.transition = '';
-    idCardOverlay.style.opacity = '';
-  }
-  resetIdCardOnPageLoad();
-  window.addEventListener('pageshow', event => {
-    if (event.persisted) resetIdCardOnPageLoad();
-  });
-
-  function setStage(name) {
-    idCardOverlay.classList.remove(...STAGES);
-    if (name) idCardOverlay.classList.add(name);
-  }
-  function clearStageTimers() {
-    while (stageTimers.length) clearTimeout(stageTimers.pop());
-  }
-  const at = (ms, fn) => stageTimers.push(setTimeout(fn, ms));
-
-  /* Reg ID follows the printed badge format: IEEE2026VJEC####.
-     Base-36 time slice + a random tail keeps it unique per submission
-     without a server to allocate sequential numbers. */
-  function generateRegId() {
-    const t = Date.now().toString(36).toUpperCase().slice(-3);
-    const r = Math.floor(Math.random() * 36).toString(36).toUpperCase();
-    return 'IEEE2026VJEC' + (t + r).slice(-4);
-  }
-
-  function roleForMembership(isMember) {
-    return isMember === 'Yes' ? 'IEEE Member' : 'Participant';
-  }
-
-  function populateCard(data) {
-    const name = data.name.trim();
-    currentRegId = generateRegId();
-
-    idCardName.textContent    = name;
-    idCardRole.textContent    = 'Event Participant';
-    idCardSubrole.textContent = roleForMembership(data.is_ieee_member);
-    idCardTrack.textContent   = data.track || '—';
-    idCardTicket.textContent  = data.is_ieee_member === 'Yes' ? 'IEEE Member' : 'Non-Member';
-    idCardRegId.textContent   = 'ID: ' + currentRegId;
-
-    // ID + name + event, so a scan identifies the holder offline
-    const payload = ['IEEE-SS26', currentRegId, name, 'IEEE Summer School 2026'].join('|');
-    try {
-      QR.render(idCardQr, payload);
-      // Barcode removed
-    } catch (err) {
-      console.error('Code generation failed', err);
-    }
-  }
-
-  function closeIdCard() {
-    clearStageTimers();
-    sequenceRunning = false;
-    idCardOverlay.classList.remove('open', ...STAGES);
-    document.removeEventListener('keydown', onEsc);
-    targetRotX = 0; targetRotY = 0; rotX = 0; rotY = 0;
-    idCardOverlay.style.transform = '';
-    idCardOverlay.style.transition = '';
-
-    // Reset all three shutter views back to the initial state
-    const initView = document.getElementById('shutter-initial-view');
-    const procView = document.getElementById('shutter-processing-view');
-    const tyView   = document.getElementById('shutter-thankyou-view');
-    if (initView) initView.style.display = 'block';
-    if (procView) procView.style.display = 'none';
-    if (tyView)   tyView.style.display   = 'none';
-
-    // Reset progress bar
-    const pBar  = document.getElementById('shutter-p-bar');
-    const pText = document.getElementById('shutter-p-text');
-    if (pBar)  pBar.textContent  = '□□□□□□□□□□';
-    if (pText) pText.textContent = '0%';
-
-    setTimeout(() => {
-      idCardOverlay.hidden = true;
-      // Restore the page to its fully-open state (nav visible, scroll enabled).
-      // liftShutterForCard did NOT call openShutter, so we set everything manually.
-      isOpen = true;
-      body.classList.add('is-open');
-      shutter.classList.add('open');
-      shutter.setAttribute('aria-hidden', 'true');
-      shutter.style.visibility = 'hidden';
-      root.classList.remove('locked');
-      body.classList.remove('locked');
-      body.style.overflow = 'auto';
-      if (lastFocused && lastFocused.focus) lastFocused.focus();
-    }, 260);
-  }
-  function onEsc(e) { if (e.key === 'Escape') closeIdCard(); }
-
-  /* The five-stage reveal from the design:
-     INITIATE → GENERATE → REVEAL (shutter down/up) → ENHANCE → COMPLETE */
-  
-  
-  const idCardWrapper = document.getElementById('idCardWrapper');
-  let rotX = 0, rotY = 0;
-  let targetRotX = 0, targetRotY = 0;
-  
-  function updateCardRotation() {
-    rotX += (targetRotX - rotX) * 0.1;
-    rotY += (targetRotY - rotY) * 0.1;
-    if(idCardWrapper) {
-       idCardWrapper.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-    }
-    requestAnimationFrame(updateCardRotation);
-  }
-  updateCardRotation();
-  
-  document.addEventListener('mousemove', (e) => {
-    if(!sequenceRunning) return;
-    const x = (e.clientX / window.innerWidth - 0.5) * 20; // max 10 deg
-    const y = -(e.clientY / window.innerHeight - 0.5) * 20;
-    targetRotX = y;
-    targetRotY = x;
-  });
-
-
-  function runIdCardSequence(data) {
-    if (sequenceRunning) return;
-    sequenceRunning = true;
-    lastFocused = document.activeElement;
-    clearStageTimers();
-
-    populateCard(data);
-
-    const initView = document.getElementById('shutter-initial-view');
-    const procView = document.getElementById('shutter-processing-view');
-    const tyView   = document.getElementById('shutter-thankyou-view');
-    if (initView) initView.style.display = 'none';
-    if (procView) procView.style.display = 'flex';
-    if (tyView)   tyView.style.display   = 'none';
-
-    // Reset progress bar
-    const pBar  = document.getElementById('shutter-p-bar');
-    const pText = document.getElementById('shutter-p-text');
-    if (pBar)  pBar.textContent  = '□□□□□□□□□□';
-    if (pText) pText.textContent = '0%';
-
-    // Close shutter to show processing animation
-    if (!isOpen) {
-      openShutter(null, () => {
-        closeShutter(runProcessingSequence);
-      });
-    } else {
-      closeShutter(runProcessingSequence);
-    }
-
-    function runProcessingSequence() {
-      // Animate progress bar on shutter face (~2s)
-      animateProgressBar(() => {
-        // Switch to "THANK YOU" view
+  if (idCardOverlay) {
+    idCardOverlay.addEventListener('click', e => {
+      if (e.target === idCardOverlay) {
+        idCardController.close();
+        const initView = document.getElementById('shutter-initial-view');
+        const procView = document.getElementById('shutter-processing-view');
+        const tyView   = document.getElementById('shutter-thankyou-view');
+        if (initView) initView.style.display = 'block';
         if (procView) procView.style.display = 'none';
-        if (tyView)   tyView.style.display   = 'flex';
-
-        // Keep "THANK YOU" visible for 2 seconds before lifting
-        at(2000, () => {
-          // 1. Load the ID card FIRST (overlay + card animation starts behind shutter)
-          idCardOverlay.hidden = false;
-          void idCardOverlay.offsetHeight;
-          idCardOverlay.classList.add('open');
-
-          // 2. Ensure shutter is fully settled in closed position, THEN lift it
-          at(100, () => {
-            shutter.style.visibility = 'visible';
-            shutter.classList.remove('open');
-            void shutter.offsetHeight;
-
-            shutter.classList.add('open');
-            shutter.setAttribute('aria-hidden', 'true');
-
-            afterShutterTransition(() => {
-              shutter.style.visibility = 'hidden';
-              document.addEventListener('keydown', onEsc);
-              setStage('stage-reveal');
-              at(300, () => {
-                setStage('stage-complete');
-                idCardClose.focus();
-              });
-            });
-          });
-        });
-      });
-    }
-  }
-
-  function animateProgressBar(cb) {
-    const pBar  = document.getElementById('shutter-p-bar');
-    const pText = document.getElementById('shutter-p-text');
-    if (!pBar || !pText) { cb(); return; }
-
-    const steps = 20;
-    const duration = 2000; // 2 seconds
-    const stepTime = duration / steps;
-    let currentStep = 0;
-
-    function step() {
-      currentStep++;
-      const filled = '■'.repeat(currentStep) + '□'.repeat(steps - currentStep);
-      const percent = Math.round((currentStep / steps) * 100);
-      pBar.textContent = filled;
-      pText.textContent = percent + '%';
-
-      if (currentStep < steps) {
-        setTimeout(step, stepTime);
-      } else {
-        // Brief pause at 100% then callback
-        setTimeout(cb, 300);
+        if (tyView)   tyView.style.display   = 'none';
       }
-    }
-    step();
+    });
   }
-
-
-  /* ---- stage 5 actions ---- */
-  idCardClose.addEventListener('click', closeIdCard);
-  idCardOverlay.addEventListener('click', e => {
-    // only a click on the backdrop itself dismisses the badge
-    if (e.target === idCardOverlay) closeIdCard();
-  });
-
-  // Download / share buttons removed from UI — no handlers needed
 
   const rules = {
     'f-name'   : v => v.trim().length >= 3 || 'Please enter your full name.',
@@ -3036,6 +1916,89 @@ input[type="radio"] {
     toggleIeeeId(false);
   }
 
+    // Animate progress bar on shutter face (~1.8s)
+  function animateProgressBar(cb) {
+    const pBar  = document.getElementById('shutter-p-bar');
+    const pText = document.getElementById('shutter-p-text');
+    if (!pBar || !pText) { cb(); return; }
+
+    const steps = 20;
+    const duration = 1800;
+    const stepTime = duration / steps;
+    let currentStep = 0;
+
+    function step() {
+      currentStep++;
+      const filled = '■'.repeat(currentStep) + '□'.repeat(steps - currentStep);
+      const percent = Math.round((currentStep / steps) * 100);
+      pBar.textContent = filled;
+      pText.textContent = percent + '%';
+
+      if (currentStep < steps) {
+        setTimeout(step, stepTime);
+      } else {
+        setTimeout(cb, 250);
+      }
+    }
+    step();
+  }
+
+  function runIdCardSequence(data) {
+    // Populate the card details immediately
+    idCardController.populateCard(data);
+    idCardController.sequenceRunning = true;
+
+    // Show processing view on shutter face
+    const initView = document.getElementById('shutter-initial-view');
+    const procView = document.getElementById('shutter-processing-view');
+    const tyView   = document.getElementById('shutter-thankyou-view');
+    if (initView) initView.style.display = 'none';
+    if (procView) procView.style.display = 'flex';
+    if (tyView)   tyView.style.display   = 'none';
+
+    // Reset progress bar
+    const pBar  = document.getElementById('shutter-p-bar');
+    const pText = document.getElementById('shutter-p-text');
+    if (pBar)  pBar.textContent  = '□□□□□□□□□□';
+    if (pText) pText.textContent = '0%';
+
+    // Step 1: Close the shutter to run the processing sequence
+    closeShutter(() => {
+      // Step 2: Animate progress bar
+      animateProgressBar(() => {
+        // Step 3: Switch to "THANK YOU FOR REGISTERING"
+        if (procView) procView.style.display = 'none';
+        if (tyView)   tyView.style.display   = 'flex';
+
+        // Keep "THANK YOU" visible for 1.8 seconds
+        setTimeout(() => {
+          // Prepare the ID card overlay behind the shutter
+          idCardOverlay.hidden = false;
+          void idCardOverlay.offsetHeight;
+          idCardOverlay.classList.add('open');
+
+          // Ensure the lanyard and card are ready
+          idCardController.setStage('stage-reveal');
+
+          // Step 4: Open shutter, and SUDDENLY drop the lanyard rope and ID card!
+          liftShutterForCard(() => {
+            // Shutter transition finished
+          });
+
+          setTimeout(() => {
+            idCardController.lanyard.replayDrop();
+            setTimeout(() => idCardController.setStage('stage-enhance'), 1200);
+            setTimeout(() => {
+              idCardController.setStage('stage-complete');
+              const closeBtn = document.getElementById('idCardClose');
+              if (closeBtn) closeBtn.focus();
+            }, 2000);
+          }, 150);
+        }, 1800);
+      });
+    });
+  }
+
   form?.addEventListener('submit', e => {
     e.preventDefault();
     const allOk = Object.keys(rules).map(validateField).every(Boolean);
@@ -3046,9 +2009,6 @@ input[type="radio"] {
     }
     const data = Object.fromEntries(new FormData(form).entries());
 
-    // NOTE: there is no backend. The UPI screenshot is previewed client-side only
-    // and is NOT uploaded or stored anywhere — `data.screenshot` is a File object
-    // that is discarded here. Wire a fetch() to a real endpoint to persist it.
     console.log('Registration payload →', data);
 
     status.hidden = false;
