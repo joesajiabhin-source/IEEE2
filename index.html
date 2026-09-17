@@ -553,7 +553,240 @@ body.is-open .nav{display:none}
 .figma-hole::after{content:"";position:absolute;inset:28%;border-radius:50%;background:#ef3b20;opacity:calc(1 - var(--story-progress,0) * 2)}
 .figma-register{position:relative;z-index:2;margin-top:clamp(1.4rem,4vw,3.5rem);min-width:112px;padding:.68rem 1.8rem;border:1px solid rgba(47,20,10,.62);background:transparent;color:#2d130b;font-size:.56rem;font-weight:800;letter-spacing:.17em;text-transform:uppercase;cursor:default}
 .figma-scroll-note{position:absolute;bottom:2rem;z-index:2;color:rgba(23,20,0,.7);font-size:.59rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;opacity:calc(1 - var(--story-progress,0) * 2)}
-body:not(.is-open) .figma-landing>*{opacity:0}body.is-open .figma-mark{animation:figma-reveal .8s cubic-bezier(.16,1,.3,1) .2s both}body.is-open .figma-scroll-note{animation:figma-note .7s cubic-bezier(.16,1,.3,1) .55s both}@keyframes figma-reveal{from{opacity:0;transform:translateY(2rem) scale(.97)}to{opacity:1;transform:none}}@keyframes figma-note{from{opacity:0;transform:translate(-50%,1.5rem)}to{opacity:1}}
+/* ============================================================
+   COOL ARCADE CRT TITLE ENTRANCE ANIMATION FOR VYORA '26
+   ============================================================ */
+
+body:not(.is-open) .figma-landing > * {
+  opacity: 0;
+}
+
+body:not(.is-open) .figma-char,
+body:not(.is-open) .figma-hole,
+body:not(.is-open) .figma-year,
+body:not(.is-open) .figma-tagline,
+body:not(.is-open) .figma-register {
+  opacity: 0;
+}
+
+/* Staggered Letter Slam-In with retro pixel bounce */
+body.is-open .figma-name .figma-char {
+  display: inline-block;
+  animation: vyCharSlam 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) calc(0.45s + var(--i, 0) * 0.13s) both;
+  will-change: transform, opacity, filter;
+  transition: transform 0.18s cubic-bezier(0.2, 0, 0.2, 1), filter 0.18s ease;
+  cursor: pointer;
+}
+
+/* Cosmic Black Hole 'O' Formation & Gravitational Warp */
+body.is-open .figma-name .figma-hole {
+  display: inline-block;
+  animation: vyHoleForm 0.75s cubic-bezier(0.19, 1, 0.22, 1) calc(0.45s + var(--i, 2) * 0.13s) both;
+  will-change: transform, opacity;
+  transition: transform 0.22s cubic-bezier(0.2, 0, 0.2, 1), filter 0.22s ease;
+  cursor: pointer;
+}
+
+/* Heavy Arcade Stamp on '26' */
+body.is-open .figma-year {
+  display: inline-block;
+  animation: vyYearStamp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 1.22s both;
+  will-change: transform, opacity, filter;
+  transition: transform 0.18s cubic-bezier(0.2, 0, 0.2, 1), filter 0.18s ease;
+  cursor: pointer;
+}
+
+/* Tagline Scanline Unroll */
+body.is-open .figma-tagline {
+  animation: vyTaglineReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.50s both;
+  will-change: transform, opacity;
+}
+
+/* Arcade Register Button Power-On + Idle Breathing Glow */
+body.is-open .figma-mark .figma-register {
+  animation:
+    vyBtnPowerOn 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.72s both,
+    vyRegisterGlow 2.5s ease-in-out 2.4s infinite;
+  will-change: transform, opacity, box-shadow;
+}
+
+/* Momentary Chromatic Glitch Wave across the entire logo */
+body.is-open .figma-mark {
+  animation: vyLogoGlitch 0.45s ease-out 1.18s both;
+}
+
+/* ------------------------------------------------------------
+   Keyframes: Retro Pixel Impact & Cosmic Implosion
+   ------------------------------------------------------------ */
+
+@keyframes vyCharSlam {
+  0% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.65) rotate(-5deg);
+    filter: drop-shadow(0 0 24px #fff875) brightness(2.2);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(10px) scale(1.12) rotate(1.5deg);
+    filter: drop-shadow(0 0 12px #ffea00) brightness(1.3);
+  }
+  78% {
+    transform: translateY(-4px) scale(0.97) rotate(-0.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: none;
+  }
+}
+
+@keyframes vyHoleForm {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(180deg);
+    filter: drop-shadow(0 0 35px #000) drop-shadow(0 0 15px rgba(255, 244, 82, 0.9));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.38) rotate(-15deg);
+    filter: drop-shadow(0 0 20px #000);
+  }
+  75% {
+    transform: scale(0.92) rotate(4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: none;
+  }
+}
+
+@keyframes vyYearStamp {
+  0% {
+    opacity: 0;
+    transform: scale(2.8) translateY(-28px);
+    filter: brightness(2.6) drop-shadow(0 0 45px #ff6817);
+  }
+  48% {
+    opacity: 1;
+    transform: scale(0.88) translateY(6px);
+    filter: brightness(1.35) drop-shadow(0 0 22px #ff6817);
+  }
+  72% {
+    transform: scale(1.08) translateY(-2px);
+  }
+  88% {
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: none;
+  }
+}
+
+@keyframes vyTaglineReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+    letter-spacing: 0.22em;
+    filter: blur(2.5px);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-2px);
+    filter: none;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: 0.03em;
+  }
+}
+
+@keyframes vyBtnPowerOn {
+  0% {
+    opacity: 0;
+    transform: scale(0.65) translateY(20px);
+    filter: brightness(2.4) drop-shadow(0 0 30px #fff3a1);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.12) translateY(-4px);
+    filter: brightness(1.25) drop-shadow(0 0 15px #ffd700);
+  }
+  78% {
+    transform: scale(0.96) translateY(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: none;
+  }
+}
+
+@keyframes vyLogoGlitch {
+  0%, 100% {
+    filter: none;
+    transform: none;
+  }
+  20% {
+    filter: drop-shadow(3px 0 0 rgba(0, 255, 255, 0.7)) drop-shadow(-3px 0 0 rgba(255, 0, 85, 0.7));
+    transform: translateX(2px) translateY(-1px);
+  }
+  40% {
+    filter: drop-shadow(-2.5px 0 0 rgba(0, 255, 255, 0.6)) drop-shadow(2.5px 0 0 rgba(255, 0, 85, 0.6));
+    transform: translateX(-2px) translateY(1px);
+  }
+  60% {
+    filter: drop-shadow(1px 0 0 rgba(0, 255, 255, 0.4));
+    transform: translateX(1px);
+  }
+  80% {
+    filter: none;
+    transform: none;
+  }
+}
+
+@keyframes vyRegisterGlow {
+  0%, 100% {
+    box-shadow: 5px 5px 0 #171005;
+  }
+  50% {
+    box-shadow: 5px 5px 0 #171005, 0 0 20px rgba(255, 243, 161, 0.7);
+  }
+}
+
+/* ------------------------------------------------------------
+   Interactive Micro-Animations: Hover Reactions
+   ------------------------------------------------------------ */
+
+body.is-open .figma-name .figma-char:hover {
+  transform: translateY(-8px) scale(1.1) !important;
+  filter: drop-shadow(0 0 14px rgba(255, 244, 82, 0.95)) !important;
+}
+
+body.is-open .figma-name .figma-hole:hover {
+  transform: scale(1.15) rotate(45deg) !important;
+  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 8px rgba(234, 255, 0, 0.85)) !important;
+}
+
+body.is-open .figma-year:hover {
+  transform: scale(1.06) translateY(-4px) !important;
+  filter: drop-shadow(0 0 22px rgba(255, 104, 23, 0.9)) !important;
+}
+
+/* Once fully revealed (after 2.5s), unlock transform cascade for scroll film */
+body.is-open .figma-mark.revealed .figma-char,
+body.is-open .figma-mark.revealed .figma-hole,
+body.is-open .figma-mark.revealed .figma-year,
+body.is-open .figma-mark.revealed .figma-tagline {
+  animation: none !important;
+  opacity: 1;
+}
+body.is-open .figma-mark.revealed {
+  animation: none !important;
+}
 /* The O opens directly onto a full next section instead of a hidden page. */
 .vyora-scroll ~ .section,.vyora-scroll ~ .rule{display:block!important}.vyora-scroll + .section{min-height:100svh;display:grid!important;align-items:center;background:#131011;color:#f7eee4;overflow:hidden}.vyora-scroll + .section .display{background:none;color:#f7eee4;-webkit-text-fill-color:#f7eee4}.vyora-scroll + .section .eyebrow{color:#ef3b20;border-color:rgba(239,59,32,.38)}.vyora-scroll + .section .lede{color:#d5c8bf}
 @media (prefers-reduced-motion:reduce){.figma-hole{transform:scale(1)}.figma-name span:not(.figma-hole),.figma-scroll-note{opacity:1}}
@@ -1018,7 +1251,7 @@ input[type="radio"] {
       <p class="figma-figure-note">NOT JUST<br>AN EVENT<br>A MOVEMENT</p>
       <p class="figma-story-left">IDEAS<br>PEOPLE<br>TECH<br>A BIGGER<br>TOMORROW</p>
       <div class="figma-mark">
-        <div class="figma-name" aria-label="VYORA"><span>V</span><span>Y</span><span class="figma-hole" aria-hidden="true"></span><span>R</span><span>A</span></div>
+        <div class="figma-name" aria-label="VYORA"><span class="figma-char" style="--i:0">V</span><span class="figma-char" style="--i:1">Y</span><span class="figma-hole" style="--i:2" aria-hidden="true"></span><span class="figma-char" style="--i:3">R</span><span class="figma-char" style="--i:4">A</span></div>
         <div class="figma-year" aria-label="26">26</div>
         <p class="figma-tagline">IDEAS • PEOPLE • TECH • A BIGGER TOMORROW</p>
         <a class="figma-register" href="#pricing">Register</a>
@@ -1623,6 +1856,16 @@ input[type="radio"] {
     if (isOpen) { if (scrollTo) smoothScroll(scrollTo); if (cb) cb(); return; }
     isOpen = true;
 
+    const figmaMark = document.querySelector('.figma-mark');
+    if (figmaMark) {
+      figmaMark.classList.remove('revealed');
+      setTimeout(() => {
+        if (body.classList.contains('is-open')) {
+          figmaMark.classList.add('revealed');
+        }
+      }, 2500);
+    }
+
     shutter.style.visibility = '';             // may have been hidden by a previous cycle
     shutter.classList.add('open');             // → transform: translateY(-100%)
     shutter.setAttribute('aria-hidden', 'true');
@@ -1657,6 +1900,8 @@ input[type="radio"] {
   // Rolls the shutter back down over the page and locks scrolling.
   function closeShutter(cb) {
     isOpen = false;
+    const figmaMark = document.querySelector('.figma-mark');
+    if (figmaMark) figmaMark.classList.remove('revealed');
     shutter.style.visibility = 'visible';
     shutter.removeAttribute('aria-hidden');
     // force a reflow so removing .open animates from the raised position
