@@ -953,10 +953,33 @@ input[type="radio"] {
   transition: filter 0.22s ease;
 }
 
+/* Coordinated Landing Hero Elements Dissolve on Scroll */
+.figma-name span:not(.figma-hole) {
+  display: block;
+  opacity: calc(1 - var(--story-progress, 0) * 2.2);
+  transform: translateY(calc(var(--story-progress, 0) * -5vh));
+  transition: opacity .08s linear;
+}
+
 .figma-year {
   display: inline-block;
   cursor: pointer;
-  transition: transform 0.18s cubic-bezier(0.2, 0, 0.2, 1), filter 0.18s ease;
+  opacity: calc(1 - var(--story-progress, 0) * 2.2);
+  transform: translateY(calc(var(--story-progress, 0) * 3vh));
+  transition: opacity .08s linear, transform 0.18s cubic-bezier(0.2, 0, 0.2, 1), filter 0.18s ease;
+}
+
+.figma-tagline,
+.figma-mark .figma-register {
+  opacity: calc(1 - var(--story-progress, 0) * 2.8);
+  transition: opacity .08s linear;
+}
+
+.figma-cabinet-header,
+.figma-figure-note,
+.figma-story-left {
+  opacity: calc(1 - var(--story-progress, 0) * 3.5);
+  transition: opacity .08s linear;
 }
 
 /* Staggered Letter Slam-In on .animate-title */
@@ -965,12 +988,18 @@ input[type="radio"] {
   will-change: transform, opacity, filter;
 }
 
-/* Cosmic Black Hole 'O' Formation & Gravitational Warp */
-/* Normal scroll-controlled O expansion */
+/* Cosmic Black Hole 'O' Formation & Scroll Expansion Portal */
 .figma-hole {
+  position: relative !important;
+  z-index: 25 !important;
   transform: scale(var(--hole-scale, 1)) !important;
   transform-origin: center center !important;
   will-change: transform !important;
+}
+
+/* While scrolling, disable pointer events on the expanding hole so it never intercepts scroll or mouse */
+body.is-scrolling .figma-hole {
+  pointer-events: none !important;
 }
 
 /* During entrance slam only, without 'both' fill-mode so it never freezes the transform */
@@ -1146,18 +1175,18 @@ input[type="radio"] {
   }
 }
 
-/* Interactive Hover Reactions */
-.figma-name .figma-char:hover {
+/* Interactive Hover Reactions (Only active at top of page, disabled during scroll) */
+body:not(.is-scrolling) .figma-name .figma-char:hover {
   transform: translateY(-8px) scale(1.1) !important;
   filter: drop-shadow(0 0 14px rgba(255, 244, 82, 0.95)) !important;
 }
 
-.figma-name .figma-hole:hover {
-  transform: scale(1.15) rotate(45deg) !important;
-  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 8px rgba(234, 255, 0, 0.85)) !important;
+body:not(.is-scrolling) .figma-name .figma-hole:hover {
+  transform: scale(1.18) rotate(25deg) !important;
+  filter: drop-shadow(0 0 18px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 8px rgba(234, 255, 0, 0.85)) !important;
 }
 
-.figma-year:hover {
+body:not(.is-scrolling) .figma-year:hover {
   transform: scale(1.06) translateY(-4px) !important;
   filter: drop-shadow(0 0 22px rgba(255, 104, 23, 0.9)) !important;
 }
@@ -2170,17 +2199,26 @@ input[type="radio"] {
     vyoraFrameQueued = false;
     if (!vyoraStory) return;
     const range = Math.max(1, vyoraStory.offsetHeight - window.innerHeight);
-    const progress = reduced ? 1 : Math.max(0, Math.min(1, (window.scrollY - vyoraStory.offsetTop) / range));
+    const scrollY = window.scrollY || window.pageYOffset || 0;
+    const progress = reduced ? 1 : Math.max(0, Math.min(1, (scrollY - vyoraStory.offsetTop) / range));
     const eased = Math.pow(progress, 1.65);
-    vyoraStory.style.setProperty('--story-progress', progress.toFixed(4));
-    vyoraStory.style.setProperty('--hole-scale', (1 + eased * 30).toFixed(3));
+    const scaleVal = (1 + eased * 38).toFixed(3);
+    const progVal = progress.toFixed(4);
 
-    // Clear any entrance animation immediately upon scroll so the O expands without interference
-    if (progress > 0.002 || window.scrollY > 15) {
+    vyoraStory.style.setProperty('--story-progress', progVal);
+    vyoraStory.style.setProperty('--hole-scale', scaleVal);
+    root.style.setProperty('--story-progress', progVal);
+    root.style.setProperty('--hole-scale', scaleVal);
+
+    // Toggle is-scrolling and release any entrance animation immediately upon scroll
+    if (progress > 0.002 || scrollY > 10) {
+      body.classList.add('is-scrolling');
       const figmaMark = document.querySelector('.figma-mark');
       if (figmaMark && figmaMark.classList.contains('animate-title')) {
         figmaMark.classList.remove('animate-title');
       }
+    } else {
+      body.classList.remove('is-scrolling');
     }
   }
   function requestVyoraPaint() {
@@ -2221,6 +2259,7 @@ input[type="radio"] {
       figmaMark.classList.remove('animate-title');
     }, 1300);
   }
+  window.triggerTitleAnimation = triggerTitleAnimation;
 
   function openShutter(scrollTo, cb) {
     if (isOpen) { if (scrollTo) smoothScroll(scrollTo); if (cb) cb(); return; }
