@@ -575,18 +575,18 @@
       if (!started) return;
       hasMobileSensors = true;
       if (gamma != null) {
-        // Natural roll limit: +/- 60 deg
-        const clampedGamma = Math.max(-60, Math.min(60, gamma));
+        // Natural, stable roll limit: +/- 26 deg (prevents card flying sideways)
+        const clampedGamma = Math.max(-26, Math.min(26, gamma));
         const targetRad = (clampedGamma * Math.PI) / 180;
-        // Smooth filter
-        phoneTiltRad += (targetRad - phoneTiltRad) * 0.28;
-        // Follow-through for lanyard anchors
-        tiltTarget = -clampedGamma * 0.85;
+        // Heavy low-pass filter: 0.08 smoothing eliminates jitters and twitches
+        phoneTiltRad += (targetRad - phoneTiltRad) * 0.08;
+        // Gentle anchor follow-through
+        tiltTarget = -clampedGamma * 0.45;
       }
       if (beta != null) {
-        // Nominal hand reading pitch is ~55 deg
-        const targetPitch = Math.max(-45, Math.min(45, beta - 55));
-        phoneTiltPitch += (targetPitch - phoneTiltPitch) * 0.25;
+        // Nominal hand reading pitch is ~55 deg, clamped gently
+        const targetPitch = Math.max(-25, Math.min(25, beta - 55));
+        phoneTiltPitch += (targetPitch - phoneTiltPitch) * 0.08;
       }
     }
 
@@ -594,15 +594,23 @@
       if (!started) return;
       hasMobileSensors = true;
       if (ax != null) {
-        // Linear acceleration along phone X axis
-        const clampedAX = Math.max(-28, Math.min(28, ax));
-        // Inertial reaction: force is opposite to phone acceleration (-m * a)
-        phoneLinearAccelX += (-clampedAX * 110 - phoneLinearAccelX) * 0.35;
-        shakeVX += -clampedAX * 18;
+        // Deadband filter: ignore resting hand tremor and micro-jitters below 1.2 m/s^2
+        const absAX = Math.abs(ax);
+        let dynAX = 0;
+        if (absAX > 1.2) {
+          dynAX = Math.sign(ax) * Math.min(8, absAX - 1.2);
+        }
+        // Scaled to gentle, realistic impulse (12 instead of 110) with smooth damping
+        phoneLinearAccelX += (-dynAX * 12 - phoneLinearAccelX) * 0.12;
+        shakeVX += -dynAX * 1.2;
       }
       if (ay != null) {
-        const clampedAY = Math.max(-28, Math.min(28, ay));
-        phoneLinearAccelY += (-clampedAY * 60 - phoneLinearAccelY) * 0.35;
+        const absAY = Math.abs(ay);
+        let dynAY = 0;
+        if (absAY > 1.2) {
+          dynAY = Math.sign(ay) * Math.min(6, absAY - 1.2);
+        }
+        phoneLinearAccelY += (-dynAY * 8 - phoneLinearAccelY) * 0.12;
       }
     }
 
@@ -782,8 +790,8 @@
       const cardEl = document.getElementById('idCard');
       if (cardEl && hasMobileSensors && !hover) {
         const tiltDeg = (phoneTiltRad * 180 / Math.PI);
-        const rotY = Math.max(-18, Math.min(18, tiltDeg * 0.35));
-        const rotX = Math.max(-18, Math.min(18, phoneTiltPitch * 0.30));
+        const rotY = Math.max(-9, Math.min(9, tiltDeg * 0.22));
+        const rotX = Math.max(-7, Math.min(7, phoneTiltPitch * 0.18));
         cardEl.style.transform =
           'perspective(800px) rotateY(' + rotY.toFixed(2) + 'deg) rotateX(' + rotX.toFixed(2) + 'deg)';
       }
@@ -1029,15 +1037,26 @@
       });
 
       // Mobile Device Motion (Accelerometer & Shake)
+      let lastGravX = 0, lastGravY = 0;
       window.addEventListener('devicemotion', (e) => {
         const isOpen = checkActive();
         if (!isOpen && !this.sequenceRunning) return;
 
-        // Use linear acceleration if available, otherwise accelerationIncludingGravity
-        const acc = e.acceleration || e.accelerationIncludingGravity;
-        if (acc && (acc.x != null || acc.y != null)) {
-          this.lanyard.deviceMotion(acc.x || 0, acc.y || 0, acc.z || 0);
+        let dynX = 0, dynY = 0;
+        // If pure linear acceleration is provided by device
+        if (e.acceleration && (e.acceleration.x != null || e.acceleration.y != null)) {
+          dynX = e.acceleration.x || 0;
+          dynY = e.acceleration.y || 0;
+        } else if (e.accelerationIncludingGravity) {
+          // If only accelerationIncludingGravity is available, strip static gravity using high-pass filter
+          const rawX = e.accelerationIncludingGravity.x || 0;
+          const rawY = e.accelerationIncludingGravity.y || 0;
+          lastGravX += (rawX - lastGravX) * 0.08;
+          lastGravY += (rawY - lastGravY) * 0.08;
+          dynX = rawX - lastGravX;
+          dynY = rawY - lastGravY;
         }
+        this.lanyard.deviceMotion(dynX, dynY, 0);
       }, { passive: true });
 
       // Mobile Device Orientation (Gyroscope / Tilt)
