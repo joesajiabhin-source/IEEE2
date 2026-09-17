@@ -553,240 +553,6 @@ body.is-open .nav{display:none}
 .figma-hole::after{content:"";position:absolute;inset:28%;border-radius:50%;background:#ef3b20;opacity:calc(1 - var(--story-progress,0) * 2)}
 .figma-register{position:relative;z-index:2;margin-top:clamp(1.4rem,4vw,3.5rem);min-width:112px;padding:.68rem 1.8rem;border:1px solid rgba(47,20,10,.62);background:transparent;color:#2d130b;font-size:.56rem;font-weight:800;letter-spacing:.17em;text-transform:uppercase;cursor:default}
 .figma-scroll-note{position:absolute;bottom:2rem;z-index:2;color:rgba(23,20,0,.7);font-size:.59rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;opacity:calc(1 - var(--story-progress,0) * 2)}
-/* ============================================================
-   COOL ARCADE CRT TITLE ENTRANCE ANIMATION FOR VYORA '26
-   ============================================================ */
-
-body:not(.is-open) .figma-landing > * {
-  opacity: 0;
-}
-
-body:not(.is-open) .figma-char,
-body:not(.is-open) .figma-hole,
-body:not(.is-open) .figma-year,
-body:not(.is-open) .figma-tagline,
-body:not(.is-open) .figma-register {
-  opacity: 0;
-}
-
-/* Staggered Letter Slam-In with retro pixel bounce */
-body.is-open .figma-name .figma-char {
-  display: inline-block;
-  animation: vyCharSlam 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) calc(0.45s + var(--i, 0) * 0.13s) both;
-  will-change: transform, opacity, filter;
-  transition: transform 0.18s cubic-bezier(0.2, 0, 0.2, 1), filter 0.18s ease;
-  cursor: pointer;
-}
-
-/* Cosmic Black Hole 'O' Formation & Gravitational Warp */
-body.is-open .figma-name .figma-hole {
-  display: inline-block;
-  animation: vyHoleForm 0.75s cubic-bezier(0.19, 1, 0.22, 1) calc(0.45s + var(--i, 2) * 0.13s) both;
-  will-change: transform, opacity;
-  transition: transform 0.22s cubic-bezier(0.2, 0, 0.2, 1), filter 0.22s ease;
-  cursor: pointer;
-}
-
-/* Heavy Arcade Stamp on '26' */
-body.is-open .figma-year {
-  display: inline-block;
-  animation: vyYearStamp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 1.22s both;
-  will-change: transform, opacity, filter;
-  transition: transform 0.18s cubic-bezier(0.2, 0, 0.2, 1), filter 0.18s ease;
-  cursor: pointer;
-}
-
-/* Tagline Scanline Unroll */
-body.is-open .figma-tagline {
-  animation: vyTaglineReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.50s both;
-  will-change: transform, opacity;
-}
-
-/* Arcade Register Button Power-On + Idle Breathing Glow */
-body.is-open .figma-mark .figma-register {
-  animation:
-    vyBtnPowerOn 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.72s both,
-    vyRegisterGlow 2.5s ease-in-out 2.4s infinite;
-  will-change: transform, opacity, box-shadow;
-}
-
-/* Momentary Chromatic Glitch Wave across the entire logo */
-body.is-open .figma-mark {
-  animation: vyLogoGlitch 0.45s ease-out 1.18s both;
-}
-
-/* ------------------------------------------------------------
-   Keyframes: Retro Pixel Impact & Cosmic Implosion
-   ------------------------------------------------------------ */
-
-@keyframes vyCharSlam {
-  0% {
-    opacity: 0;
-    transform: translateY(-60px) scale(0.65) rotate(-5deg);
-    filter: drop-shadow(0 0 24px #fff875) brightness(2.2);
-  }
-  55% {
-    opacity: 1;
-    transform: translateY(10px) scale(1.12) rotate(1.5deg);
-    filter: drop-shadow(0 0 12px #ffea00) brightness(1.3);
-  }
-  78% {
-    transform: translateY(-4px) scale(0.97) rotate(-0.5deg);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1) rotate(0deg);
-    filter: none;
-  }
-}
-
-@keyframes vyHoleForm {
-  0% {
-    opacity: 0;
-    transform: scale(0) rotate(180deg);
-    filter: drop-shadow(0 0 35px #000) drop-shadow(0 0 15px rgba(255, 244, 82, 0.9));
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.38) rotate(-15deg);
-    filter: drop-shadow(0 0 20px #000);
-  }
-  75% {
-    transform: scale(0.92) rotate(4deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-    filter: none;
-  }
-}
-
-@keyframes vyYearStamp {
-  0% {
-    opacity: 0;
-    transform: scale(2.8) translateY(-28px);
-    filter: brightness(2.6) drop-shadow(0 0 45px #ff6817);
-  }
-  48% {
-    opacity: 1;
-    transform: scale(0.88) translateY(6px);
-    filter: brightness(1.35) drop-shadow(0 0 22px #ff6817);
-  }
-  72% {
-    transform: scale(1.08) translateY(-2px);
-  }
-  88% {
-    transform: scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-    filter: none;
-  }
-}
-
-@keyframes vyTaglineReveal {
-  0% {
-    opacity: 0;
-    transform: translateY(14px);
-    letter-spacing: 0.22em;
-    filter: blur(2.5px);
-  }
-  65% {
-    opacity: 1;
-    transform: translateY(-2px);
-    filter: none;
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    letter-spacing: 0.03em;
-  }
-}
-
-@keyframes vyBtnPowerOn {
-  0% {
-    opacity: 0;
-    transform: scale(0.65) translateY(20px);
-    filter: brightness(2.4) drop-shadow(0 0 30px #fff3a1);
-  }
-  55% {
-    opacity: 1;
-    transform: scale(1.12) translateY(-4px);
-    filter: brightness(1.25) drop-shadow(0 0 15px #ffd700);
-  }
-  78% {
-    transform: scale(0.96) translateY(1px);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-    filter: none;
-  }
-}
-
-@keyframes vyLogoGlitch {
-  0%, 100% {
-    filter: none;
-    transform: none;
-  }
-  20% {
-    filter: drop-shadow(3px 0 0 rgba(0, 255, 255, 0.7)) drop-shadow(-3px 0 0 rgba(255, 0, 85, 0.7));
-    transform: translateX(2px) translateY(-1px);
-  }
-  40% {
-    filter: drop-shadow(-2.5px 0 0 rgba(0, 255, 255, 0.6)) drop-shadow(2.5px 0 0 rgba(255, 0, 85, 0.6));
-    transform: translateX(-2px) translateY(1px);
-  }
-  60% {
-    filter: drop-shadow(1px 0 0 rgba(0, 255, 255, 0.4));
-    transform: translateX(1px);
-  }
-  80% {
-    filter: none;
-    transform: none;
-  }
-}
-
-@keyframes vyRegisterGlow {
-  0%, 100% {
-    box-shadow: 5px 5px 0 #171005;
-  }
-  50% {
-    box-shadow: 5px 5px 0 #171005, 0 0 20px rgba(255, 243, 161, 0.7);
-  }
-}
-
-/* ------------------------------------------------------------
-   Interactive Micro-Animations: Hover Reactions
-   ------------------------------------------------------------ */
-
-body.is-open .figma-name .figma-char:hover {
-  transform: translateY(-8px) scale(1.1) !important;
-  filter: drop-shadow(0 0 14px rgba(255, 244, 82, 0.95)) !important;
-}
-
-body.is-open .figma-name .figma-hole:hover {
-  transform: scale(1.15) rotate(45deg) !important;
-  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 8px rgba(234, 255, 0, 0.85)) !important;
-}
-
-body.is-open .figma-year:hover {
-  transform: scale(1.06) translateY(-4px) !important;
-  filter: drop-shadow(0 0 22px rgba(255, 104, 23, 0.9)) !important;
-}
-
-/* Once fully revealed (after 2.5s), unlock transform cascade for scroll film */
-body.is-open .figma-mark.revealed .figma-char,
-body.is-open .figma-mark.revealed .figma-hole,
-body.is-open .figma-mark.revealed .figma-year,
-body.is-open .figma-mark.revealed .figma-tagline {
-  animation: none !important;
-  opacity: 1;
-}
-body.is-open .figma-mark.revealed {
-  animation: none !important;
-}
 /* The O opens directly onto a full next section instead of a hidden page. */
 .vyora-scroll ~ .section,.vyora-scroll ~ .rule{display:block!important}.vyora-scroll + .section{min-height:100svh;display:grid!important;align-items:center;background:#131011;color:#f7eee4;overflow:hidden}.vyora-scroll + .section .display{background:none;color:#f7eee4;-webkit-text-fill-color:#f7eee4}.vyora-scroll + .section .eyebrow{color:#ef3b20;border-color:rgba(239,59,32,.38)}.vyora-scroll + .section .lede{color:#d5c8bf}
 @media (prefers-reduced-motion:reduce){.figma-hole{transform:scale(1)}.figma-name span:not(.figma-hole),.figma-scroll-note{opacity:1}}
@@ -1170,6 +936,224 @@ input[type="radio"] {
 @media(max-width:760px){.game-section{padding-block:3.25rem!important}.game-grid--2,.game-grid--3,.game-grid--4,.registration-shell{grid-template-columns:1fr}.journey-line{grid-template-columns:1fr;gap:.8rem}.journey-link{height:22px;width:4px;margin:auto;background:repeating-linear-gradient(180deg,#ecea38 0 12px,transparent 12px 20px)}.game-title{font-size:1.35rem}.game-panel{box-shadow:4px 4px 0 #050504}.ieee-logo{width:170px;margin:auto}.experience-card{min-height:11rem}}
 /* Bright VYORA game-board palette for every content section. */
 .game-section{background:#e8e62c!important;color:#0b0b07!important}.game-section::before{opacity:.78;background:repeating-linear-gradient(0deg,rgba(0,0,0,.075) 0 1px,transparent 1px 4px),radial-gradient(circle at 50% 30%,#ffff59 0,#e4e22a 55%,#aaa719 100%)}.game-section .game-title{color:#090906;text-shadow:3px 3px 0 rgba(255,255,173,.8)}.game-section .game-lede,.game-section .lede{color:#26250d!important}.game-section .game-kicker{color:#0b0b07}.game-section .game-kicker b{background:#101008;color:#f6f346;box-shadow:4px 4px 0 #a29f12}.game-section .game-panel,.game-section .card{border-radius:0!important;border:3px solid #101008!important;background:#10100c!important;color:#f7f26b!important;box-shadow:6px 6px 0 #858313,inset 0 0 0 2px #f3ef42!important}.game-section .game-panel p,.game-section .game-panel li,.game-section .card p,.game-section .card li{color:#e9e5a2!important}.game-section .game-panel h3,.game-section .card h3{color:#f8f45e!important;font-family:"Press Start 2P",monospace!important;font-size:clamp(.68rem,1vw,.9rem)!important;line-height:1.5}.game-section .pill-list li::before{background:#f5f048!important;box-shadow:none}.game-section .section-head{margin-bottom:1.4rem}.game-section .day-switch button{border-radius:0!important;border:3px solid #0b0b07!important;background:#10100c!important;color:#f5f047!important;font-family:"Press Start 2P",monospace}.game-section .day-switch button[aria-selected="true"]{background:#0b0b07!important;color:#f6f146!important;box-shadow:4px 4px 0 #aaa714}.game-section .timeline::before{background:#0b0b07!important}.game-section .slot{border-radius:0!important;background:#0d0d09!important;border:3px solid #0b0b07!important;box-shadow:5px 5px 0 #aaa714!important}.game-section .slot time{color:#ff6928!important;font-family:"Press Start 2P",monospace}.game-section .slot h4{color:#f7f35a!important;font-family:"Press Start 2P",monospace}.game-section .slot p{color:#e9e3a0!important}.about-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:1rem}.about-stat{padding:1rem;border-right:2px solid #e9e342;color:#f5f054;text-align:center;font:400 .64rem/1.45 "Press Start 2P",monospace}.about-stat:last-child{border:0}.about-stat i{display:block;margin-bottom:.55rem;font-style:normal;font-size:1.5rem}.program-art{position:absolute;right:1rem;top:1rem;width:60px;height:60px;pointer-events:none}.program-art::before,.program-art::after{content:"";position:absolute;background:#f5f050;box-shadow:6px 6px 0 #080806}.workshop-card:nth-child(1) .program-art::before{width:44px;height:10px;top:14px;left:4px}.workshop-card:nth-child(1) .program-art::after{width:10px;height:40px;top:4px;left:21px;animation:pixel-pulse 1s steps(2,end) infinite}.workshop-card:nth-child(2) .program-art::before{width:34px;height:34px;left:12px;top:12px;clip-path:polygon(50% 0,62% 36%,100% 50%,62% 64%,50% 100%,38% 64%,0 50%,38% 36%);animation:pixel-spin 3s steps(8,end) infinite}.workshop-card:nth-child(3) .program-art::before{width:50px;height:12px;top:20px;left:3px;transform:rotate(-30deg);animation:pixel-slide 1.1s steps(2,end) infinite}.experience-card .pixel-icon{font-family:"Press Start 2P",monospace;animation:pixel-bounce 1s steps(2,end) infinite}.campfire{width:72px;height:80px;image-rendering:pixelated;filter:none}.campfire::before{left:10px;width:52px;height:70px;background:linear-gradient(90deg,transparent 0 18%,#ff4d1c 18% 82%,transparent 82%);clip-path:polygon(50% 0,64% 24%,82% 24%,70% 48%,100% 100%,0 100%,30% 48%,18% 24%,36% 24%);animation:pixel-fire .65s steps(2,end) infinite}.campfire::after{left:23px;width:27px;height:42px;background:#fff244;clip-path:polygon(50% 0,100% 100%,0 100%);animation:pixel-fire .65s steps(2,end) infinite reverse}@keyframes pixel-pulse{50%{transform:scale(1.18)}}@keyframes pixel-spin{to{transform:rotate(360deg)}}@keyframes pixel-slide{50%{transform:translateX(7px) rotate(-30deg)}}@keyframes pixel-bounce{50%{transform:translateY(-7px)}}@keyframes pixel-fire{50%{transform:translateY(-7px) scaleX(.8)}}.game-section .form-grid input,.game-section .form-grid select,.game-section .form-grid textarea{border-radius:0!important;border:2px solid #e8e342!important;background:#080806!important;color:#f8f459!important}.game-section .field label{color:#f8f459!important;font-family:"Press Start 2P",monospace;font-size:.55rem}.pixel-footer{position:relative;background:#0a0a07;color:#f4ef55;padding:2rem max(1.5rem,calc((100vw - 1200px)/2));border-top:6px solid #e7e32d;display:flex;justify-content:space-between;align-items:center;gap:1rem;font:400 .62rem/1.6 "Press Start 2P",monospace}.pixel-footer strong{font-size:1rem}.pixel-footer a{color:#f4ef55;text-decoration:none}.pixel-footer nav{display:flex;gap:1rem;flex-wrap:wrap}@media(max-width:760px){.about-stats{grid-template-columns:repeat(2,1fr)}.about-stat:nth-child(2){border-right:0}.pixel-footer{display:grid}.program-art{opacity:.75}.game-section .card{box-shadow:4px 4px 0 #858313!important}}
+
+/* ============================================================
+   RETRO ARCADE CRT TITLE ENTRANCE ANIMATION FOR VYORA '26
+   ============================================================ */
+
+.figma-name .figma-char {
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.2, 0, 0.2, 1), filter 0.18s ease;
+}
+
+.figma-name .figma-hole {
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.22s cubic-bezier(0.2, 0, 0.2, 1), filter 0.22s ease;
+}
+
+.figma-year {
+  display: inline-block;
+  cursor: pointer;
+  transition: transform 0.18s cubic-bezier(0.2, 0, 0.2, 1), filter 0.18s ease;
+}
+
+/* Staggered Letter Slam-In on .animate-title */
+.figma-mark.animate-title .figma-char {
+  animation: vyCharSlam 0.58s cubic-bezier(0.175, 0.885, 0.32, 1.275) calc(var(--i, 0) * 0.12s) both !important;
+  will-change: transform, opacity, filter;
+}
+
+/* Cosmic Black Hole 'O' Formation & Gravitational Warp */
+.figma-mark.animate-title .figma-hole {
+  animation: vyHoleForm 0.68s cubic-bezier(0.19, 1, 0.22, 1) calc(var(--i, 2) * 0.12s) both !important;
+  will-change: transform, opacity;
+}
+
+/* Heavy Arcade Stamp on '26' */
+.figma-mark.animate-title .figma-year {
+  animation: vyYearStamp 0.68s cubic-bezier(0.16, 1, 0.3, 1) 0.68s both !important;
+  will-change: transform, opacity, filter;
+}
+
+/* Tagline Scanline Unroll */
+.figma-mark.animate-title .figma-tagline {
+  animation: vyTaglineReveal 0.52s cubic-bezier(0.16, 1, 0.3, 1) 0.90s both !important;
+  will-change: transform, opacity;
+}
+
+/* Arcade Register Button Power-On + Idle Breathing Glow */
+.figma-mark.animate-title .figma-register {
+  animation:
+    vyBtnPowerOn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 1.10s both,
+    vyRegisterGlow 2.5s ease-in-out 1.7s infinite !important;
+  will-change: transform, opacity, box-shadow;
+}
+
+/* Momentary Chromatic Glitch Wave across the entire logo */
+.figma-mark.animate-title {
+  animation: vyLogoGlitch 0.4s ease-out 0.60s both !important;
+}
+
+/* ------------------------------------------------------------
+   Keyframes: Retro Pixel Impact & Cosmic Implosion
+   ------------------------------------------------------------ */
+
+@keyframes vyCharSlam {
+  0% {
+    opacity: 0;
+    transform: translateY(-65px) scale(0.6) rotate(-5deg);
+    filter: drop-shadow(0 0 26px #fff875) brightness(2.2);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(10px) scale(1.12) rotate(1.5deg);
+    filter: drop-shadow(0 0 12px #ffea00) brightness(1.3);
+  }
+  78% {
+    transform: translateY(-4px) scale(0.97) rotate(-0.5deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: none;
+  }
+}
+
+@keyframes vyHoleForm {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(180deg);
+    filter: drop-shadow(0 0 35px #000) drop-shadow(0 0 15px rgba(255, 244, 82, 0.9));
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.38) rotate(-15deg);
+    filter: drop-shadow(0 0 20px #000);
+  }
+  75% {
+    transform: scale(0.92) rotate(4deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: none;
+  }
+}
+
+@keyframes vyYearStamp {
+  0% {
+    opacity: 0;
+    transform: scale(2.8) translateY(-28px);
+    filter: brightness(2.6) drop-shadow(0 0 45px #ff6817);
+  }
+  48% {
+    opacity: 1;
+    transform: scale(0.88) translateY(6px);
+    filter: brightness(1.35) drop-shadow(0 0 22px #ff6817);
+  }
+  72% {
+    transform: scale(1.08) translateY(-2px);
+  }
+  88% {
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: none;
+  }
+}
+
+@keyframes vyTaglineReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+    letter-spacing: 0.22em;
+    filter: blur(2.5px);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-2px);
+    filter: none;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    letter-spacing: 0.03em;
+  }
+}
+
+@keyframes vyBtnPowerOn {
+  0% {
+    opacity: 0;
+    transform: scale(0.65) translateY(20px);
+    filter: brightness(2.4) drop-shadow(0 0 30px #fff3a1);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.12) translateY(-4px);
+    filter: brightness(1.25) drop-shadow(0 0 15px #ffd700);
+  }
+  78% {
+    transform: scale(0.96) translateY(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: none;
+  }
+}
+
+@keyframes vyLogoGlitch {
+  0%, 100% {
+    filter: none;
+    transform: none;
+  }
+  20% {
+    filter: drop-shadow(3px 0 0 rgba(0, 255, 255, 0.7)) drop-shadow(-3px 0 0 rgba(255, 0, 85, 0.7));
+    transform: translateX(2px) translateY(-1px);
+  }
+  40% {
+    filter: drop-shadow(-2.5px 0 0 rgba(0, 255, 255, 0.6)) drop-shadow(2.5px 0 0 rgba(255, 0, 85, 0.6));
+    transform: translateX(-2px) translateY(1px);
+  }
+  60% {
+    filter: drop-shadow(1px 0 0 rgba(0, 255, 255, 0.4));
+    transform: translateX(1px);
+  }
+  80% {
+    filter: none;
+    transform: none;
+  }
+}
+
+@keyframes vyRegisterGlow {
+  0%, 100% {
+    box-shadow: 5px 5px 0 #171005;
+  }
+  50% {
+    box-shadow: 5px 5px 0 #171005, 0 0 20px rgba(255, 243, 161, 0.7);
+  }
+}
+
+/* Interactive Hover Reactions */
+.figma-name .figma-char:hover {
+  transform: translateY(-8px) scale(1.1) !important;
+  filter: drop-shadow(0 0 14px rgba(255, 244, 82, 0.95)) !important;
+}
+
+.figma-name .figma-hole:hover {
+  transform: scale(1.15) rotate(45deg) !important;
+  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 8px rgba(234, 255, 0, 0.85)) !important;
+}
+
+.figma-year:hover {
+  transform: scale(1.06) translateY(-4px) !important;
+  filter: drop-shadow(0 0 22px rgba(255, 104, 23, 0.9)) !important;
+}
+
 </style>
 </head>
 <body class="locked">
@@ -1852,19 +1836,20 @@ input[type="radio"] {
     setTimeout(finish, reduced ? 1000 : 3000);
   }
 
+  function triggerTitleAnimation() {
+    const figmaMark = document.querySelector('.figma-mark');
+    if (!figmaMark) return;
+    figmaMark.classList.remove('animate-title');
+    void figmaMark.offsetWidth; // force DOM reflow
+    figmaMark.classList.add('animate-title');
+  }
+
   function openShutter(scrollTo, cb) {
     if (isOpen) { if (scrollTo) smoothScroll(scrollTo); if (cb) cb(); return; }
     isOpen = true;
 
-    const figmaMark = document.querySelector('.figma-mark');
-    if (figmaMark) {
-      figmaMark.classList.remove('revealed');
-      setTimeout(() => {
-        if (body.classList.contains('is-open')) {
-          figmaMark.classList.add('revealed');
-        }
-      }, 2500);
-    }
+    // Trigger title animation as shutter uncovers the arcade monitor
+    setTimeout(triggerTitleAnimation, 1100);
 
     shutter.style.visibility = '';             // may have been hidden by a previous cycle
     shutter.classList.add('open');             // → transform: translateY(-100%)
@@ -1879,6 +1864,7 @@ input[type="radio"] {
 
       shutter.style.visibility = 'hidden';    // keep it out of the paint / hit-test path
       window.dispatchEvent(new CustomEvent('shutter:open'));
+      triggerTitleAnimation();
       if (scrollTo) smoothScroll(scrollTo);
       if (cb) cb();
     });
@@ -2265,6 +2251,43 @@ input[type="radio"] {
   });
 
 })();
+
+  // Initialize Landing Title Animation on load and on scroll
+  (function() {
+    function initTitleEntrance() {
+      const figmaMark = document.querySelector('.figma-mark');
+      if (!figmaMark) return;
+
+      // Allow clicking title to replay animation
+      figmaMark.addEventListener('click', () => {
+        if (typeof triggerTitleAnimation === 'function') triggerTitleAnimation();
+      });
+
+      // Play on initial load / landing
+      setTimeout(() => {
+        if (typeof triggerTitleAnimation === 'function') triggerTitleAnimation();
+      }, 400);
+
+      // Also trigger via IntersectionObserver when scrolled into view
+      if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && typeof triggerTitleAnimation === 'function') {
+              triggerTitleAnimation();
+            }
+          });
+        }, { threshold: 0.3 });
+        obs.observe(figmaMark);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTitleEntrance);
+    } else {
+      initTitleEntrance();
+    }
+  })();
+
 </script>
 </body>
 </html>
