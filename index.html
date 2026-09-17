@@ -841,7 +841,9 @@ input[type="radio"] {
   opacity: 1; /* always opaque, position hides it */
 }
 .stage-reveal .id-card-container, .stage-enhance .id-card-container, .stage-complete .id-card-container {
-  animation: cardDrop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* Position is driven by the lanyard solver. Keeping the parent at its
+     resting layout avoids a second CSS drop separating card from strap. */
+  animation:none;transform:translateY(0);
 }
 @keyframes cardDrop{
   0%  {transform:translateY(-150vh)}
@@ -893,8 +895,9 @@ input[type="radio"] {
   transform:translateY(-30px) scale(.95) rotateX(8deg);
   transition:box-shadow .6s ease, transform .5s cubic-bezier(.4,0,.2,1);
 }
-/* stage 3 — the card drops in on the lanyard */
-.stage-reveal .id-card{animation:idCardDrop .85s cubic-bezier(.22,.9,.3,1) forwards}
+/* The connected lanyard solver owns arrival. Do not animate the card face
+   separately or the punch-hole can visibly detach from the hook. */
+.stage-reveal .id-card{opacity:1;transform:none;animation:none}
 @keyframes idCardDrop{
   0%  {opacity:0;transform:translateY(-46px) scale(.94) rotateX(10deg)}
   55% {opacity:1;transform:translateY(7px)  scale(1.008) rotateX(-2deg)}
@@ -1242,13 +1245,6 @@ input[type="radio"] {
 .stage-enhance .id-card-close,
 .stage-complete .id-card-close{opacity:1;pointer-events:auto}
 .id-card-close:hover{background:rgba(255,80,80,.35);border-color:rgba(255,120,120,.5);transform:rotate(90deg) scale(1.1)}
-.id-card-overlay.is-retracted .id-card-container{
-  animation:none!important;
-  transform:translateY(-130vh)!important;
-  transition:transform .7s cubic-bezier(.5,0,.8,.25);
-}
-.id-card-overlay.is-retracted .id-card-lanyard{opacity:0!important;transition:opacity .28s ease}
-.id-card-container.phone-drop{animation:cardDrop .78s cubic-bezier(.22,.9,.3,1) both!important}
 .id-card-close:active{transform:rotate(90deg) scale(.95)}
 
 /* ---------- LANYARD VISIBILITY ---------- */
@@ -2615,6 +2611,7 @@ input[type="radio"] {
     clearStageTimers();
     sequenceRunning = false;
     phoneUpsideDown = false;
+    LANYARD.setRetracted(false);
     idCardOverlay.classList.remove('open', 'is-retracted', ...STAGES);
     document.removeEventListener('keydown', onEsc);
     const bloodBg = document.getElementById('blood-bg');
@@ -2715,8 +2712,8 @@ input[type="radio"] {
       idleForce: 1.6         // intentionally tiny, natural hanging sway
     };
     const PEND_LEN = 16;            // ring→card-top drop (px): the snap-hook span
-    const ITER = 8;                 // constraint relaxation passes per substep
-    const SUB = 1/120;              // fixed physics substep (s)
+    const ITER = 5;                 // constraint relaxation passes per substep
+    const SUB = 1/90;               // fixed physics substep (s)
 
     // ---------- state ----------
     let W = 0, H = 0;
@@ -2739,6 +2736,9 @@ input[type="radio"] {
     let hoverVX = 0;                 // smoothed pointer x-velocity while hovering
     let hoverDef = 0;                // steady hold deflection force on the tip
     let idleTime = 0;                // phase for the barely perceptible rest sway
+    let tiltTarget = 0;              // phone tilt target; written by sensors, consumed in rAF
+    let arrivalY = 0, arrivalV = 0; // shared card + strap top-down arrival state
+    let retracted = false;
 
     const makePt = (x, y, m) => ({ x, y, px: x, py: y, m });
 
@@ -2788,8 +2788,8 @@ input[type="radio"] {
       if (fresh){
         // the drop just ended with a little bounce: let the rope inherit it
         fresh = false;
-        tip.px = tip.x - 0.55;             // ≈ 66 px/s sideways drift
-        swingVel = 0.28;                    // card swings out from the landing
+        arrivalY = -(rest.top + (rest.h || 320) + 36);
+        arrivalV = 0;
       }
     }
 
@@ -2852,8 +2852,7 @@ input[type="radio"] {
       // silent (the plumbing gates it on accelerometer freshness), so
       // the two sensors never double-drive the anchor frame.
       if (!started) return;
-      const target = Math.max(-120, Math.min(120, -(gamma / 45) * 120));
-      winDX += (target - winDX) * 0.06;   // slow lerp = steadier hold
+      tiltTarget = Math.max(-90, Math.min(90, -(gamma / 45) * 90));
     }
     function motion(gx){
       if (!started) return;
@@ -2864,17 +2863,10 @@ input[type="radio"] {
       //   leanF (heavy, tau~0.30s @60Hz) -> steady anchor tilt
       //   leanM (medium, tau~0.07s)      -> fast enough for genuine
       //                                     jerks, eats hf tremor
-      const lean = Math.max(-1.4, Math.min(1.4, gx / 9.81));
-      leanF += (lean - leanF) * 0.055;
-      leanM += (lean - leanM) * 0.22;
-      // slow part: steady tilt of the anchor frame
-      winDX += (-leanF * 120 - winDX) * 0.10;
-      // fast part: only real jerks cross the dead-zone and inject
-      // lateral velocity into the cloth; tremor never reaches 0.05
-      const jerk = leanM - prevGX; prevGX = leanM;
-      if (Math.abs(jerk) > 0.05){
-        shakeVX = Math.max(-560, Math.min(560, shakeVX - jerk * 5600));
-      }
+      const lean = Math.max(-1, Math.min(1, gx / 9.81));
+      // Sensor callbacks never directly move the rope. They only update a
+      // target which the fixed-timestep solver follows once per frame.
+      tiltTarget = -lean * 72;
     }
 
     // ---------- simulation ----------
@@ -2913,10 +2905,18 @@ input[type="radio"] {
       }
       windX *= Math.exp(-dt * 2.2);
       if (Math.abs(windX) < 0.05) windX = 0;
-      // anchor tilt relaxes home when sensors go quiet (also lets the
-      // sim reach true rest so idle frames can be skipped entirely)
-      winDX *= Math.exp(-dt * 1.1);
-      if (Math.abs(winDX) < 0.02) winDX = 0;
+      // One damped phone target prevents noisy sensor callbacks from
+      // injecting dozens of competing movements into the cloth per frame.
+      winDX += (tiltTarget - winDX) * (1 - Math.exp(-dt * 3.4));
+
+      // Vertical arrival/retraction is part of this same connected system.
+      // The ring, hook, card and rendered fabric all use arrivalY, so the
+      // attachment is never visually broken during a drop or phone flip.
+      const arrivalTarget = retracted ? -(rest.top + (rest.h || 320) + 36) : 0;
+      const arrivalA = (arrivalTarget - arrivalY) * 24 - arrivalV * 8;
+      arrivalV += arrivalA * dt;
+      arrivalY += arrivalV * dt;
+      if (!retracted && arrivalY > 0){ arrivalY = 0; arrivalV *= -0.12; }
 
       // hover hold: the O-ring is springed toward the pointer side, so
       // the badge physically yields and the strands bow around it
@@ -2997,16 +2997,22 @@ input[type="radio"] {
       return d;
     }
 
+    function visualPoints(pts){
+      const lastIndex = pts.length - 1;
+      return pts.map((p, i) => ({ x:p.x, y:p.y + arrivalY * (i / lastIndex) }));
+    }
     function paint(){
       if (!lySvg) return;
-      const dL = catmull(ptsL), dR = catmull(ptsR);
+      const viewL = visualPoints(ptsL), viewR = visualPoints(ptsR);
+      const dL = catmull(viewL), dR = catmull(viewR);
       const order = [dL, dR, dL, dR, dL, dR, dL, dR, dL, dR];
       for (let i = 0; i < strandEls.length; i++){
         if (strandEls[i]) strandEls[i].setAttribute('d', order[i]);
       }
       // O-ring: full circle behind the strands, lower half in front —
       // the fabric visibly passes through the metal
-      const t = 'translate(' + tip.x.toFixed(2) + ' ' + tip.y.toFixed(2) + ')';
+      const visualTipY = tip.y + arrivalY;
+      const t = 'translate(' + tip.x.toFixed(2) + ' ' + visualTipY.toFixed(2) + ')';
       const rb = document.getElementById('lyRingBackC');
       const rf = document.getElementById('lyRingFrontC');
       if (rb) rb.setAttribute('transform', t);
@@ -3016,7 +3022,7 @@ input[type="radio"] {
       const hg = document.getElementById('lyHookG');
       if (hg){
         const nx = tip.x + Math.sin(swingAng) * PEND_LEN;
-        const ny = tip.y + Math.cos(swingAng) * PEND_LEN;
+        const ny = visualTipY + Math.cos(swingAng) * PEND_LEN;
         hg.setAttribute('transform',
           'translate(' + nx.toFixed(2) + ' ' + ny.toFixed(2) + ') rotate(' +
           (swingAng * 180 / Math.PI).toFixed(2) + ')');
@@ -3030,7 +3036,7 @@ input[type="radio"] {
       // follows the rope tip. tip - restTip is how far the O-ring has
       // wandered; the rotation pivots at 50% -16px (the ring).
       const dx = tip.x - restX;
-      const dy = tip.y - (restTop - PEND_LEN);
+      const dy = tip.y + arrivalY - (restTop - PEND_LEN);
       const ang = swingAng * 180 / Math.PI;
       idCardSwing.style.transform =
         'translate(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px) ' +
@@ -3077,22 +3083,17 @@ input[type="radio"] {
       requestAnimationFrame(frame);
     }
     requestAnimationFrame(frame);
-    // Watchdog: embedded/throttled webviews can freeze rAF entirely —
-    // pump frame() from a 16ms interval when rAF stalls >80ms. An alive
-    // rAF keeps lastBeat fresh and starves the watchdog; a frozen one
-    // lets it take over. frame()'s dt clamp keeps double-driving stable.
-    setInterval(() => {
-      if (performance.now() - lastBeat > 80) frame(performance.now());
-    }, 16);
 
     return {
       pushPointer, hoverMove, hoverEnd, strike, motion, deviceTilt, reset,
+      setRetracted(value){ retracted = !!value; },
+      replayDrop(){ retracted = false; arrivalY = -(rest.top + (rest.h || 320) + 36); arrivalV = 0; },
       physics: PHYSICS,
       // live card geometry for the pointer plumbing — derived from sim
       // state only, so the hot pointermove path never touches layout
       cardGeom(){
         if (!tip || !started) return null;
-        return { cx: tip.x, top: tip.y + PEND_LEN, w: rest.w || 240, h: rest.h || 320 };
+        return { cx: tip.x, top: tip.y + arrivalY + PEND_LEN, w: rest.w || 240, h: rest.h || 320 };
       },
       isStarted: () => started,
       dbg(){ return { tip: tip && { x: tip.x, y: tip.y }, swingAng }; }
@@ -3106,6 +3107,9 @@ input[type="radio"] {
   //   pointer near the badge  -> moving air nudges the rope (as before)
   let lastPX = null, lastPY = null, lastPT = 0, lastVX = 0, lastVY = 0, hovering = false;
   document.addEventListener('pointermove', (e) => {
+    // Hover physics belongs to a desktop pointer. On touch devices it would
+    // fight the orientation solver and cause apparent jitter.
+    if (e.pointerType === 'touch') return;
     if (!sequenceRunning){
       lastPX = null;
       if (hovering){ hovering = false; LANYARD.hoverEnd(); }
@@ -3175,26 +3179,20 @@ input[type="radio"] {
         // Turning the phone over retracts the completed badge upward into
         // the shutter. No backdrop click can dismiss it; this is purely a
         // physical orientation response.
-        idCardOverlay.classList.add('is-retracted');
+        LANYARD.setRetracted(true);
       } else {
         // Returning upright replays the same top-down arrival, then the
         // rope solver takes over again from its resting connection point.
-        idCardOverlay.classList.remove('is-retracted');
-        idCardContainer.classList.remove('phone-drop');
-        void idCardContainer.offsetWidth;
-        idCardContainer.classList.add('phone-drop');
-        LANYARD.reset();
+        LANYARD.replayDrop();
       }
     }
     if (e.gamma == null || phoneUpsideDown) return;
-    // STABILISATION: the accelerometer is the single tilt authority.
-    // gamma is only honoured when devicemotion has been silent for
-    // 800ms, so the anchor frame is never double-driven by two
-    // disagreeing sensors (the historical wobble source).
-    if (performance.now() - lastMotionAt < 800) return;
     LANYARD.deviceTilt(e.gamma);
   };
+  let sensorsAttached = false;
   const attachSensors = () => {
+    if (sensorsAttached) return;
+    sensorsAttached = true;
     window.addEventListener('devicemotion', onMotion);
     window.addEventListener('deviceorientation', onOrientation);
   };
@@ -3213,8 +3211,8 @@ input[type="radio"] {
     document.removeEventListener('touchend', sensorRetry);
     document.removeEventListener('click', sensorRetry);
   };
-  document.addEventListener('touchend', sensorRetry, { once: false });
-  document.addEventListener('click', sensorRetry, { once: false });
+  document.addEventListener('touchend', sensorRetry, { once: true });
+  document.addEventListener('click', sensorRetry, { once: true });
   // Test/automation hook — lets QA drive the rope without the full
   // registration flow. Harmless in production.
   window.__ieeeLanyard = { LANYARD, isRunning: () => sequenceRunning,
