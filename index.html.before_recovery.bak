@@ -3,9 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 <title>IEEE Summer School 2026 — IEEE SB VJEC</title>
 <meta name="description" content="IEEE Summer School 2026, hosted by IEEE Student Branch, Vimal Jyothi Engineering College — two days of hands-on tracks, workshops and industry talks.">
 <style>
@@ -51,7 +48,8 @@
    1. BASE
    ============================================================ */
 *,*::before,*::after{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:calc(var(--housing-h) + 24px)}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--housing-h) + 24px);scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
 body{
   margin:0;
   background:
@@ -61,6 +59,7 @@ body{
   color:var(--fg);
   font:16px/1.65 ui-sans-serif,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
 }
 /* Warehouse background — lives INSIDE the hero only, revealed when the
    shutter rolls up. It scrolls away with #home, so the rest of the page
@@ -82,12 +81,18 @@ body{
   will-change:transform,opacity;
 }
 .is-open #home::before{opacity:1;transform:scale(1.02) perspective(900px) translateZ(0)}
-/* soft fade at the bottom of the hero so the photo hands off cleanly
-   to the dark page background below */
-#home::after{
-  content:"";position:absolute;left:0;right:0;bottom:0;height:140px;z-index:1;
-  pointer-events:none;
-  background:linear-gradient(180deg, transparent, var(--ink-0));
+
+/* Mobile hero — the portrait crop places the headbox up top and the logo
+   wall centred under the fold, so we anchor to top-centre and let the
+   sides crop. Same reveal motion as desktop. */
+@media (max-width:720px){
+  #home::before{
+    background:
+      linear-gradient(180deg, rgba(6,7,10,.42) 0%, rgba(6,7,10,.18) 26%, rgba(6,7,10,.22) 62%, rgba(6,7,10,.55) 100%),
+      radial-gradient(ellipse 150% 100% at 50% 40%, transparent 52%, rgba(0,0,0,.5) 100%),
+      url('warehouse-bg(mobile).png') center top / cover no-repeat;
+    transform-origin:50% 30%;
+  }
 }
 /* soft fade at the bottom of the hero so the photo hands off cleanly
    to the dark page background below */
@@ -476,7 +481,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 }
 /* single minimal entry control */
 .enter-btn{
-  position:absolute;left:50%;bottom:clamp(2rem,7vh,4.5rem);transform:translateX(-50%);
+  position:absolute;left:50%;bottom:clamp(3.2rem,12vh,5.5rem);transform:translateX(-50%);
   background:rgba(0,0,0,.35);border:1px solid rgba(217,215,210,.35);
   color:#c9c6c0;border-radius:4px;
   padding:.8rem 2.6rem;cursor:pointer;
@@ -485,6 +490,58 @@ button,input,select,textarea{font:inherit;color:inherit}
 }
 .enter-btn:hover{border-color:#c9252d;color:#e04048;background:rgba(0,0,0,.55)}
 .enter-btn:focus-visible{outline:2px solid #c9252d;outline-offset:3px}
+
+/* ---------- MOBILE SHUTTER FACE ----------
+   Keep the CSS-painted corrugated steel look on phones (same shutter the
+   desktop paints — solid corrugated metal with painted stencil letters).
+   We only shrink the type + adjust the ENTER button position so they fit
+   a phone screen, and remove the tap-highlight that iOS/Android adds. */
+@media (max-width:720px){
+  .shutter{
+    /* kill the blue tap-highlight + focus ring mobile browsers add */
+    -webkit-tap-highlight-color:transparent;
+    outline:none;
+    cursor:default;
+  }
+  .shutter:focus,.shutter:focus-visible,.shutter:active{outline:none}
+  .shutter *{-webkit-tap-highlight-color:transparent}
+  .st-ieee{
+    font-size:clamp(4rem,21vw,8.5rem);
+    letter-spacing:.06em;
+  }
+  .st-vjec{
+    font-size:clamp(1.05rem,4.8vw,1.9rem);
+    margin-top:1rem;
+    letter-spacing:.42em;text-indent:.42em;
+  }
+  .enter-btn{
+    /* high enough that no phone's home-gesture bar / safe-area can cover it */
+    bottom:clamp(4.5rem,17vh,7rem);
+    padding:.85rem 2.4rem;
+    font-size:.74rem;letter-spacing:.42em;text-indent:.42em;
+    position:absolute;left:50%;transform:translateX(-50%);
+  }
+  .enter-btn:focus,.enter-btn:focus-visible{outline:none}
+  /* processing / thank-you shutter views — sized so they fit a phone */
+  #shutter-processing-view,#shutter-thankyou-view{padding:0 1.2rem}
+  #shutter-processing-view .st-ieee{
+    font-size:clamp(1.7rem,8.4vw,2.6rem) !important;
+    letter-spacing:.08em !important;
+    line-height:1.16 !important;
+    margin-bottom:1.2rem !important;
+  }
+  #shutter-thankyou-view .st-ieee{
+    font-size:clamp(1.55rem,7.6vw,2.3rem) !important;
+    letter-spacing:.07em !important;
+    line-height:1.2 !important;
+  }
+  #shutter-thankyou-view .st-vjec{
+    font-size:clamp(.78rem,3.4vw,1.05rem) !important;
+    margin-top:1.2rem !important;
+    letter-spacing:.34em;text-indent:.34em;
+  }
+  #shutter-progress{font-size:1rem !important;letter-spacing:1px}
+}
 
 /* OPEN STATE — rolls up into the barrel with a metallic rattle */
 @keyframes rattle{
@@ -525,160 +582,6 @@ main{position:relative;z-index:1}
   position:relative;
   overflow:hidden;
 }
-/* Figma-inspired scroll story. The shutter remains the entry interaction;
-   this scene begins only after it clears and transitions into the site. */
-.vyora-scroll{height:220vh!important;padding:0!important;display:block!important;align-content:start!important;overflow:visible!important}
-.vyora-scroll::before,.vyora-scroll::after{display:none!important}
-.vyora-scroll .room-lights{height:100vh}
-.vyora-scroll .wrap{position:sticky;top:0;height:100vh;display:grid;align-content:center;z-index:2}
-.vyora-iris{position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none}
-.vyora-iris::before{content:"";position:absolute;left:50%;top:50%;width:clamp(7rem,17vw,14rem);aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(var(--iris-scale,0));background:#050609;box-shadow:0 0 0 1px rgba(255,214,0,.3),0 0 44px rgba(255,173,0,.35);will-change:transform}
-.vyora-iris::after{content:"26";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--iris-label-scale,1));color:#ff5a00;font-weight:950;font-size:clamp(5rem,20vw,15rem);line-height:.7;letter-spacing:-.1em;opacity:var(--iris-label-opacity,1);text-shadow:0 0 28px rgba(255,90,0,.45);will-change:transform,opacity}
-.vyora-scroll .stage-grid{transition:opacity .2s linear,transform .2s linear;opacity:var(--story-copy-opacity,1);transform:translateY(calc(var(--story-copy-shift,0) * 1px))}
-@media (max-width:720px){.vyora-scroll{height:190vh!important}.vyora-scroll .wrap{width:min(100% - 2rem,var(--maxw));align-content:center}.vyora-iris::before{width:10rem}}
-
-/* The post-shutter landing is a self-contained scroll film: title first,
-   then its O expands into the dark opening of the next section. */
-body.is-open .nav{display:none}
-.vyora-scroll > .room-lights,.vyora-scroll > .vyora-iris,.vyora-scroll > .wrap{display:none}
-.figma-landing{position:sticky;top:0;height:100vh;z-index:4;display:grid;place-items:center;overflow:hidden;isolation:isolate;color:#160d0a;background:#ef3b20}
-.figma-landing::before{content:"";position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(90deg,rgba(70,8,5,.12) 0 1px,transparent 1px 5px),radial-gradient(ellipse at 50% 43%,transparent 8%,rgba(190,34,19,.18) 60%,rgba(101,13,10,.35) 100%);pointer-events:none}
-.figma-landing::after{content:"";position:absolute;inset:clamp(.75rem,1.8vw,1.75rem);border:1px solid rgba(29,12,10,.5);pointer-events:none}
-.figma-mark{position:relative;z-index:2;display:grid;justify-items:center;gap:clamp(.25rem,1.3vw,1rem);margin-top:-2.5vh;text-align:center;isolation:isolate}
-.figma-year{color:#c92819;font-weight:950;font-size:clamp(10rem,31vw,27rem);line-height:.58;letter-spacing:-.16em;text-shadow:0 3px 0 rgba(92,22,0,.14);transform:translateX(-.035em)}
-.figma-name{display:flex;align-items:center;color:#160d0a;font-family:Impact,"Arial Black",sans-serif;font-size:clamp(5rem,15vw,14rem);font-weight:950;line-height:.7;letter-spacing:-.09em;filter:drop-shadow(0 2px 0 rgba(255,150,0,.2))}
-.figma-name span:not(.figma-hole){display:block;opacity:calc(1 - var(--story-progress,0) * 1.7);transform:translateY(calc(var(--story-progress,0) * -4vh));transition:opacity .08s linear}
-.figma-hole{position:relative;display:inline-block;width:.61em;height:.61em;margin:0 -.02em;border-radius:50%;vertical-align:.03em;transform:scale(var(--hole-scale,1));transform-origin:center;background:#131011;box-shadow:0 0 0 1px rgba(0,0,0,.45),0 0 38px rgba(59,5,2,.28);will-change:transform;z-index:3}
-.figma-hole::after{content:"";position:absolute;inset:28%;border-radius:50%;background:#ef3b20;opacity:calc(1 - var(--story-progress,0) * 2)}
-.figma-register{position:relative;z-index:2;margin-top:clamp(1.4rem,4vw,3.5rem);min-width:112px;padding:.68rem 1.8rem;border:1px solid rgba(47,20,10,.62);background:transparent;color:#2d130b;font-size:.56rem;font-weight:800;letter-spacing:.17em;text-transform:uppercase;cursor:default}
-.figma-scroll-note{position:absolute;bottom:2rem;z-index:2;color:rgba(23,20,0,.7);font-size:.59rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;opacity:calc(1 - var(--story-progress,0) * 2)}
-body:not(.is-open) .figma-landing>*{opacity:0}body.is-open .figma-mark{animation:figma-reveal .8s cubic-bezier(.16,1,.3,1) .2s both}body.is-open .figma-scroll-note{animation:figma-note .7s cubic-bezier(.16,1,.3,1) .55s both}@keyframes figma-reveal{from{opacity:0;transform:translateY(2rem) scale(.97)}to{opacity:1;transform:none}}@keyframes figma-note{from{opacity:0;transform:translate(-50%,1.5rem)}to{opacity:1}}
-/* The O opens directly onto a full next section instead of a hidden page. */
-.vyora-scroll ~ .section,.vyora-scroll ~ .rule{display:block!important}.vyora-scroll + .section{min-height:100svh;display:grid!important;align-items:center;background:#131011;color:#f7eee4;overflow:hidden}.vyora-scroll + .section .display{background:none;color:#f7eee4;-webkit-text-fill-color:#f7eee4}.vyora-scroll + .section .eyebrow{color:#ef3b20;border-color:rgba(239,59,32,.38)}.vyora-scroll + .section .lede{color:#d5c8bf}
-@media (prefers-reduced-motion:reduce){.figma-hole{transform:scale(1)}.figma-name span:not(.figma-hole),.figma-scroll-note{opacity:1}}
-@media (max-width:720px){.figma-landing{min-height:100svh}.figma-name{font-size:clamp(4rem,18vw,7rem)}.figma-year{font-size:clamp(8rem,36vw,13rem)}.figma-scroll-note{bottom:1.4rem}.figma-hole{transform:scale(var(--hole-scale,1))}}
-
-/* ============================================================
-   VYORA '26 — implementation of the supplied Figma frame
-   The cabinet artwork provides the physical shell; the screen, typography,
-   and expanding void are live HTML/CSS so the prototype can scroll.
-   ============================================================ */
-.figma-landing{
-  background:#090806;
-  color:#090708;
-}
-.figma-landing::before{
-  inset:9% 7% 30%!important;z-index:0!important;
-  background:
-    repeating-linear-gradient(0deg,rgba(255,244,82,.045) 0 1px,transparent 1px 4px),
-    radial-gradient(ellipse at 50% 40%,#e8e42a 0%,#c8c51c 53%,#797810 100%)!important;
-  border:2px solid #292301;border-radius:3px;
-  box-shadow:inset 0 0 80px rgba(34,27,0,.5),0 0 0 4px rgba(5,4,2,.82),0 0 42px rgba(255,209,28,.2);
-}
-.figma-landing::after{inset:10% 8% 31%!important;z-index:1!important;border:1px solid rgba(255,238,90,.5)!important;border-radius:2px}
-.figma-mark{z-index:2!important;gap:clamp(.2rem,1vw,.75rem)!important;margin-top:-2vh!important}
-.figma-year{
-  color:#ee5712!important;font-family:Impact,"Arial Black",sans-serif;
-  font-size:clamp(8rem,23vw,20rem)!important;line-height:.58!important;
-  letter-spacing:-.18em!important;text-shadow:none!important;opacity:.96;
-}
-.figma-name{
-  color:#08070b!important;font-size:clamp(4.7rem,13.5vw,12rem)!important;
-  letter-spacing:-.1em!important;filter:none!important;
-  text-shadow:2px 0 #08070b,-2px 0 rgba(8,7,11,.78);
-}
-/* Fine horizontal cuts reproduce the distressed Figma lettering without
-   baking the title into an image. */
-.figma-name span:not(.figma-hole){
-  background:repeating-linear-gradient(180deg,#08070b 0 7px,transparent 7px 9px,#08070b 9px 15px);
-  -webkit-background-clip:text;background-clip:text;color:transparent!important;
-}
-.figma-hole{
-  width:.64em!important;height:.64em!important;background:
-    radial-gradient(circle at 24% 21%,#8c7ec0 0 1.4%,transparent 1.8%),
-    radial-gradient(circle at 74% 28%,#f1e8ff 0 1%,transparent 1.5%),
-    radial-gradient(circle at 61% 72%,#6e5ba2 0 1.3%,transparent 1.8%),
-    radial-gradient(circle at 33% 63%,#bca8e8 0 .9%,transparent 1.5%),
-    radial-gradient(circle at 50% 48%,#191226 0%,#06050a 67%)!important;
-  box-shadow:inset -11px -11px 25px rgba(0,0,0,.7),0 0 0 2px #0b0812,0 0 32px rgba(14,5,26,.65)!important;
-}
-.figma-hole::after{opacity:0!important}
-.figma-register{border-color:rgba(17,14,1,.75)!important;background:rgba(229,225,31,.14)!important;color:#171300!important}
-.figma-scroll-note{z-index:3!important;color:#1c1905!important;text-shadow:0 1px rgba(255,244,101,.5)!important}
-/* The supplied frame contains only the title treatment; actions stay in the
-   following content section rather than being invented inside the Figma hero. */
-.figma-register,.figma-scroll-note{display:none!important}
-@media(max-width:720px){
-  .figma-landing{background-position:center!important}
-  .figma-landing::before{inset:13% 6% 28%!important}
-  .figma-landing::after{inset:14% 7% 29%!important}
-  .figma-name{font-size:clamp(3.7rem,17vw,6.2rem)!important}
-  .figma-year{font-size:clamp(7rem,29vw,11rem)!important}
-}
-
-/* Live cabinet construction — no screenshot/reference image is used here. */
-.figma-landing{background:#050604!important;color:#f4ed61!important}
-.figma-landing::before{inset:2.5% 4.5%!important;z-index:0!important;border:0!important;border-radius:clamp(1rem,2vw,2rem)!important;background:linear-gradient(115deg,#211b08 0 2%,#070806 3% 9%,#32290b 10% 11%,#080806 12% 88%,#32290b 89% 90%,#080806 91% 97%,#211b08 100%)!important;box-shadow:inset 0 0 0 3px #030402,inset 0 0 0 8px #30280b,inset 0 0 0 12px #090a07,0 18px 40px #000!important}
-.figma-landing::after{inset:12% 8% 24%!important;z-index:1!important;border:3px solid #292505!important;border-radius:clamp(.7rem,1.3vw,1.2rem)!important;background:radial-gradient(ellipse at 50% 35%,#f3ef35 0%,#d5d41f 52%,#6e700d 100%)!important;box-shadow:inset 0 0 50px rgba(42,36,0,.62),0 0 0 5px #050604,0 0 0 8px #51430b!important}
-.figma-landing::selection{background:#f5ef3b;color:#070806}
-.figma-cabinet-top,.figma-cabinet-side,.figma-cabinet-floor,.figma-controls{position:absolute;z-index:4;pointer-events:none}.figma-cabinet-top{top:4.5%;left:12%;right:12%;height:7%;border:2px solid #4a3d09;border-bottom-color:#0b0c07;border-radius:0 0 1rem 1rem;background:linear-gradient(180deg,#171607,#050604);box-shadow:0 8px 15px rgba(0,0,0,.8)}.figma-cabinet-side{top:15%;bottom:18%;width:clamp(1.1rem,3vw,3rem);background:linear-gradient(90deg,#050604,#41340a 45%,#080805 80%);box-shadow:inset 0 0 0 1px #6b550c}.figma-cabinet-side::after{content:"";position:absolute;left:35%;top:8%;width:30%;height:32%;background:linear-gradient(#fff36a,#e6aa13,#fff36a);box-shadow:0 0 24px #ffd51e}.figma-cabinet-side.left{left:5%}.figma-cabinet-side.right{right:5%;transform:scaleX(-1)}.figma-cabinet-floor{height:17%;left:5%;right:5%;bottom:3%;border:3px solid #30290b;border-top-color:#c2a91b;background:linear-gradient(165deg,#181506,#080806 48%,#242008);transform:perspective(700px) rotateX(32deg);transform-origin:bottom}.figma-controls{z-index:5;left:19%;right:19%;bottom:6%;height:10%;display:flex;align-items:center;justify-content:space-between}.figma-joystick{width:clamp(1.8rem,4vw,3.4rem);aspect-ratio:.55;border-radius:50% 50% 38% 38%;background:radial-gradient(circle at 50% 18%,#f4df58 0 10%,#171408 12% 33%,#5a470b 35% 43%,#0a0a07 45%);filter:drop-shadow(0 5px 4px #000)}.figma-panel{width:30%;height:60%;border:2px solid #816e13;background:repeating-linear-gradient(90deg,#0a0a07 0 4px,#31290b 4px 6px);box-shadow:inset 0 0 15px #000}
-.figma-cabinet-header{position:absolute;z-index:6;top:15%;left:12%;right:12%;display:flex;align-items:center;justify-content:space-between;color:#f3ed65;font:800 clamp(.52rem,.75vw,.78rem)/1 ui-monospace,monospace;letter-spacing:.13em}.figma-cabinet-header b{font:900 clamp(.75rem,1vw,1rem)/.8 Impact,sans-serif;letter-spacing:.03em}.figma-cabinet-header b small{display:block;font:700 .55em/1 ui-monospace,monospace;letter-spacing:.1em}.figma-cabinet-header nav{display:flex;gap:clamp(.7rem,2vw,2.3rem)}.figma-cabinet-header a{color:inherit}.figma-cabinet-header a:first-child{border-bottom:2px solid #f3ed65;padding-bottom:.4rem}.figma-cabinet-header em{font-style:normal;border:1px solid #f3ed65;border-radius:999px;padding:.65rem 1.6rem}.figma-figure-note{position:absolute;z-index:6;top:30%;right:12%;max-width:10ch;font:800 clamp(.5rem,.7vw,.7rem)/1.4 ui-monospace,monospace;letter-spacing:.16em;text-transform:uppercase;color:#f3ed65}.figma-figure-note::after{content:"";display:block;width:2rem;border-top:2px solid;margin-top:.8rem}.figma-story-left{position:absolute;z-index:6;left:12%;bottom:27%;font:800 clamp(.48rem,.7vw,.68rem)/1.45 ui-monospace,monospace;letter-spacing:.14em;color:#f3ed65}.figma-mark{z-index:5!important;margin-top:4vh!important}.figma-year{color:#ef5a13!important;font-size:clamp(8rem,22vw,20rem)!important}.figma-name{font-size:clamp(4.5rem,13vw,11.5rem)!important}.figma-register,.figma-scroll-note{display:none!important}
-@media(max-width:720px){.figma-landing::before{inset:2% 2.5%!important;border-radius:.65rem!important}.figma-landing::after{inset:14% 6% 28%!important;border-width:2px!important}.figma-cabinet-top{left:9%;right:9%;top:4%;height:7%}.figma-cabinet-side{top:16%;bottom:21%;width:1.2rem}.figma-cabinet-side.left{left:3%}.figma-cabinet-side.right{right:3%}.figma-cabinet-header{left:10%;right:10%;top:16%;font-size:.44rem}.figma-cabinet-header nav{display:none}.figma-cabinet-header em{padding:.45rem .7rem}.figma-figure-note,.figma-story-left{display:none}.figma-controls{left:19%;right:19%;bottom:7%;height:8%}.figma-mark{margin-top:6vh!important}.figma-year{font-size:clamp(6.8rem,27vw,10rem)!important}.figma-name{font-size:clamp(3.4rem,15vw,5.7rem)!important}}
-
-/* Supplied landing-page cabinet artwork. Screen content stays live above it. */
-.figma-frame-art{position:absolute;inset:0;z-index:4;width:100%;height:100%;object-fit:fill;pointer-events:none;mix-blend-mode:screen}.figma-cabinet-top,.figma-cabinet-side,.figma-cabinet-floor,.figma-controls{display:none!important}.figma-landing::after{inset:12% 9% 14%!important}.figma-cabinet-header{z-index:6!important}.figma-mark{z-index:5!important}.figma-figure-note,.figma-story-left{z-index:6!important}@media(max-width:720px){.figma-landing::after{inset:13% 9% 17%!important}}
-
-/* Pixel-arcade title treatment from the supplied reference. */
-.figma-mark{gap:clamp(.45rem,1.1vw,1rem)!important;margin-top:5vh!important}.figma-pixel-label,.figma-tagline{margin:0;font:400 clamp(.45rem,.78vw,.8rem)/1.35 "Press Start 2P",ui-monospace,monospace;letter-spacing:.03em;color:#1d1007;text-shadow:1px 1px 0 rgba(255,246,111,.7);white-space:nowrap}.figma-pixel-label{padding:.75rem 1rem;background:#211207;color:#fff5bb;box-shadow:5px 0 #211207,-5px 0 #211207,0 5px #211207,0 -5px #211207}.figma-name{font-family:"Press Start 2P",ui-monospace,monospace!important;font-size:clamp(3rem,8.7vw,8.2rem)!important;font-weight:400!important;line-height:1!important;letter-spacing:-.13em!important;filter:none!important}.figma-name span:not(.figma-hole){background:none!important;color:#fff9d7!important;-webkit-text-fill-color:#fff9d7!important;text-shadow:5px 0 #1d1007,-5px 0 #1d1007,0 5px #1d1007,0 -5px #1d1007,5px 5px #1d1007,-5px 5px #1d1007,5px -5px #1d1007,-5px -5px #1d1007,9px 9px #1d1007}.figma-hole{width:.58em!important;height:.58em!important;background:radial-gradient(circle at 30% 25%,#f8f8f8 0 1.2%,transparent 1.8%),radial-gradient(circle at 68% 36%,#dedede 0 1%,transparent 1.5%),radial-gradient(circle at 50% 75%,#fff 0 .9%,transparent 1.4%),#030303!important;box-shadow:0 0 0 7px #1d1007,8px 8px 0 #1d1007!important}.figma-year{font-family:"Press Start 2P",ui-monospace,monospace!important;font-size:clamp(2.6rem,6vw,6.1rem)!important;line-height:1!important;letter-spacing:-.18em!important;color:#ff6817!important;text-shadow:5px 0 #1d1007,-5px 0 #1d1007,0 5px #1d1007,0 -5px #1d1007,5px 5px #1d1007,-5px 5px #1d1007,9px 9px #1d1007}.figma-tagline{font-size:clamp(.45rem,.7vw,.72rem);color:#1d1007;font-weight:700}.figma-mark .figma-register{display:none!important}@media(max-width:720px){.figma-mark{gap:.6rem!important;margin-top:7vh!important}.figma-pixel-label{font-size:.38rem;padding:.6rem .7rem}.figma-name{font-size:clamp(2rem,11vw,3.5rem)!important}.figma-name span:not(.figma-hole){text-shadow:3px 0 #1d1007,-3px 0 #1d1007,0 3px #1d1007,0 -3px #1d1007,5px 5px #1d1007}.figma-hole{box-shadow:0 0 0 4px #1d1007,5px 5px #1d1007!important}.figma-year{font-size:clamp(1.9rem,9vw,3rem)!important;text-shadow:3px 0 #1d1007,-3px 0 #1d1007,0 3px #1d1007,0 -3px #1d1007,5px 5px #1d1007}.figma-tagline{font-size:.35rem;letter-spacing:0;max-width:88%;white-space:normal}}
-/* Final hero controls: solid pixel iris and the registration call-to-action. */
-.figma-pixel-label{display:none!important}
-.figma-hole{
-  width:.82em!important;
-  height:.82em!important;
-  margin:0 -.065em!important;
-  align-self:center;
-  border-radius:0!important;
-  clip-path:polygon(24% 0,76% 0,76% 8%,88% 8%,88% 20%,100% 20%,100% 80%,88% 80%,88% 92%,76% 92%,76% 100%,24% 100%,24% 92%,12% 92%,12% 80%,0 80%,0 20%,12% 20%,12% 8%,24% 8%);
-  background:#050505!important;
-  box-shadow:none!important;
-}
-.figma-hole::after{display:none!important}
-.figma-cabinet-header{color:#171005!important}
-.figma-cabinet-header a{color:#171005!important;text-shadow:none!important}
-.figma-cabinet-header a:first-child{border-color:#171005!important}
-.figma-cabinet-header em{display:none!important}
-.figma-mark .figma-register{
-  display:inline-flex!important;
-  align-items:center;
-  justify-content:center;
-  min-width:clamp(9rem,13vw,12rem);
-  margin-top:clamp(.6rem,1.25vw,1rem)!important;
-  padding:.85rem 1.15rem!important;
-  border:3px solid #171005!important;
-  border-radius:0!important;
-  background:#fff3a1!important;
-  color:#171005!important;
-  font:400 clamp(.5rem,.72vw,.72rem)/1 "Press Start 2P",ui-monospace,monospace!important;
-  letter-spacing:.08em!important;
-  text-decoration:none;
-  text-transform:uppercase;
-  box-shadow:5px 5px 0 #171005!important;
-  transition:transform .16s ease,box-shadow .16s ease;
-}
-.figma-mark .figma-register:hover,.figma-mark .figma-register:focus-visible{transform:translate(3px,3px);box-shadow:2px 2px 0 #171005!important}
-.figma-figure-note,.figma-story-left{
-  z-index:3!important;
-  opacity:calc(1 - var(--story-progress,0) * 4);
-  transition:opacity .08s linear;
-}
-.figma-frame-art--phone{display:none}
-@media(max-width:720px){
-  .figma-frame-art:not(.figma-frame-art--phone){display:none}
-  .figma-frame-art--phone{display:block}
-  .figma-hole{width:.82em!important;height:.82em!important;margin:0 -.08em!important}
-  .figma-mark .figma-register{min-width:8.5rem;padding:.72rem .8rem!important;font-size:.46rem!important}
-}
-
 /* narrower content wrap inside hero so the room walls are visible */
 #home .wrap{
   width:min(100% - 4rem, 920px);
@@ -753,78 +656,8 @@ body:not(.is-open) .figma-landing>*{opacity:0}body.is-open .figma-mark{animation
   background:linear-gradient(150deg,var(--gold-0),var(--gold-2));
   box-shadow:0 0 10px rgba(232,194,122,.55);
 }
-
-/* --- highlight strip (section 1) --- */
-.highlights{display:grid;grid-template-columns:repeat(4,1fr);gap:1.15rem}
-.highlight{display:grid;gap:.45rem;padding:1.3rem}
-.highlight .ico{
-  width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
-  background:linear-gradient(150deg,rgba(232,194,122,.22),rgba(232,194,122,.05));
-  border:1px solid var(--line);color:var(--gold-1);font-size:.9rem;
-}
-.highlight h4{margin:.4rem 0 0;font-size:.98rem}
-.highlight p{font-size:.88rem}
-
-/* --- track cards --- */
-.track{display:grid;gap:.8rem}
-.track .tag{
-  align-self:start;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--gold-1);border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;
-}
-.track .speaker{
-  display:flex;align-items:center;gap:.7rem;margin-top:.35rem;
-  padding-top:.85rem;border-top:1px dashed var(--line-soft);
-}
-.avatar{
-  width:36px;height:36px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
-  background:linear-gradient(150deg,var(--ink-4),var(--ink-2));
-  border:1px solid var(--line);color:var(--gold-1);font-size:.7rem;font-weight:800;
-}
-.speaker b{display:block;font-size:.86rem}
-.speaker span{font-size:.72rem;color:var(--fg-mute)}
-
-/* --- schedule --- */
-.day-switch{display:flex;gap:.5rem;margin-bottom:1.8rem;flex-wrap:wrap}
-.day-switch button{
-  padding:.6rem 1.3rem;border-radius:999px;cursor:pointer;
-  border:1px solid var(--line-soft);background:var(--glass);
-  font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-dim);
-  transition:all .35s var(--ease-shutter);
-}
-.day-switch button[aria-selected="true"]{
-  color:#241a06;border-color:transparent;
-  background:linear-gradient(180deg,var(--gold-0),var(--gold-2));
-}
-.timeline{position:relative;padding-left:2.1rem;display:grid;gap:1rem}
-.timeline::before{
-  content:"";position:absolute;left:.52rem;top:.4rem;bottom:.4rem;width:1px;
-  background:linear-gradient(180deg,transparent,var(--line),transparent);
-}
-.slot{position:relative;padding:1.05rem 1.25rem}
-.slot::before{
-  content:"";position:absolute;left:-1.85rem;top:1.45rem;width:11px;height:11px;border-radius:50%;
-  background:var(--ink-0);border:2px solid var(--gold-2);
-  box-shadow:0 0 0 4px rgba(232,194,122,.10);
-}
-.slot time{
-  display:block;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-1);
-  margin-bottom:.3rem;
-}
-.slot h4{margin:0 0 .25rem;font-size:1rem}
-.slot p{margin:0;color:var(--fg-dim);font-size:.9rem}
-.day-panel[hidden]{display:none}
-
-/* --- tickets --- */
-.tickets{display:grid;grid-template-columns:repeat(3,1fr);gap:1.15rem;margin-bottom:2.4rem}
-.ticket{display:grid;gap:.75rem;position:relative}
-.ticket.featured{border-color:var(--line);box-shadow:0 30px 70px -34px rgba(232,194,122,.4),inset 0 1px 0 rgba(255,255,255,.10)}
-.ticket .badge{
-  position:absolute;top:-.7rem;right:1.1rem;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
-  background:linear-gradient(180deg,var(--gold-0),var(--gold-2));color:#241a06;
-  padding:.28rem .7rem;border-radius:999px;font-weight:800;
-}
-.price{font-size:2rem;font-weight:800;color:var(--gold-1);line-height:1}
-.price small{font-size:.66rem;letter-spacing:.2em;color:var(--fg-mute);font-weight:600;display:block;margin-top:.3rem;text-transform:uppercase}
+.pill-list b{color:inherit}
+.pill-list li{list-style:none}
 
 /* --- form --- */
 .form-grid{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr)}
@@ -870,6 +703,33 @@ body:not(.is-open) .figma-landing>*{opacity:0}body.is-open .figma-mark{animation
 .conditional-field {
   transition: all 0.3s ease;
 }
+/* UPI-fixed payment display — payment method isn't a choice anymore */
+.upi-static{
+  display:flex;align-items:center;gap:.85rem;
+  padding:.8rem 1rem;border-radius:11px;
+  background:rgba(58,208,127,.06);border:1px solid rgba(58,208,127,.28);
+}
+.upi-badge{
+  font-size:.72rem;font-weight:800;letter-spacing:.14em;
+  background:linear-gradient(135deg,#3ad07f,#149a58);color:#04140c;
+  padding:.38rem .7rem;border-radius:8px;
+}
+.upi-sub{font-size:.78rem;color:var(--fg-dim);letter-spacing:.04em}
+.field-hint{font-size:.74rem;color:var(--fg-mute);margin:.25rem 0 .55rem;letter-spacing:.02em}
+.req{
+  font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:#ff9a9a;
+  border:1px solid rgba(255,107,107,.35);border-radius:6px;padding:.16rem .42rem;margin-left:.4rem;
+  vertical-align:middle;
+}
+/* Registration fee row — shows live price as IEEE member toggles */
+.price-box{
+  padding:.75rem 1rem;border-radius:11px;
+  background:var(--glass);border:1px solid var(--line-soft);
+  display:flex;flex-direction:column;gap:.3rem;
+}
+.price-line{font-size:1.05rem;font-weight:800;color:var(--gold-0)}
+.price-note{font-size:.74rem;color:var(--fg-mute);letter-spacing:.04em}
+.price-box .strike{text-decoration:line-through;opacity:.55;font-weight:600;color:var(--fg-mute)}
 input[type="radio"] {
   accent-color: var(--gold-1);
   width: 16px;
@@ -879,6 +739,11 @@ input[type="radio"] {
 /* ============================================================
    ID CARD — PREMIUM EVENT BADGE
    ============================================================ */
+/* Blood-red backdrop — DISABLED (not needed for ID card reveal) */
+#blood-bg{
+  display:none !important;
+}
+
 .id-card-overlay{
   --badge-gold:#d4a017;
   --badge-gold-soft:#e6be4e;
@@ -888,14 +753,15 @@ input[type="radio"] {
   --line:#ececec;
   --line-soft:#f4f4f4;
   --sp:8px;
-  position:fixed;inset:0;z-index:110;
+  --badge-drop:clamp(72px,12vh,110px);
+  position:fixed;inset:0;z-index:65;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:16px;
-  overflow-y:auto;
+  overflow:hidden;
   pointer-events:none;
-  background: 
-    radial-gradient(circle at 50% -20%, rgba(212,160,23,.15) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 50%, #15161a 0%, #08090a 100%);
+  background:
+    radial-gradient(circle at 50% -20%, rgba(212,160,23,.08) 0%, transparent 50%),
+    url('Id card bg.png') center center / cover no-repeat;
   perspective:1000px;
   opacity:0;transition:opacity .3s ease, transform 1s ease-out;
 }
@@ -935,142 +801,67 @@ input[type="radio"] {
   50%{transform:translateY(-18px) scale(1.06)}
 }
 
-/* ---------- LANYARD ---------- */
+/* ---------- LANYARD (SVG rope) ----------
+   Full-viewport overlay behind the card; the rope sim paints the
+   woven strands, O-ring and snap-hook into it every frame. */
 .id-card-lanyard{
-  position:relative;z-index:3;
-  width:80px;height:220px;
+  position:fixed;inset:0;z-index:3;
   pointer-events:none;
-  margin:0 auto;
-  flex-shrink:0;
   overflow:visible;
 }
-
-/* Strap: fills from top of lanyard container down to just above the ring */
-.ly-strap{
-  position:absolute;
-  top:0;bottom:32px;
-  left:50%;transform:translateX(-50%);
-  width:38px;
-  background:
-    repeating-linear-gradient(45deg, rgba(0,0,0,0.07) 0, rgba(0,0,0,0.07) 1.5px, transparent 1.5px, transparent 3px),
-    linear-gradient(90deg, #0b5c52 0%, #12897a 22%, #16a394 50%, #12897a 78%, #0b5c52 100%);
-  box-shadow: 2px 0 8px rgba(0,0,0,0.35), -2px 0 8px rgba(0,0,0,0.35);
-  border-radius:2px 2px 0 0;
+.ly-svg{
+  position:absolute;inset:0;width:100%;height:100%;
+  overflow:visible;
+  display:block;
 }
-/* Center ridge highlight on strap */
-.ly-strap::before{
-  content:"";
-  position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.06) 44%,rgba(255,255,255,.1) 50%,rgba(255,255,255,.06) 56%,transparent 100%);
-  pointer-events:none;
-}
+/* woven cloth strands — layered strokes along the same centreline:
+   dark edge → mid cloth → light core → sheen → gold stitch */
+.ly-s{fill:none;stroke-linecap:round;stroke-linejoin:round}
+#lyStrandLEdge,#lyStrandREdge{stroke:#032f22}
+#lyStrandLMid, #lyStrandRMid {stroke:#075f43}
+#lyStrandLCore,#lyStrandRCore{stroke:#0b8d62}
+#lyStrandLSheen,#lyStrandRSheen{stroke:rgba(194,255,221,.22)}
+#lyStrandLStitch,#lyStrandRStitch{stroke:rgba(229,242,202,.48);stroke-dasharray:4 6}
+/* chrome O-ring rims + swivel snap-hook */
+.ly-ring-arc{fill:none;stroke:url(#lyChrome);stroke-width:3.6;filter:url(#lyMetal)}
+.ly-hook{stroke:url(#lyChrome);fill:none;filter:url(#lyMetal)}
+.ly-hook-fill{fill:url(#lyChrome);stroke:#2c2f33;stroke-width:.6;filter:url(#lyMetal)}
 
-/* --- Left strap: goes up-left at ~16deg, extends above container --- */
-
-
-/* --- Right strap: goes up-right at ~16deg --- */
-
-
-/* --- Printed text running along the strap --- */
-
-.ly-strap-l .ly-label{
-  transform:translateX(-50%) rotate(0deg);
-}
-.ly-strap-r .ly-label{
-  transform:translateX(-50%) rotate(180deg);
-  top:30px;
-}
-
-/* --- Breakaway buckle on left strap --- */
-
-.ly-breakaway::before{
-  content:"";
-  position:absolute;top:0;left:0;right:0;height:12px;
-  background:linear-gradient(180deg,#555 0%,#3a3a3a 50%,#2a2a2a 100%);
-  border-radius:3px 3px 2px 2px;
-  box-shadow:0 2px 4px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.1);
-}
-.ly-breakaway::after{
-  content:"";
-  position:absolute;bottom:0;left:2px;right:2px;height:14px;
-  background:linear-gradient(180deg,#3a3a3a 0%,#4a4a4a 50%,#3a3a3a 100%);
-  border-radius:2px 2px 3px 3px;
-  box-shadow:0 2px 4px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-/* --- Metal D-ring where both straps converge --- */
-.ly-ring{
-  position:absolute;
-  bottom:0;left:50%;transform:translateX(-50%);
-  width:22px;height:16px;
-  border:3px solid #b0b0b0;
-  border-radius:4px;
-  background:transparent;
-  z-index:5;
-  box-shadow:
-    0 1px 3px rgba(0,0,0,.25),
-    inset 0 1px 1px rgba(255,255,255,.4),
-    inset 0 -1px 1px rgba(0,0,0,.15);
-}
-
-/* --- Lobster claw clip connecting to card --- */
-.ly-clip{
-  position:absolute;
-  bottom:-34px;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;
-  z-index:5;
-}
-.ly-clip-ring{
-  width:10px;height:8px;
-  border:2.5px solid #a0a0a0;
-  border-radius:3px 3px 0 0;
-  border-bottom:none;
-  box-shadow:inset 0 1px 2px rgba(255,255,255,.3);
-}
-.ly-clip-body{
-  width:16px;height:28px;
-  background:linear-gradient(90deg,
-    #a8a8a8 0%,#d0d0d0 12%,#e8e8e8 28%,#f2f2f2 40%,
-    #dcdcdc 52%,#c8c8c8 65%,#d8d8d8 78%,#e8e8e8 90%,#a8a8a8 100%);
-  border-radius:3px 3px 6px 6px;
-  position:relative;
-  box-shadow:
-    0 4px 10px rgba(0,0,0,.35),
-    inset 0 1px 0 rgba(255,255,255,.7),
-    inset 0 -1px 0 rgba(0,0,0,.12);
-}
-/* gate arm */
-.ly-clip-body::before{
-  content:"";
-  position:absolute;top:6px;right:-3px;
-  width:3px;height:16px;
-  background:linear-gradient(90deg,#b0b0b0,#d0d0d0,#b0b0b0);
-  border-radius:0 2px 2px 0;
-  box-shadow:1px 0 3px rgba(0,0,0,.15);
-}
-/* hook tip */
-.ly-clip-body::after{
-  content:"";
-  position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);
-  width:10px;height:6px;
-  background:linear-gradient(180deg,#c0c0c0,#999);
-  border-radius:0 0 4px 4px;
-  box-shadow:0 2px 4px rgba(0,0,0,.2);
-}
-
-/* ---------- CONTAINER (hanging + ground shadow) ---------- */
+/* ---------- CONTAINER (in normal flow; rope drives the swing group) ----------
+   The container keeps its original flex-flow place inside the overlay
+   (cardDrop animation unchanged). The verlet rope instead drives the
+   inner .id-card-swing group: translate to the rope-tip + rotate about
+   the hook nose, so hook + punch-slot stay welded as one rigid body. */
 .id-card-container{
   display:flex;flex-direction:column;
   width:var(--card-w);max-width:330px;
-  margin:0 auto;position:relative;top:0;z-index:2;
+  margin:0 auto;position:relative;top:var(--badge-drop);z-index:2;
   transform:translateY(-150vh);
   transform-style:preserve-3d;
   opacity: 1; /* always opaque, position hides it */
 }
 .stage-reveal .id-card-container, .stage-enhance .id-card-container, .stage-complete .id-card-container {
-  /* The lanyard solver owns arrival; a second drop makes the hook detach. */
-  animation:none;
-  transform:translateY(0);
+  /* Position is driven by the lanyard solver. Keeping the parent at its
+     resting layout avoids a second CSS drop separating card from strap. */
+  animation:none;transform:translateY(0);
+}
+@keyframes cardDrop{
+  0%  {transform:translateY(-150vh)}
+  100%{transform:translateY(0)}
+}
+/* the swing wrapper — a plain pass-through: the lanyard SVG is
+   position:fixed inside it, the card flow stays untouched */
+#idCardWrapper{
+  position:static;
+  pointer-events:none;
+}
+/* rope-driven rigid body: JS writes translate(tip) rotate(swingAng);
+   the pivot is the ring centre, PEND_LEN (16px) above the card top */
+.id-card-swing{
+  position:relative;
+  transform-origin:50% -16px;
+  transform-style:preserve-3d;
+  will-change:transform;
 }
 .id-card-container::after{
   content:"";position:absolute;left:50%;bottom:-30px;transform:translateX(-50%);
@@ -1078,24 +869,23 @@ input[type="radio"] {
   background:radial-gradient(ellipse at center, rgba(0,0,0,.55), transparent 70%);
   filter:blur(10px);opacity:0;transition:opacity .5s ease .2s;
 }
-.stage-reveal .id-card-container::after,
-.stage-enhance .id-card-container::after,
-.stage-complete .id-card-container::after{opacity:1}
 
 /* ---------- THE CARD (dark + gold, per reference) ---------- */
 .id-card{
-  --card-w:clamp(320px,86vw,380px);
+  --card-w:clamp(200px,56vw,240px);
   width:var(--card-w);
   position:relative;
   display:block;
-  padding:22px 22px 20px;
-  border-radius:20px;
+  padding:14px 14px 12px;
+  border-radius:15px;
   transform-origin:top center;
   background:
     linear-gradient(157deg, rgba(232,194,122,.10) 0%, transparent 34%),
     linear-gradient(200deg, rgba(232,194,122,.06) 0%, transparent 46%),
     linear-gradient(180deg,#15171d 0%,#0d0f13 52%,#090a0d 100%);
   border:1px solid rgba(232,194,122,.30);
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
   box-shadow:
     0 0 0 1px rgba(0,0,0,.6),
     0 18px 40px -14px rgba(0,0,0,.85),
@@ -1105,7 +895,8 @@ input[type="radio"] {
   transform:translateY(-30px) scale(.95) rotateX(8deg);
   transition:box-shadow .6s ease, transform .5s cubic-bezier(.4,0,.2,1);
 }
-/* stage 3 — the card drops in on the lanyard */
+/* The connected lanyard solver owns arrival. Do not animate the card face
+   separately or the punch-hole can visibly detach from the hook. */
 .stage-reveal .id-card{opacity:1;transform:none;animation:none}
 @keyframes idCardDrop{
   0%  {opacity:0;transform:translateY(-46px) scale(.94) rotateX(10deg)}
@@ -1132,16 +923,22 @@ input[type="radio"] {
     0 50px 90px -30px rgba(0,0,0,.9);
 }
 .stage-complete .id-card:hover{
-  transform:translateY(-5px) rotateX(-1.5deg);
+  /* hover no longer lifts the badge with a canned transform — the
+     lanyard physics engine owns all card motion. Hovering the badge
+     now pushes the rope directly (LANYARD.hoverMove), so the card
+     SWINGS like a real badge poked by a finger. A faint glow hints
+     focus without fighting the physics. */
   box-shadow:
-    0 0 0 1px rgba(232,194,122,.34),
-    0 0 26px rgba(232,194,122,.22),
-    0 26px 52px -14px rgba(0,0,0,.88),
-    0 60px 100px -30px rgba(0,0,0,.92);
+    0 0 0 1px rgba(232,194,122,.28),
+    0 0 20px rgba(232,194,122,.16),
+    0 18px 40px -14px rgba(0,0,0,.85),
+    0 50px 90px -30px rgba(0,0,0,.9);
 }
-/* punch-hole slot at the top of the badge */
+/* punch-hole slot at the top of the badge — sits where the chrome
+   J-hook drops in. Sits flush with the card's top edge so there's
+   no visible gap between the hook and the metal curve of the card. */
 .id-card::before{
-  content:"";position:absolute;top:11px;left:50%;transform:translateX(-50%);
+  content:"";position:absolute;top:3px;left:50%;transform:translateX(-50%);
   width:52px;height:9px;border-radius:5px;
   background:#05060a;
   box-shadow:inset 0 1px 2px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.05);
@@ -1150,100 +947,100 @@ input[type="radio"] {
 /* ---------- CARD HEADER ---------- */
 .id-card-header{
   display:flex;align-items:flex-start;justify-content:space-between;
-  gap:10px;margin-top:12px;
+  gap:8px;margin-top:9px;
 }
-.id-card-brandblock{display:flex;align-items:center;gap:8px}
+.id-card-brandblock{display:flex;align-items:center;gap:6px}
 .id-card-logo{color:var(--gold-1);display:flex}
 .id-card-brandtext{display:flex;flex-direction:column;line-height:1.15}
 .id-card-brand{
-  font-size:15px;font-weight:800;letter-spacing:.04em;color:var(--gold-0);
+  font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--gold-0);
 }
 .id-card-brandsub{
-  font-size:9.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  font-size:7px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
   color:var(--fg-mute);
 }
 .id-card-eventtag{
-  text-align:right;font-size:9.5px;font-weight:700;line-height:1.35;
+  text-align:right;font-size:7px;font-weight:700;line-height:1.35;
   letter-spacing:.14em;text-transform:uppercase;color:var(--fg-dim);
 }
 
 /* ---------- TAGLINE ---------- */
 .id-card-tagline{
-  margin:20px 0 0;
-  font-size:22px;line-height:1.16;font-weight:800;letter-spacing:-.01em;
+  margin:15px 0 0;
+  font-size:16px;line-height:1.16;font-weight:800;letter-spacing:-.01em;
   color:var(--gold-0);
   text-shadow:0 0 20px rgba(232,194,122,.28);
 }
 .id-card-role{
-  display:block;margin-top:9px;
-  font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;
+  display:block;margin-top:7px;
+  font-size:7.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;
   color:var(--fg-dim);
 }
 
 /* ---------- PHOTO ---------- */
 .id-card-avatar{
-  width:112px;height:112px;margin:18px auto 0;
+  width:84px;height:84px;margin:14px auto 0;
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(180deg,#f3e9d6,#d9cbb2);
   border:2px solid rgba(232,194,122,.65);
   box-shadow:
-    0 0 0 5px rgba(232,194,122,.10),
+    0 0 0 4px rgba(232,194,122,.10),
     0 8px 22px rgba(0,0,0,.5),
     inset 0 -6px 14px rgba(0,0,0,.16);
   overflow:hidden;
 }
-.id-card-avatar svg{width:60px;height:60px;color:#8d7f66}
+.id-card-avatar svg{width:38px;height:38px;color:#8d7f66}
 
 /* ---------- NAME ---------- */
 .id-card-name{
-  margin:15px 0 0;text-align:center;
-  font-size:21px;font-weight:800;letter-spacing:.02em;
+  margin:11px 0 0;text-align:center;
+  font-size:16px;font-weight:800;letter-spacing:.02em;
   color:var(--gold-0);
   text-shadow:0 0 18px rgba(232,194,122,.22);
   overflow-wrap:anywhere;
 }
 .id-card-subrole{
-  display:block;margin-top:5px;text-align:center;
-  font-size:10px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;
+  display:block;margin-top:4px;text-align:center;
+  font-size:7.5px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;
   color:var(--fg-mute);
 }
 
 /* ---------- META ROW ---------- */
 .id-card-meta{
-  display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
-  margin-top:14px;
+  display:flex;justify-content:center;gap:8px;flex-wrap:wrap;
+  margin-top:10px;
 }
 .id-card-chip{
-  font-size:9.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
+  font-size:7px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;
   color:var(--gold-1);
-  padding:5px 10px;border-radius:999px;
+  padding:4px 8px;border-radius:999px;
   border:1px solid rgba(232,194,122,.28);
   background:rgba(232,194,122,.07);
 }
 
 /* ---------- CODES ---------- */
 .id-card-codes{
-  display:flex;align-items:center;gap:14px;
-  margin-top:18px;padding-top:16px;
+  display:flex;align-items:center;gap:10px;
+  margin-top:13px;padding-top:12px;
   border-top:1px solid rgba(232,194,122,.16);
 }
 .id-card-qr{
   flex-shrink:0;
-  width:76px;height:76px;padding:6px;border-radius:8px;
+  width:48px;height:48px;padding:4px;border-radius:6px;
   background:#fff;
   box-shadow:0 2px 10px rgba(0,0,0,.5);
 }
 .id-card-qr canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
-.id-card-codestack{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.id-card-codestack{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
 .id-card-barcode{
-  width:100%;height:44px;
+  width:100%;height:33px;
   background:#fff;border-radius:4px;padding:4px 6px;
   box-shadow:0 2px 10px rgba(0,0,0,.45);
 }
 .id-card-barcode canvas{display:block;width:100%;height:100%}
 .id-card-id{
-  font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  font-size:8px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--fg-dim);font-weight:700;font-variant-numeric:tabular-nums;
   text-align:center;overflow-wrap:anywhere;
 }
@@ -1259,12 +1056,10 @@ input[type="radio"] {
 .stage-reveal .id-card-meta    {animation-delay:.70s}
 .stage-reveal .id-card-codes   {animation-delay:.78s}
 
-/* card container drops from above the viewport */
-@keyframes cardDrop{
-  0%  {transform:translateY(-150vh)}
-  100%{transform:translateY(0)}
-}
-/* gentle pendulum swing once settled */
+/* card container drops from above the viewport (defined next to
+   .id-card-container above — the old centered-flex variant removed) */
+/* gentle pendulum swing once settled (kept for reference — real swing
+   is now a verlet rope simulation painting the strap + driving the card) */
 @keyframes cardSwing{
   0%  {transform:translateY(0) rotate(-1.5deg)}
   100%{transform:translateY(0) rotate(1.5deg)}
@@ -1408,17 +1203,26 @@ input[type="radio"] {
    STAGE 5 — COMPLETE  (actions)
    ============================================================ */
 .id-card-actions{
-  display:flex;flex-direction:column;gap:10px;
-  width:clamp(320px,86vw,380px);
-  margin:34px auto 0;
+  display:flex;flex-direction:column;gap:8px;
+  width:clamp(200px,56vw,240px);
+  margin:26px auto 0;
   opacity:0;transform:translateY(10px);
   pointer-events:none;
+  /* stack above the 3D card wrapper — its projected hit-box would
+     otherwise swallow clicks on the download button */
+  position:relative;top:var(--badge-drop);z-index:5;
 }
 .stage-complete .id-card-actions{
   animation:idFadeUp .5s ease .1s forwards;
   pointer-events:auto;
 }
 .id-card-actions .btn{width:100%;justify-content:center}
+.id-card-actions .btn{padding:.6rem 1rem;font-size:.68rem}
+/* Download button stays put — no lift or sheen on hover, unlike the
+   tilting ID card above it (which is intentional). */
+#downloadQrBtn:hover, #downloadQrBtn:active { transform:none }
+#downloadQrBtn::after { display:none }
+.qr-dl-note{font-size:.66rem;color:var(--fg-mute);letter-spacing:.06em;margin:.4rem 0 0;text-align:center}
 .id-card-hint{
   margin:2px 0 0;text-align:center;
   font-size:11px;color:var(--fg-mute);
@@ -1426,43 +1230,87 @@ input[type="radio"] {
 
 /* close button */
 .id-card-close{
-  position:fixed;top:16px;right:16px;z-index:8;
-  width:42px;height:42px;border-radius:50%;
+  position:fixed;top:124px;right:20px;z-index:120;
+  width:44px;height:44px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.16);
-  color:var(--fg);cursor:pointer;
+  background:rgba(5,11,10,.82);
+  border:1.5px solid rgba(232,194,122,.68);
+  color:#e9ecf1;cursor:pointer;
   opacity:0;pointer-events:none;
-  transition:background .2s ease,transform .2s ease,opacity .3s ease;
+  transition:background .2s ease,transform .25s ease,opacity .4s ease;
+  box-shadow:0 2px 18px rgba(0,0,0,.68),0 0 14px rgba(232,194,122,.16);
 }
+/* show from stage-reveal onwards (not just stage-complete) */
+.stage-reveal .id-card-close,
+.stage-enhance .id-card-close,
 .stage-complete .id-card-close{opacity:1;pointer-events:auto}
-.id-card-close:hover{background:rgba(255,255,255,.15);transform:rotate(90deg)}
+.id-card-close:hover{background:rgba(255,80,80,.35);border-color:rgba(255,120,120,.5);transform:rotate(90deg) scale(1.1)}
+.id-card-close:active{transform:rotate(90deg) scale(.95)}
 
-/* ---------- LANYARD RECOLOUR (teal, per reference) ---------- */
-.id-card-lanyard{opacity:1;transition:opacity .4s ease}
+/* ---------- LANYARD VISIBILITY ---------- */
+.id-card-lanyard{opacity:0;transition:opacity .4s ease}
 .stage-reveal .id-card-lanyard,
 .stage-enhance .id-card-lanyard,
 .stage-complete .id-card-lanyard{opacity:1}
-.ly-strap{
-  background:linear-gradient(90deg,#0b5c52 0%,#12897a 22%,#16a394 50%,#12897a 78%,#0b5c52 100%)!important;
-}
 
 /* ---------- RESPONSIVE ---------- */
+/* Phone: swap in the portrait ID-card backdrop and shrink the badge.
+   The desktop card is sized for a wide screen; on a phone it dominates
+   the viewport, so the clamp range moves down and padding/radius shrink. */
+@media (max-width:720px){
+  .id-card-overlay{
+    background:
+      radial-gradient(circle at 50% -16%, rgba(212,160,23,.07) 0%, transparent 46%),
+      url('id card bg(mobile).png') center top / cover no-repeat;
+    padding:12px;
+    --badge-drop:clamp(46px,8vh,72px);
+  }
+  .id-card-container{max-width:225px}
+  .id-card{
+    --card-w:clamp(145px,40vw,185px);
+    padding:9px 10px 10px;border-radius:11px;
+  }
+  .id-card::before{top:4px;width:24px;height:6px}
+  .id-card-header{gap:5px;margin-top:6px}
+  .id-card-logo svg{width:15px;height:15px}
+  .id-card-brand{font-size:8px}
+  .id-card-brandsub{font-size:6px}
+  .id-card-eventtag{font-size:6px;line-height:1.3}
+  .id-card-tagline{margin:8px 0 0;font-size:10px}
+  .id-card-role{margin-top:4px;font-size:6px;letter-spacing:.18em}
+  .id-card-avatar{width:44px;height:44px;margin:8px auto 0}
+  .id-card-avatar svg{width:24px;height:24px}
+  .id-card-name{margin:6px 0 0;font-size:10px}
+  .id-card-subrole{margin-top:2px;font-size:6px;letter-spacing:.18em}
+  .id-card-meta{margin-top:6px;gap:4px}
+  .id-card-chip{font-size:6px;padding:2px 5px}
+  .id-card-codes{margin-top:8px;padding-top:8px;gap:6px}
+  .id-card-qr{width:36px;height:36px;padding:3px}
+  .id-card-id{font-size:6px}
+  .id-card-hint{font-size:8px}
+  .id-wireframe{width:clamp(145px,40vw,185px)}
+  .id-card-actions{width:clamp(145px,40vw,185px);margin-top:12px}
+  .id-card-close{top:12px;right:12px;width:36px;height:36px}
+}
 @media (max-width:460px){
-  .id-card{--card-w:90vw;padding:18px 18px 18px}
-  .id-card-tagline{font-size:20px}
-  .id-card-avatar{width:96px;height:96px}
-  .id-card-name{font-size:19px}
-  .id-card-qr{width:66px;height:66px}
-  .id-card-actions{width:90vw}
+  .id-card{--card-w:43vw;padding:8px 10px 9px}
+  .id-card-tagline{font-size:9.5px}
+  .id-card-avatar{width:40px;height:40px}
+  .id-card-name{font-size:9px}
+  .id-card-qr{width:33px;height:33px}
+  .id-card-actions{width:43vw}
 }
 
 /* ---------- REDUCED MOTION ---------- */
 @media (prefers-reduced-motion:reduce){
   .id-card-overlay{transition:opacity .2s ease}
-  .id-card,.id-card-container,.id-card-lanyard{
-    animation:none!important;opacity:1;transform:none;transition:none;
+  .id-card,.id-card-container,.id-card-swing,.id-card-lanyard,#idCardWrapper{
+    animation:none!important;opacity:1;transition:none;
   }
+  .id-card{transform:none!important}
+  /* The badge still needs a correct resting geometry. The physics loop is
+     user-requested, so avoid the legacy off-screen transform here. */
+  .id-card-container{transform:translateY(0)!important}
   .id-card-header,.id-card-tagline,.id-card-avatar,
   .id-card-name,.id-card-subrole,.id-card-meta,.id-card-codes,
   .id-card-actions{
@@ -1492,7 +1340,11 @@ input[type="radio"] {
   .id-card-overlay[hidden]{display:none!important}
   .id-card-bg,.id-particles,.id-card-close,.id-card-actions,
   .id-stage,.id-card-lanyard{display:none!important}
-  .id-card-container{opacity:1!important;margin:0 auto!important;perspective:none!important}
+  .id-card-container{
+    opacity:1!important;margin:0 auto!important;perspective:none!important;
+    position:static!important;transform:none!important;animation:none!important;
+  }
+  #idCardWrapper{position:static!important;transform:none!important}
   .id-card-container::after{display:none!important}
   .id-card{
     opacity:1!important;transform:none!important;animation:none!important;
@@ -1524,11 +1376,11 @@ input[type="radio"] {
    8. RESPONSIVE
    ============================================================ */
 @media (max-width:1040px){
-  .metrics,.coords,.highlights{grid-template-columns:repeat(2,1fr)}
+  .g-3,.g-4{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:960px){
   .stage-grid,.g-2-1{grid-template-columns:1fr}
-  .g-3,.g-4,.tickets{grid-template-columns:repeat(2,1fr)}
+  .g-3,.g-4{grid-template-columns:repeat(2,1fr)}
   .room-lights{display:none}
   #home .wrap{width:min(100% - 2.5rem,var(--maxw))}
 }
@@ -1544,10 +1396,29 @@ input[type="radio"] {
   }
   .is-open .nav-links.show{transform:translateY(0)}
   .nav-toggle{display:block}
-  .g-2,.g-3,.g-4,.tickets,.form-grid,.metrics,.coords,.highlights{grid-template-columns:1fr}
+  .g-2,.g-3,.g-4,.form-grid{grid-template-columns:1fr}
   .stats{grid-template-columns:repeat(2,1fr)}
-  .admin-body{padding:1.2rem}
-  .actions .btn{width:100%}
+
+  /* Hero content sits over the portrait room photo. The logo occupies the
+     upper-middle of the image, so copy is pushed down and the bottom fade
+     is taller to hand off to the dark page cleanly. */
+  #home{padding:calc(var(--housing-h) + 4vh) 0 0;align-content:center}
+  #home .wrap{width:min(100% - 2rem,var(--maxw))}
+  #home::after{height:200px}
+  .stage-grid{gap:1.3rem;padding-top:0}
+  .stage-grid h2{font-size:clamp(1.35rem,6.4vw,1.9rem)}
+  #home .lede{font-size:.8rem;margin-top:.8rem !important}
+  .stage-actions{gap:.5rem}
+  .stage-actions .btn{padding:.62rem 1.15rem;font-size:.62rem;letter-spacing:.1em}
+  .scroll-cue{margin-top:1.1rem}
+  .scroll-cue i{height:26px}
+  #home .stat{padding:.65rem .8rem}
+  #home .stat b{font-size:1.2rem}
+  .section{padding:3.5rem 0}
+}
+@media (max-width:400px){
+  .stage-grid h2{font-size:1.3rem}
+  #home .lede{font-size:.77rem}
 }
 
 /* ============================================================
@@ -1557,16 +1428,17 @@ input[type="radio"] {
   :root{--shutter-dur:.45s;--reveal-dur:.25s}
   html{scroll-behavior:auto}
   .reveal{transform:none}
-  .register::before,.scroll-cue i,.chip.live .dot{animation:none}
+  .register::before,.scroll-cue i{animation:none}
   .btn::after{display:none}
 }
-/* Game-interface sections — the hero keeps the cabinet; the content becomes the game UI. */
-.game-section{position:relative;overflow:hidden;padding-block:clamp(3.5rem,7vw,7rem)!important;background:#0a0a08;color:#f5f0ad}
-.game-section::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;background:repeating-linear-gradient(0deg,rgba(244,240,83,.035) 0 1px,transparent 1px 4px),linear-gradient(90deg,rgba(225,219,40,.05),transparent 22%,transparent 78%,rgba(225,219,40,.05))}
-.game-section .wrap{position:relative;z-index:1}.game-kicker{display:flex;align-items:center;gap:.75rem;margin-bottom:1.2rem;color:#ece63a;font:400 clamp(.6rem,.8vw,.76rem)/1 "Press Start 2P",monospace;text-transform:uppercase}.game-kicker b{display:grid;place-items:center;width:3.6rem;padding:.6rem .2rem;color:#090906;background:#ecea38;box-shadow:4px 4px 0 #080806}.game-title{margin:0;color:#fbf7c5;font:400 clamp(1.5rem,3vw,3.1rem)/1.12 "Press Start 2P",monospace;text-transform:uppercase}.game-lede{max-width:66ch;margin:1.2rem 0 0;color:#d7d28b;font:500 clamp(.76rem,1.1vw,.98rem)/1.7 ui-monospace,monospace}.game-panel{position:relative;border:3px solid #e7e23b;background:#12120e;padding:clamp(1rem,2vw,1.6rem);box-shadow:7px 7px 0 #050504,inset 0 0 0 2px #423f0a}.game-panel::before{content:"";position:absolute;inset:7px;pointer-events:none;border:1px solid rgba(237,233,53,.36)}.game-grid{display:grid;gap:1rem}.game-grid--2{grid-template-columns:repeat(2,minmax(0,1fr))}.game-grid--3{grid-template-columns:repeat(3,minmax(0,1fr))}.game-grid--4{grid-template-columns:repeat(4,minmax(0,1fr))}.game-panel h3{position:relative;margin:0 0 .8rem;color:#f6f05f;font:400 clamp(.8rem,1.25vw,1.1rem)/1.35 "Press Start 2P",monospace;text-transform:uppercase}.game-panel p,.game-panel li{position:relative;color:#ddd8a6;font:500 .85rem/1.6 ui-monospace,monospace}.game-panel ul{position:relative;margin:0;padding-left:1.15rem}.game-stat{min-height:8rem;display:grid;align-content:space-between}.game-stat span{color:#b8b25e;font:.7rem/1.3 ui-monospace,monospace;text-transform:uppercase}.game-stat strong{color:#fff97a;font:400 1rem/1.35 "Press Start 2P",monospace}.pixel-icon{font-size:2rem;filter:drop-shadow(3px 3px 0 #050504)}.journey-line{display:grid;grid-template-columns:1fr auto 1fr;gap:1rem;align-items:center;margin-top:2rem}.journey-link{height:4px;background:repeating-linear-gradient(90deg,#ecea38 0 12px,transparent 12px 20px)}.slot time{position:relative;display:block;margin-bottom:.65rem;color:#ff6b22;font:400 .66rem/1 "Press Start 2P",monospace}.workshop-card{cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}.workshop-card:hover{transform:translate(-4px,-4px);box-shadow:11px 11px 0 #050504}.workshop-card .tag{position:relative;display:inline-block;margin-bottom:.8rem;padding:.35rem .5rem;background:#e9e63b;color:#090906;font:400 .56rem/1 "Press Start 2P",monospace}.experience-card{min-height:14rem;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(155deg,#16150f,#050504)}.campfire{position:absolute;top:1.3rem;right:1.3rem;width:46px;height:54px;filter:drop-shadow(0 0 10px #fa5422);animation:fire-flicker 1.2s steps(2,end) infinite}.campfire::before{content:"";position:absolute;bottom:0;left:8px;width:30px;height:42px;background:#ff5a1d;clip-path:polygon(50% 0,82% 42%,69% 42%,100% 100%,0 100%,31% 42%,18% 42%)}.campfire::after{content:"";position:absolute;bottom:3px;left:16px;width:15px;height:25px;background:#fff04d;clip-path:polygon(50% 0,100% 100%,0 100%)}@keyframes fire-flicker{50%{transform:translateY(-3px) scale(.92,1.08)}}.faq-item{border-bottom:2px solid rgba(235,230,58,.38)}.faq-item summary{cursor:pointer;list-style:none;padding:1rem 0;color:#f5f06a;font:400 .72rem/1.5 "Press Start 2P",monospace}.faq-item summary::-webkit-details-marker{display:none}.faq-item summary::before{content:"+";display:inline-block;margin-right:.8rem;color:#ff6825}.faq-item[open] summary::before{content:"−"}.faq-item p{padding:0 0 1rem 1.7rem;margin:0}.ieee-logo{width:min(100%,260px);aspect-ratio:1;object-fit:cover;mix-blend-mode:screen;filter:contrast(1.1) saturate(.8)}.registration-shell{display:grid;grid-template-columns:.8fr 1.2fr;gap:1.2rem;align-items:center}.pricing-price{display:block;margin:.9rem 0;color:#fff767;font:400 1.55rem/1 "Press Start 2P",monospace}.game-section .btn{position:relative;border-radius:0;border:2px solid #f1ed51;background:#f4ef4b;color:#090906;font-family:"Press Start 2P",monospace;box-shadow:4px 4px 0 #060605}.game-section .btn:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 #060605}
-@media(max-width:760px){.game-section{padding-block:3.25rem!important}.game-grid--2,.game-grid--3,.game-grid--4,.registration-shell{grid-template-columns:1fr}.journey-line{grid-template-columns:1fr;gap:.8rem}.journey-link{height:22px;width:4px;margin:auto;background:repeating-linear-gradient(180deg,#ecea38 0 12px,transparent 12px 20px)}.game-title{font-size:1.35rem}.game-panel{box-shadow:4px 4px 0 #050504}.ieee-logo{width:170px;margin:auto}.experience-card{min-height:11rem}}
-/* Bright VYORA game-board palette for every content section. */
-.game-section{background:#e8e62c!important;color:#0b0b07!important}.game-section::before{opacity:.78;background:repeating-linear-gradient(0deg,rgba(0,0,0,.075) 0 1px,transparent 1px 4px),radial-gradient(circle at 50% 30%,#ffff59 0,#e4e22a 55%,#aaa719 100%)}.game-section .game-title{color:#090906;text-shadow:3px 3px 0 rgba(255,255,173,.8)}.game-section .game-lede,.game-section .lede{color:#26250d!important}.game-section .game-kicker{color:#0b0b07}.game-section .game-kicker b{background:#101008;color:#f6f346;box-shadow:4px 4px 0 #a29f12}.game-section .game-panel,.game-section .card{border-radius:0!important;border:3px solid #101008!important;background:#10100c!important;color:#f7f26b!important;box-shadow:6px 6px 0 #858313,inset 0 0 0 2px #f3ef42!important}.game-section .game-panel p,.game-section .game-panel li,.game-section .card p,.game-section .card li{color:#e9e5a2!important}.game-section .game-panel h3,.game-section .card h3{color:#f8f45e!important;font-family:"Press Start 2P",monospace!important;font-size:clamp(.68rem,1vw,.9rem)!important;line-height:1.5}.game-section .pill-list li::before{background:#f5f048!important;box-shadow:none}.game-section .section-head{margin-bottom:1.4rem}.game-section .day-switch button{border-radius:0!important;border:3px solid #0b0b07!important;background:#10100c!important;color:#f5f047!important;font-family:"Press Start 2P",monospace}.game-section .day-switch button[aria-selected="true"]{background:#0b0b07!important;color:#f6f146!important;box-shadow:4px 4px 0 #aaa714}.game-section .timeline::before{background:#0b0b07!important}.game-section .slot{border-radius:0!important;background:#0d0d09!important;border:3px solid #0b0b07!important;box-shadow:5px 5px 0 #aaa714!important}.game-section .slot time{color:#ff6928!important;font-family:"Press Start 2P",monospace}.game-section .slot h4{color:#f7f35a!important;font-family:"Press Start 2P",monospace}.game-section .slot p{color:#e9e3a0!important}.about-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:1rem}.about-stat{padding:1rem;border-right:2px solid #e9e342;color:#f5f054;text-align:center;font:400 .64rem/1.45 "Press Start 2P",monospace}.about-stat:last-child{border:0}.about-stat i{display:block;margin-bottom:.55rem;font-style:normal;font-size:1.5rem}.program-art{position:absolute;right:1rem;top:1rem;width:60px;height:60px;pointer-events:none}.program-art::before,.program-art::after{content:"";position:absolute;background:#f5f050;box-shadow:6px 6px 0 #080806}.workshop-card:nth-child(1) .program-art::before{width:44px;height:10px;top:14px;left:4px}.workshop-card:nth-child(1) .program-art::after{width:10px;height:40px;top:4px;left:21px;animation:pixel-pulse 1s steps(2,end) infinite}.workshop-card:nth-child(2) .program-art::before{width:34px;height:34px;left:12px;top:12px;clip-path:polygon(50% 0,62% 36%,100% 50%,62% 64%,50% 100%,38% 64%,0 50%,38% 36%);animation:pixel-spin 3s steps(8,end) infinite}.workshop-card:nth-child(3) .program-art::before{width:50px;height:12px;top:20px;left:3px;transform:rotate(-30deg);animation:pixel-slide 1.1s steps(2,end) infinite}.experience-card .pixel-icon{font-family:"Press Start 2P",monospace;animation:pixel-bounce 1s steps(2,end) infinite}.campfire{width:72px;height:80px;image-rendering:pixelated;filter:none}.campfire::before{left:10px;width:52px;height:70px;background:linear-gradient(90deg,transparent 0 18%,#ff4d1c 18% 82%,transparent 82%);clip-path:polygon(50% 0,64% 24%,82% 24%,70% 48%,100% 100%,0 100%,30% 48%,18% 24%,36% 24%);animation:pixel-fire .65s steps(2,end) infinite}.campfire::after{left:23px;width:27px;height:42px;background:#fff244;clip-path:polygon(50% 0,100% 100%,0 100%);animation:pixel-fire .65s steps(2,end) infinite reverse}@keyframes pixel-pulse{50%{transform:scale(1.18)}}@keyframes pixel-spin{to{transform:rotate(360deg)}}@keyframes pixel-slide{50%{transform:translateX(7px) rotate(-30deg)}}@keyframes pixel-bounce{50%{transform:translateY(-7px)}}@keyframes pixel-fire{50%{transform:translateY(-7px) scaleX(.8)}}.game-section .form-grid input,.game-section .form-grid select,.game-section .form-grid textarea{border-radius:0!important;border:2px solid #e8e342!important;background:#080806!important;color:#f8f459!important}.game-section .field label{color:#f8f459!important;font-family:"Press Start 2P",monospace;font-size:.55rem}.pixel-footer{position:relative;background:#0a0a07;color:#f4ef55;padding:2rem max(1.5rem,calc((100vw - 1200px)/2));border-top:6px solid #e7e32d;display:flex;justify-content:space-between;align-items:center;gap:1rem;font:400 .62rem/1.6 "Press Start 2P",monospace}.pixel-footer strong{font-size:1rem}.pixel-footer a{color:#f4ef55;text-decoration:none}.pixel-footer nav{display:flex;gap:1rem;flex-wrap:wrap}@media(max-width:760px){.about-stats{grid-template-columns:repeat(2,1fr)}.about-stat:nth-child(2){border-right:0}.pixel-footer{display:grid}.program-art{opacity:.75}.game-section .card{box-shadow:4px 4px 0 #858313!important}}
+
+/* VYORA '26 arcade landing — isolated to #home. */
+.vyora-home{height:100vh!important;min-height:640px!important;padding:0!important;display:grid!important;place-items:center!important;overflow:hidden!important;background:#070600!important;color:#ffe900!important;isolation:isolate}
+.vyora-home::before,.vyora-home::after{display:none!important}.vyora-home>.wrap,.vyora-home>.room-lights{display:none!important}
+.vyora-cabinet{position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(0,0,0,.82),transparent 18%,transparent 82%,rgba(0,0,0,.82)),linear-gradient(180deg,rgba(0,0,0,.58),transparent 28%,rgba(0,0,0,.7)),url('warehouse-bg.png') center/cover no-repeat;filter:saturate(1.5) contrast(1.2)}
+.vyora-screen{position:relative;width:min(82vw,1050px);height:min(72vh,650px);border:2px solid rgba(255,219,24,.53);border-radius:20px;box-shadow:inset 0 0 0 9px rgba(0,0,0,.53),inset 0 0 100px rgba(0,0,0,.62),0 0 34px rgba(245,208,0,.22);overflow:hidden;display:grid;place-items:center;background:repeating-linear-gradient(0deg,rgba(255,235,0,.07) 0 1px,transparent 1px 4px),radial-gradient(ellipse at 50% 42%,rgba(247,221,0,.26),transparent 44%)}
+.vyora-screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.25),transparent 15%,transparent 85%,rgba(0,0,0,.25))}.vyora-big-date{position:absolute;top:12%;font:900 clamp(10rem,28vw,23rem)/.7 Impact,'Arial Black',sans-serif;letter-spacing:-.15em;color:#f5d900;opacity:.7;text-shadow:0 0 24px #e7bc00;z-index:0}.vyora-mark{z-index:2;display:flex;align-items:center;font:900 clamp(5.2rem,15vw,13rem)/.72 Impact,'Arial Black',sans-serif;letter-spacing:-.1em;color:#ffed12;text-shadow:0 4px 0 #8e6800,0 0 20px rgba(255,229,0,.9)}.vyora-mark i{width:.62em;aspect-ratio:1;border-radius:50%;background:#000;box-shadow:none;display:block;z-index:4}.vyora-tagline{position:absolute;z-index:3;top:70%;letter-spacing:.6em;font:700 clamp(.6rem,1.3vw,.9rem) monospace;color:#ffe813}.vyora-explore{position:absolute;z-index:3;top:80%;padding:.7rem 2.7rem;border:2px solid #ffe813;color:#ffe813;font:700 .7rem monospace;letter-spacing:.24em}.vyora-explore:hover{background:#ffe813;color:#090700}.vyora-left,.vyora-right{position:absolute;z-index:3;font:700 .65rem/1.6 monospace;letter-spacing:.16em;color:#ffed16}.vyora-left{left:7%;bottom:20%}.vyora-right{right:7%;top:22%;text-align:right}.vyora-scroll{position:absolute;z-index:3;bottom:4%;font:700 .58rem monospace;letter-spacing:.3em}.vyora-scroll b{display:block;text-align:center;font-size:1rem}@media(max-width:720px){.vyora-home{min-height:100svh!important}.vyora-screen{width:91vw;height:75svh}.vyora-mark{font-size:clamp(4.2rem,19vw,7rem)}.vyora-big-date{font-size:clamp(9rem,42vw,15rem)}.vyora-left{left:6%;bottom:18%;font-size:.48rem}.vyora-right{display:none}.vyora-tagline{letter-spacing:.32em}.vyora-explore{top:81%}}
+
 </style>
 </head>
 <body class="locked">
@@ -1582,11 +1454,9 @@ input[type="radio"] {
 
   <nav class="nav-links" id="navLinks" aria-label="Primary">
     <a href="#home">Home</a>
-    <a href="#about">Event Details</a>
     <a href="#schedule">Schedule</a>
-    <a href="#pricing">Pricing</a>
+    <a href="#venue">Venue</a>
     <a href="#register-section">Register</a>
-    <a href="#contact">Contact</a>
   </nav>
 </header>
 
@@ -1600,6 +1470,7 @@ input[type="radio"] {
 </div>
 
 <!-- ============ SHUTTER — lifted only by REGISTER / .cta ============ -->
+<div id="blood-bg" aria-hidden="true"></div>
 <div class="shutter" id="shutter" role="region" aria-label="Entry shutter" tabindex="0">
   <div class="shutter-skin">
     <div class="shutter-face">
@@ -1628,48 +1499,32 @@ input[type="radio"] {
 <main>
 
   <!-- ============ 1. HERO STAGE & EVENT HIGHLIGHTS ============ -->
-  <section class="section vyora-scroll" id="home">
+  <section class="section vyora-home" id="home">
+    <div class="vyora-cabinet" aria-hidden="true"></div>
+    <div class="vyora-screen">
+      <p class="vyora-left">IDEAS<br>PEOPLE<br>TECH<br>A BIGGER<br>TOMORROW</p>
+      <p class="vyora-right">NOT JUST<br>AN EVENT<br>A MOVEMENT</p>
+      <div class="vyora-big-date" aria-hidden="true">26</div>
+      <div class="vyora-mark" aria-label="VYORA 26"><span>VY</span><i aria-hidden="true"></i><span>RA</span></div>
+      <p class="vyora-tagline">IGNITE WHAT'S NEXT</p>
+      <a class="vyora-explore cta" href="#schedule" data-target="#schedule">EXPLORE</a>
+      <p class="vyora-scroll">SCROLL <b>↓</b></p>
+    </div>
     <!-- Realistic spotlight lighting overlay -->
     <div class="room-lights" aria-hidden="true"></div>
-    <div class="vyora-iris" aria-hidden="true"></div>
-    <div class="figma-landing" aria-label="Vyora 2026 landing page">
-      <img class="figma-frame-art" src="Landingpageframe.png" alt="" aria-hidden="true">
-      <img class="figma-frame-art figma-frame-art--phone" src="landingpagephoneframe.png" alt="" aria-hidden="true">
-      <div class="figma-cabinet-top" aria-hidden="true"></div>
-      <div class="figma-cabinet-side left" aria-hidden="true"></div>
-      <div class="figma-cabinet-side right" aria-hidden="true"></div>
-      <div class="figma-cabinet-floor" aria-hidden="true"></div>
-      <div class="figma-controls" aria-hidden="true"><i class="figma-joystick"></i><i class="figma-panel"></i><i class="figma-joystick"></i></div>
-      <header class="figma-cabinet-header">
-        <b>IEEE<small>VJEC SB</small></b>
-        <nav aria-label="Landing navigation"><a href="#home">HOME</a><a href="#about">ABOUT</a><a href="#schedule">EVENTS</a><a href="#venue">CONTACT</a></nav>
-        <em>REGISTER</em>
-      </header>
-      <p class="figma-figure-note">NOT JUST<br>AN EVENT<br>A MOVEMENT</p>
-      <p class="figma-story-left">IDEAS<br>PEOPLE<br>TECH<br>A BIGGER<br>TOMORROW</p>
-      <div class="figma-mark">
-        <div class="figma-name" aria-label="VYORA"><span>V</span><span>Y</span><span class="figma-hole" aria-hidden="true"></span><span>R</span><span>A</span></div>
-        <div class="figma-year" aria-label="26">26</div>
-        <p class="figma-tagline">IDEAS • PEOPLE • TECH • A BIGGER TOMORROW</p>
-        <a class="figma-register" href="#pricing">Register</a>
-      </div>
-      <span class="figma-scroll-note">Scroll to enter</span>
-    </div>
 
     <div class="wrap">
       <div class="stage-grid">
         <div class="reveal" style="--d:0ms">
-          <span class="eyebrow">Event Overview</span>
+          <span class="eyebrow">IEEE Summer School 2026</span>
           <h2 class="display" style="margin-top:1rem">Two days.<br>Five tracks.<br>One build sprint.</h2>
           <p class="lede" style="margin-top:1.1rem">
-            IEEE Summer School 2026 is the flagship technical programme of IEEE Student Branch,
-            Vimal Jyothi Engineering College. It compresses a semester of practical engineering into
-            a weekend of guided labs, industry sessions and a closing showcase — no slide-decks-only
-            sessions, every track ends with something you have actually built.
+            A weekend of guided labs, industry sessions and a final showcase — every track
+            ends with something you've actually built. Hosted by IEEE SB VJEC.
           </p>
           <div class="stage-actions">
             <a class="btn cta btn-gold" href="#register-section" data-target="#register-section">Reserve a Seat</a>
-            <a class="btn cta btn-ghost" href="#events" data-target="#events">Explore Tracks</a>
+            <a class="btn cta btn-ghost" href="#schedule" data-target="#schedule">See Schedule</a>
           </div>
           <div class="scroll-cue"><i></i> Scroll to explore</div>
         </div>
@@ -1684,297 +1539,169 @@ input[type="radio"] {
     </div>
   </section>
 
-  <!-- ============ 2. ABOUT IEEE SB VJEC & OBJECTIVES ============ -->
-  <section class="section game-section" id="about">
+  <!-- ============ 2. SCHEDULE ============ -->
+  <section class="section" id="schedule">
     <div class="wrap">
       <div class="section-head reveal">
-        <div class="game-kicker"><b>01</b> Event details // about VYORA</div>
-        <h2 class="game-title">A platform for bold ideas</h2>
-        <p class="lede">
-          VYORA '26 is a national-level AI-focused technical and community event by IEEE Student Branch and the IEEE Computational Intelligence Society Chapter at Vimal Jyothi Engineering College, Kannur. It brings students, creators and problem-solvers together to explore, learn and build.
-        </p>
+        <span class="eyebrow">Schedule</span>
+        <h2 class="display">Two days, in outline</h2>
+        <p class="lede">Final timings are mailed to registrants a week before.</p>
       </div>
 
-      <div class="game-panel" style="margin:1.2rem 0;display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:center">
-        <img class="ieee-logo" src="logopixel.png" alt="IEEE VJEC SB pixel logo">
-        <div><h3>IEEE VJEC SB</h3><p>Ideas • People • Tech • A Bigger Tomorrow.</p><div class="about-stats"><span class="about-stat"><i>▣</i>OCT 09–10<br>2026</span><span class="about-stat"><i>⌖</i>VJEC<br>KANNUR</span><span class="about-stat"><i>◉</i>NATIONAL<br>LEVEL</span><span class="about-stat"><i>✦</i>AI +<br>COMMUNITY</span></div></div>
-      </div>
-
-      <div class="grid g-2-1">
-        <div class="card reveal" style="--d:80ms">
-          <h3>Our Vision</h3>
-          <p>
-            To turn classroom theory into shipped work. Every participant leaves with a repository,
-            a demo, and a mentor they can keep talking to — not just a certificate.
-          </p>
+      <div class="grid g-2">
+        <div class="card reveal" style="--d:0ms">
+          <h3 style="margin:0 0 .9rem">Day 01 · Saturday <span style="color:var(--gold-1);font-weight:600">14 June</span></h3>
           <ul class="pill-list">
-            <li>Project-first pedagogy over lecture-first delivery.</li>
-            <li>Mentors drawn from industry and senior IEEE volunteers.</li>
-            <li>Open, documented outputs that outlive the event.</li>
+            <li><b style="color:var(--gold-1);font-weight:600">08:30</b> Check-in &amp; kit</li>
+            <li><b style="color:var(--gold-1);font-weight:600">09:30</b> Opening keynote</li>
+            <li><b style="color:var(--gold-1);font-weight:600">10:30</b> Track lab I</li>
+            <li><b style="color:var(--gold-1);font-weight:600">14:00</b> Track lab II</li>
+            <li><b style="color:var(--gold-1);font-weight:600">16:45</b> Cross-track review</li>
           </ul>
         </div>
-
-        <div class="card reveal" style="--d:200ms">
-          <h3>Summer School Objectives</h3>
+        <div class="card reveal" style="--d:120ms">
+          <h3 style="margin:0 0 .9rem">Day 02 · Sunday <span style="color:var(--gold-1);font-weight:600">15 June</span></h3>
           <ul class="pill-list">
-            <li>Give students hands-on exposure to current engineering toolchains.</li>
-            <li>Bridge the gap between academic syllabus and industry practice.</li>
-            <li>Build a peer network across colleges in the Kerala Section.</li>
-            <li>Encourage IEEE membership through demonstrated value.</li>
-            <li>Seed year-round project teams from the cohort.</li>
+            <li><b style="color:var(--gold-1);font-weight:600">09:00</b> Day-two standup</li>
+            <li><b style="color:var(--gold-1);font-weight:600">09:30</b> Main build block</li>
+            <li><b style="color:var(--gold-1);font-weight:600">13:30</b> Track challenge</li>
+            <li><b style="color:var(--gold-1);font-weight:600">15:15</b> Project showcase</li>
+            <li><b style="color:var(--gold-1);font-weight:600">16:30</b> Certificates &amp; close</li>
           </ul>
         </div>
       </div>
-
-      <div class="grid g-3" style="margin-top:1.15rem">
-        <div class="card reveal" style="--d:80ms">
-          <h3>Who should attend</h3>
-          <p>Second- and third-year engineering students across CSE, ECE, EEE and allied branches. Basic programming familiarity is enough — tracks ramp from fundamentals.</p>
-        </div>
-        <div class="card reveal" style="--d:180ms">
-          <h3>What you take home</h3>
-          <p>A working project, a documented repository, IEEE-issued participation credentials, and access to the alumni mentor channel.</p>
-        </div>
-        <div class="card reveal" style="--d:280ms">
-          <h3>Format</h3>
-          <p>Two full days on campus. Mornings are guided labs, afternoons are build blocks, and each day closes with a review panel and demos.</p>
-        </div>
-      </div>
     </div>
   </section>
 
   <div class="rule"></div>
 
-  <!-- ============ 4. TIMELINE / SCHEDULE ============ -->
-  <section class="section game-section" id="schedule">
+  <!-- ============ 3. VENUE & CONTACT ============ -->
+  <section class="section" id="venue">
     <div class="wrap">
       <div class="section-head reveal">
-        <div class="game-kicker"><b>02</b> Time schedule // plan your day</div>
-        <h2 class="game-title">Event journey</h2>
-        <p class="game-lede">Two days of ideas, learning, AI and shared experiences. Select a day to inspect the program.</p>
+        <span class="eyebrow">Venue</span>
+        <h2 class="display">Where it happens</h2>
       </div>
-
-      <div class="day-switch reveal" role="tablist" aria-label="Schedule days">
-        <button type="button" role="tab" aria-selected="true"  aria-controls="day1" id="tab1">Day 01 · 14 June</button>
-        <button type="button" role="tab" aria-selected="false" aria-controls="day2" id="tab2">Day 02 · 15 June</button>
-      </div>
-
-      <div class="day-panel" id="day1" role="tabpanel" aria-labelledby="tab1">
-        <div class="timeline">
-          <div class="card slot reveal" style="--d:0ms">
-            <time>08:30 — 09:30</time><h4>Registration &amp; Kit Handover</h4>
-            <p>Check-in at the academic block, badge and kit collection, track room allocation.</p>
-          </div>
-          <div class="card slot reveal" style="--d:70ms">
-            <time>09:30 — 10:15</time><h4>Inauguration &amp; Keynote</h4>
-            <p>Welcome address by the branch counsellor, followed by the opening industry keynote.</p>
-          </div>
-          <div class="card slot reveal" style="--d:140ms">
-            <time>10:30 — 13:00</time><h4>Track Lab — Session I</h4>
-            <p>Fundamentals and environment setup inside your chosen track. Everything installed and running before lunch.</p>
-          </div>
-          <div class="card slot reveal" style="--d:210ms">
-            <time>14:00 — 16:30</time><h4>Track Lab — Session II</h4>
-            <p>Guided build. Mentors circulate; checkpoint commits at the end of each hour.</p>
-          </div>
-          <div class="card slot reveal" style="--d:280ms">
-            <time>16:45 — 18:00</time><h4>Review Panel &amp; Networking</h4>
-            <p>Cross-track review of day-one progress, followed by an open networking hour.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="day-panel" id="day2" role="tabpanel" aria-labelledby="tab2" hidden>
-        <div class="timeline">
-          <div class="card slot reveal" style="--d:0ms">
-            <time>09:00 — 09:30</time><h4>Standup &amp; Day-Two Brief</h4>
-            <p>Each cohort states its build target for the day in two minutes.</p>
-          </div>
-          <div class="card slot reveal" style="--d:70ms">
-            <time>09:30 — 12:30</time><h4>Track Lab — Session III</h4>
-            <p>The main build block. Integration, debugging, and a mid-block mentor review.</p>
-          </div>
-          <div class="card slot reveal" style="--d:140ms">
-            <time>13:30 — 15:00</time><h4>Challenge Round</h4>
-            <p>Track-specific challenge — CTF, line-follow race, deployment sprint or model bake-off.</p>
-          </div>
-          <div class="card slot reveal" style="--d:210ms">
-            <time>15:15 — 16:30</time><h4>Project Showcase</h4>
-            <p>Every team demos to the full cohort. Five minutes each, live only — no slides.</p>
-          </div>
-          <div class="card slot reveal" style="--d:280ms">
-            <time>16:30 — 17:30</time><h4>Valediction &amp; Certificates</h4>
-            <p>Awards, IEEE membership drive, and certificate distribution.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="rule"></div>
-
-  <!-- ============ 5. PRICING ============ -->
-  <section class="section game-section" id="events">
-    <div class="wrap">
-      <div class="game-kicker"><b>03</b> Major events // explore</div>
-      <h2 class="game-title">Choose your quest</h2>
-      <p class="game-lede">Technical learning meets community adventure: AI workshops, talks, musical night, trekking and campfire.</p>
-      <div class="game-grid game-grid--3" style="margin-top:1.5rem">
-        <article class="game-panel workshop-card"><i class="program-art" aria-hidden="true"></i><span class="tag">WORKSHOP 01</span><h3>Agentic AI</h3><p>Resource person: Sreeram M R, Entri App.</p></article>
-        <article class="game-panel workshop-card"><i class="program-art" aria-hidden="true"></i><span class="tag">WORKSHOP 02</span><h3>AI, ML &amp; Data Science</h3><p>Abhinav I, Usmanul Faris K S and Abhiram M S.</p></article>
-        <article class="game-panel workshop-card"><i class="program-art" aria-hidden="true"></i><span class="tag">WORKSHOP 03</span><h3>GitHub with AI</h3><p>Josin Joseph and Samanway T K.</p></article>
-      </div>
-      <div class="game-grid game-grid--3" style="margin-top:1rem">
-        <article class="game-panel experience-card"><i class="campfire" aria-hidden="true"></i><span class="tag">EXPERIENCE</span><h3>Campfire</h3><p>End day two outdoors with a community campfire after trekking.</p></article>
-        <article class="game-panel experience-card"><span class="pixel-icon">♫</span><h3>Musical Night</h3><p>Day one closes with ice breaking and a musical night.</p></article>
-        <article class="game-panel experience-card"><span class="pixel-icon">▲</span><h3>Trekking</h3><p>Explore the shared adventure at Palakkayam Thattu.</p></article>
-      </div>
-    </div>
-  </section>
-
-  <div class="rule"></div>
-
-  <section class="section game-section" id="pricing">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <div class="game-kicker"><b>04</b> Registration // choose your pass</div>
-        <h2 class="game-title">Join VYORA '26</h2>
-        <p class="game-lede">Pick your pass and reserve a place in the game.</p>
-        <p class="lede" style="color: var(--fg-dim); font-size: 0.9rem; margin-top: 1rem;">
-          Dummy pricing details: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-          This is a placeholder for any additional demi/dummy pricing details required for the event.
+      <div class="card reveal" style="--d:80ms;padding:1.6rem 1.6rem 1.4rem">
+        <p style="margin:0;font-size:1.02rem;color:var(--gold-0);font-weight:600">Vimal Jyothi Engineering College</p>
+        <p style="margin:.35rem 0 0;font-size:.9rem;color:var(--fg-dim);line-height:1.6">
+          Chemperi, Kannur, Kerala 670632 &nbsp;·&nbsp; 14 &amp; 15 June 2026 &nbsp;·&nbsp; 08:30 onwards
+        </p>
+        <p style="margin:.9rem 0 0;font-size:.9rem;color:var(--fg-dim)">
+          <a href="mailto:ieeesb@vjec.ac.in" style="color:var(--gold-1)">ieeesb@vjec.ac.in</a>
+          &nbsp;·&nbsp;
+          <a href="tel:+919000000000" style="color:var(--gold-1)">+91 90000 00000</a>
         </p>
       </div>
+    </div>
+  </section>
 
-      <div class="game-grid game-grid--2" style="margin-bottom:1.4rem">
-        <article class="game-panel"><h3>IEEE Member</h3><span class="pricing-price">₹499</span><p>Event access for IEEE members.</p></article>
-        <article class="game-panel"><h3>Non-IEEE Member</h3><span class="pricing-price">₹899</span><p>Event access for non-IEEE members.</p></article>
+  <div class="rule"></div>
+
+  <!-- ============ 4. REGISTER ============ -->
+  <section class="section" id="register-section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Register</span>
+        <h2 class="display">Reserve your seat</h2>
+        <p class="lede">Seats are allotted per track on a first-come basis.</p>
       </div>
 
-      <div class="grid g-2-1">
-        <form class="card static reveal" id="regForm" novalidate style="--d:0ms">
-          <div class="game-kicker" style="margin-bottom:1rem"><b>05</b> Registration terminal</div>
-          <h3 style="margin-bottom:1.1rem" id="register-section">Reserve your seat</h3>
-          <div class="form-grid">
-            <div class="field">
-              <label for="f-name">Full name</label>
-              <input id="f-name" name="name" type="text" autocomplete="name" required>
-              <span class="err" data-err-for="f-name"></span>
+      <form class="card static reveal" id="regForm" novalidate style="--d:0ms;max-width:720px;margin:0 auto">
+        <div class="form-grid">
+          <div class="field">
+            <label for="f-name">Full name</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required>
+            <span class="err" data-err-for="f-name"></span>
+          </div>
+          <div class="field">
+            <label for="f-phone">Phone</label>
+            <input id="f-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" required>
+            <span class="err" data-err-for="f-phone"></span>
+          </div>
+          <div class="field full">
+            <label for="f-email">Email</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required>
+            <span class="err" data-err-for="f-email"></span>
+          </div>
+          <div class="field full">
+            <label for="f-track">Track</label>
+            <select id="f-track" name="track" required>
+              <option value="">Select a track…</option>
+              <option>Applied Machine Learning</option>
+              <option>Embedded &amp; IoT Systems</option>
+              <option>Modern Web Engineering</option>
+              <option>Cybersecurity Foundations</option>
+              <option>Robotics &amp; Control</option>
+            </select>
+            <span class="err" data-err-for="f-track"></span>
+          </div>
+
+          <div class="field full" style="display:flex;gap:1rem;align-items:center;margin-top:.35rem;">
+            <label style="margin:0;">IEEE Member?</label>
+            <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.8rem;cursor:pointer;color:var(--fg);">
+              <input type="radio" name="is_ieee_member" value="Yes" onchange="toggleIeeeId(true)"> Yes
+            </label>
+            <label style="display:flex;align-items:center;gap:0.3rem;font-size:0.8rem;cursor:pointer;color:var(--fg);">
+              <input type="radio" name="is_ieee_member" value="No" onchange="toggleIeeeId(false)" checked> No
+            </label>
+          </div>
+
+          <div class="field full conditional-field" id="ieee-id-field" style="display:none;">
+            <label for="f-ieee-id">IEEE Membership ID</label>
+            <input id="f-ieee-id" name="ieee_id" type="text">
+            <span class="err" data-err-for="f-ieee-id"></span>
+          </div>
+
+          <!-- Price summary — updates when IEEE yes/no changes -->
+          <div class="field full" id="price-row">
+            <label>Registration fee</label>
+            <div class="price-box">
+              <div class="price-line" id="priceDisplay"></div>
+              <div class="price-note" id="priceNote"></div>
             </div>
-            <div class="field">
-              <label for="f-phone">Phone</label>
-              <input id="f-phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" required>
-              <span class="err" data-err-for="f-phone"></span>
+          </div>
+
+          <div class="field full">
+            <label>Payment method</label>
+            <div class="upi-static" aria-label="Payment method: UPI">
+              <span class="upi-badge">UPI</span>
+              <span class="upi-sub">UPI is the only accepted payment method</span>
             </div>
-            <div class="field full">
-              <label for="f-email">Email</label>
-              <input id="f-email" name="email" type="email" autocomplete="email" required>
-              <span class="err" data-err-for="f-email"></span>
-            </div>
-            <div class="field full">
-              <label for="f-track">Track</label>
-              <select id="f-track" name="track" required>
-                <option value="">Select a track…</option>
-                <option>Applied Machine Learning</option>
-                <option>Embedded &amp; IoT Systems</option>
-                <option>Modern Web Engineering</option>
-                <option>Cybersecurity Foundations</option>
-                <option>Robotics &amp; Control</option>
-              </select>
-              <span class="err" data-err-for="f-track"></span>
-            </div>
-            
-            <div class="field full" style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem;">
-              <label style="margin:0;">Are you an IEEE Member?</label>
-              <label style="display:flex; align-items:center; gap:0.3rem; font-size:0.8rem; cursor:pointer; color:var(--fg);">
-                <input type="radio" name="is_ieee_member" value="Yes" onchange="toggleIeeeId(true)"> Yes
-              </label>
-              <label style="display:flex; align-items:center; gap:0.3rem; font-size:0.8rem; cursor:pointer; color:var(--fg);">
-                <input type="radio" name="is_ieee_member" value="No" onchange="toggleIeeeId(false)" checked> No
-              </label>
-            </div>
-            
-            <div class="field full conditional-field" id="ieee-id-field" style="display:none;">
-              <label for="f-ieee-id">IEEE Membership ID</label>
-              <input id="f-ieee-id" name="ieee_id" type="text">
-              <span class="err" data-err-for="f-ieee-id"></span>
-            </div>
-            
-            <div class="field full">
-              <label for="f-payment-method">Payment Method</label>
-              <select id="f-payment-method" name="payment_method" required onchange="toggleUpiScreenshot()">
-                <option value="">Select payment method…</option>
-                <option value="upi">UPI Payment</option>
-                <option value="cash">Cash</option>
-                <option value="bank">Bank Transfer</option>
-              </select>
-              <span class="err" data-err-for="f-payment-method"></span>
-            </div>
-            
-            <div class="field full conditional-field" id="upi-screenshot-field" style="display:none;">
-              <label>Upload UPI Payment Screenshot</label>
-              <div class="upload-area" id="uploadArea" onclick="document.getElementById('f-screenshot').click()">
-                <div id="uploadPlaceholder">
-                  <span style="font-size: 1.5rem; display:block; margin-bottom: 0.5rem; color: var(--gold-1);">↑</span>
-                  Click to upload screenshot
-                </div>
-                <img id="uploadPreview" src="" alt="Screenshot Preview" style="display:none; max-width: 100%; max-height: 200px; border-radius: 8px; margin: 0 auto;">
+            <input type="hidden" id="f-payment-method" name="payment_method" value="upi">
+          </div>
+
+          <div class="field full" id="upi-screenshot-field">
+            <label>Upload UPI payment screenshot <span class="req">required</span></label>
+            <p class="field-hint">JPEG or PNG, up to 5MB — it's checked when you submit.</p>
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('f-screenshot').click()">
+              <div id="uploadPlaceholder">
+                <span style="font-size:1.5rem;display:block;margin-bottom:0.5rem;color:var(--gold-1);">↑</span>
+                Click to upload screenshot
               </div>
-              <input id="f-screenshot" name="screenshot" type="file" accept="image/*" style="display:none;" onchange="previewImage(this)">
-              <span class="err" data-err-for="f-screenshot"></span>
+              <img id="uploadPreview" src="" alt="Screenshot preview" style="display:none;max-width:100%;max-height:200px;border-radius:8px;margin:0 auto;">
             </div>
-
-            <div class="field full">
-              <label for="f-note">Anything we should know? (optional)</label>
-              <textarea id="f-note" name="note" rows="3"></textarea>
-            </div>
+            <input id="f-screenshot" name="screenshot" type="file" accept="image/*" style="display:none;" onchange="previewImage(this)">
+            <span class="err" data-err-for="f-screenshot"></span>
           </div>
-          <button class="btn btn-gold" type="submit" style="margin-top:1.2rem; width:100%;">Submit Registration</button>
-          <p class="form-status" id="formStatus" role="status" hidden></p>
-        </form>
 
-        <aside class="card reveal" style="--d:140ms">
-          <h3>Venue &amp; contact</h3>
-          <ul class="contact-list" style="margin-top:1rem">
-            <li><b>Venue</b><span>Vimal Jyothi Engineering College, Chemperi, Kannur, Kerala 670632</span></li>
-            <li><b>Dates</b><span>14 – 15 June 2026 · 08:30 onwards</span></li>
-            <li><b>Email</b><a href="mailto:ieeesb@vjec.ac.in">ieeesb@vjec.ac.in</a></li>
-            <li><b>Student Branch Chair</b><a href="tel:+919000000000">+91 90000 00000</a></li>
-            <li><b>Registration Desk</b><a href="tel:+919111111111">+91 91111 11111</a></li>
-          </ul>
-          <div style="margin-top:1.4rem;display:flex;gap:.6rem;flex-wrap:wrap">
-            <a class="btn btn-ghost" href="mailto:ieeesb@vjec.ac.in">Email us</a>
-            <a class="btn btn-ghost" href="#home">Back to top</a>
+          <div class="field full">
+            <label for="f-note">Anything we should know? <span style="color:var(--fg-mute);text-transform:none;letter-spacing:0">(optional)</span></label>
+            <textarea id="f-note" name="note" rows="3"></textarea>
           </div>
-        </aside>
-      </div>
+        </div>
+        <button class="btn btn-gold" type="submit" style="margin-top:1.3rem;width:100%;">Submit registration</button>
+        <p class="form-status" id="formStatus" role="status" hidden></p>
+      </form>
 
-      <div class="footer" style="margin-top:3rem">
+      <div class="footer" style="margin-top:3.5rem">
         <span>© 2026 IEEE Student Branch · Vimal Jyothi Engineering College</span>
-        <span>Built for IEEE Summer School 2026</span>
+        <span><a href="#home" style="color:var(--gold-1)">↑ Back to top</a></span>
       </div>
     </div>
   </section>
 
-  <section class="section game-section" id="faq">
-    <div class="wrap">
-      <div class="game-kicker"><b>05</b> Help terminal // FAQ</div>
-      <h2 class="game-title">Need a clue?</h2>
-      <div class="game-panel" style="margin-top:1.4rem">
-        <details class="faq-item"><summary>Where is VYORA '26 held?</summary><p>At Vimal Jyothi Engineering College, Kannur, Kerala.</p></details>
-        <details class="faq-item"><summary>When is the event?</summary><p>October 09–10, 2026.</p></details>
-        <details class="faq-item"><summary>What does the pass include?</summary><p>Your event registration covers access according to the selected pass. Final payment confirmation is handled by the registration team.</p></details>
-      </div>
-    </div>
-  </section>
 </main>
-
-<footer class="pixel-footer" id="venue">
-  <strong>IEEE<br>VJEC SB</strong>
-  <span>VYORA '26<br>IDEAS • PEOPLE • TECH</span>
-  <nav aria-label="Footer navigation"><a href="#about">ABOUT</a><a href="#schedule">SCHEDULE</a><a href="#events">EVENTS</a><a href="#pricing">REGISTER</a></nav>
-  <span>VIMAL JYOTHI ENGINEERING COLLEGE<br>KANNUR, KERALA • 2026</span>
-</footer>
 
 <!-- ============ EVENT ID CARD — 5-STAGE REVEAL ============ -->
 <div class="id-card-overlay" id="idCardOverlay" role="dialog" aria-modal="true" aria-labelledby="idCardName" hidden>
@@ -2010,23 +1737,64 @@ input[type="radio"] {
   </div>
 
 
-  <!-- lanyard — V-shape hanging from the neck -->
-  <div id="idCardWrapper" style="transform-style: preserve-3d; perspective: 1000px;">
+  <!-- lanyard — simulated rope (two woven strands) painted into SVG.
+       Sits BESIDE the card container (not inside it) so the full-viewport
+       SVG is never trapped by a transformed ancestor. -->
+  <div id="idCardWrapper">
+  <div class="id-card-lanyard" id="idCardLanyard" aria-hidden="true">
+    <svg class="ly-svg" id="lySvg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <!-- chrome for ring + hook -->
+        <linearGradient id="lyChrome" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0"   stop-color="#5f6367"/>
+          <stop offset=".2"  stop-color="#9aa0a5"/>
+          <stop offset=".4"  stop-color="#d9dee2"/>
+          <stop offset=".5"  stop-color="#f4f7f9"/>
+          <stop offset=".6"  stop-color="#d9dee2"/>
+          <stop offset=".8"  stop-color="#9aa0a5"/>
+          <stop offset="1"   stop-color="#5f6367"/>
+        </linearGradient>
+        <filter id="lyMetal" x="-60%" y="-60%" width="220%" height="220%">
+          <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity=".5"/>
+        </filter>
+      </defs>
+      <!-- back rim of the O-ring (strands painted over it) -->
+      <circle class="ly-ring-arc" id="lyRingBackC" r="9"/>
+      <!-- the two woven cloth strands, re-pathed every frame -->
+      <g id="lyStrands">
+        <path class="ly-s" id="lyStrandLEdge"   stroke-width="24"/>
+        <path class="ly-s" id="lyStrandREdge"   stroke-width="24"/>
+        <path class="ly-s" id="lyStrandLMid"    stroke-width="19"/>
+        <path class="ly-s" id="lyStrandRMid"    stroke-width="19"/>
+        <path class="ly-s" id="lyStrandLCore"   stroke-width="13"/>
+        <path class="ly-s" id="lyStrandRCore"   stroke-width="13"/>
+        <path class="ly-s" id="lyStrandLSheen"  stroke-width="3"/>
+        <path class="ly-s" id="lyStrandRSheen"  stroke-width="3"/>
+        <path class="ly-s" id="lyStrandLStitch" stroke-width="1.25"/>
+        <path class="ly-s" id="lyStrandRStitch" stroke-width="1.25"/>
+      </g>
+      <!-- front rim of the O-ring (painted over the strands) -->
+      <path class="ly-ring-arc" id="lyRingFrontC" d="M9,0 A9,9 0 0 1 -9,0"/>
+      <!-- swivel snap-hook: drawn around the card-top origin (the punch
+           slot centre). paint() translates it to the ring's underside and
+           rotates it with the swinging card body. -->
+      <g id="lyHookG">
+        <!-- barrel from the ring down to the card -->
+        <line class="ly-hook" x1="0" y1="-15.5" x2="0" y2="-8" stroke-width="2.4"/>
+        <rect class="ly-hook-fill" x="-3" y="-8" width="6" height="7.6" rx="1.8"/>
+        <!-- J-curl hooking through the punch slot -->
+        <path class="ly-hook" d="M-2.1,-0.6 v4.6 a2.6,2.6 0 1 0 2.6,-2.6" stroke-width="2.2"/>
+      </g>
+    </svg>
+  </div>
   <div class="id-card-container" id="idCardContainer">
-    <div class="id-card-lanyard" id="idCardLanyard" aria-hidden="true">
-      <div class="ly-strap ly-strap-main"></div>
-      <div class="ly-ring"></div>
-      <div class="ly-clip">
-        <div class="ly-clip-ring"></div>
-        <div class="ly-clip-body"></div>
-      </div>
-    </div>
+    <div class="id-card-swing" id="idCardSwing">
     <article class="id-card" id="idCard">
 
       <header class="id-card-header">
         <div class="id-card-brandblock">
           <div class="id-card-logo" aria-hidden="true">
-            <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+            <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
               <path d="M16 2 30 16 16 30 2 16Z" fill="currentColor" opacity=".18"/>
               <path d="M16 2 30 16 16 30 2 16Z" stroke="currentColor" stroke-width="1.6"/>
               <circle cx="16" cy="16" r="4" fill="currentColor"/>
@@ -2071,14 +1839,17 @@ input[type="radio"] {
       </div>
 
     </article>
-    </div>
-    <!-- ===== STAGE 5 — actions ===== -->
-    <div class="id-card-actions" style="flex-direction:column; gap:8px;">
-      <p class="id-card-hint" id="idCardHint">Show this badge at the registration desk.</p>
-    </div>
+    </div><!-- /id-card-swing -->
+  </div><!-- /id-card-container -->
+  </div><!-- /idCardWrapper -->
+  <!-- ===== STAGE 5 — actions (OUTSIDE the swinging wrapper, so the
+       download button never moves while the badge physically swings) ===== -->
+  <div class="id-card-actions" style="flex-direction:column; gap:8px;">
+    <button class="btn btn-gold" id="downloadQrBtn" type="button" hidden>⬇&nbsp; Download QR ticket</button>
   </div>
 </div>
 
+<script src="ticket.js"></script>
 <script>
 (() => {
   'use strict';
@@ -2090,26 +1861,6 @@ input[type="radio"] {
   const navLinks  = document.getElementById('navLinks');
   const navToggle = document.getElementById('navToggle');
   const reduced   = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* Scroll-controlled iris transition based on the supplied Figma prototype.
-     It is isolated from shutter and ID-card state. */
-  const vyoraStory = document.getElementById('home');
-  let vyoraFrameQueued = false;
-  function paintVyoraStory() {
-    vyoraFrameQueued = false;
-    if (!vyoraStory) return;
-    const range = Math.max(1, vyoraStory.offsetHeight - window.innerHeight);
-    const progress = reduced ? 1 : Math.max(0, Math.min(1, (window.scrollY - vyoraStory.offsetTop) / range));
-    const eased = Math.pow(progress, 1.65);
-    vyoraStory.style.setProperty('--story-progress', progress.toFixed(4));
-    vyoraStory.style.setProperty('--hole-scale', (1 + eased * 30).toFixed(3));
-  }
-  function requestVyoraPaint() {
-    if (!vyoraFrameQueued) { vyoraFrameQueued = true; requestAnimationFrame(paintVyoraStory); }
-  }
-  window.addEventListener('scroll', requestVyoraPaint, { passive:true });
-  window.addEventListener('resize', requestVyoraPaint);
-  requestVyoraPaint();
 
   let isOpen = false;
 
@@ -2275,21 +2026,8 @@ input[type="radio"] {
   }
 
   /* ----------------------------------------------------------
-     4. SCHEDULE TABS
+     4. SCHEDULE — single two-day grid, no tabs (simplified)
      ---------------------------------------------------------- */
-  const tabs = [...document.querySelectorAll('.day-switch [role="tab"]')];
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => {
-        const on = t === tab;
-        t.setAttribute('aria-selected', String(on));
-        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
-      });
-      // the newly shown panel was display:none, so its observer never fired
-      document.querySelectorAll('#' + tab.getAttribute('aria-controls') + ' .reveal')
-        .forEach(el => el.classList.add('in'));
-    });
-  });
 
   /* ----------------------------------------------------------
      6. REGISTRATION FORM (client-side validation only)
@@ -2306,26 +2044,56 @@ input[type="radio"] {
       input.removeAttribute('required');
       input.value = '';
     }
+    updatePrice(isMember);
   };
 
-  window.toggleUpiScreenshot = function() {
-    const method = document.getElementById('f-payment-method').value;
-    const field = document.getElementById('upi-screenshot-field');
-    const input = document.getElementById('f-screenshot');
-    if(method === 'upi') {
-      field.style.display = 'block';
-      input.setAttribute('required', 'true');
+  /* ----------------------------------------------------------
+     IEEE member pricing — ₹599 vs ₹999 for non-members.
+     ---------------------------------------------------------- */
+  function updatePrice(isMember) {
+    const priceEl  = document.getElementById('priceDisplay');
+    const noteEl   = document.getElementById('priceNote');
+    if (!priceEl || !noteEl) return;
+    if (isMember) {
+      priceEl.innerHTML = `<span class="strike">₹999</span> ₹599`;
+      noteEl.textContent = 'IEEE member price';
     } else {
-      field.style.display = 'none';
-      input.removeAttribute('required');
-      input.value = '';
-      document.getElementById('uploadPreview').style.display = 'none';
-      document.getElementById('uploadPlaceholder').style.display = 'block';
+      priceEl.innerHTML = '₹999';
+      noteEl.textContent = 'General admission';
     }
-  };
+  }
+  // Show the general price on load so the section never looks empty.
+  updatePrice(false);
+
+  // UPI is the only payment method, so the screenshot field is always visible.
+  // toggleUpiScreenshot kept as a no-op so any leftover references don't break.
+  window.toggleUpiScreenshot = function() {};
+
+  // Screenshot is validated here at upload time AND at submit time — the
+  // registration cannot go through without a real, valid image file.
+  const SCREENSHOT_MAX = 5 * 1024 * 1024; // 5MB
+  function validateScreenshotFile(input) {
+    const file = input.files && input.files[0];
+    if (!file) return 'Payment screenshot is required — UPI is the only payment method.';
+    if (!file.type.startsWith('image/')) return 'Please upload an image file (JPEG or PNG).';
+    if (file.size > SCREENSHOT_MAX) return 'Screenshot is over 5MB — please compress it first.';
+    return true;
+  }
 
   window.previewImage = function(input) {
     if (input.files && input.files[0]) {
+      const errEl = document.querySelector('[data-err-for="f-screenshot"]');
+      const ok = validateScreenshotFile(input);
+      if (ok !== true) {
+        input.value = '';                       // reject: clear the bad pick
+        document.getElementById('uploadPlaceholder').style.display = 'block';
+        document.getElementById('uploadPreview').style.display = 'none';
+        if (errEl) errEl.textContent = ok;      // show why it was rejected
+        input.closest('.field').classList.add('invalid');
+        return;
+      }
+      if (errEl) errEl.textContent = '';
+      input.closest('.field').classList.remove('invalid');
       var reader = new FileReader();
       reader.onload = function(e) {
         document.getElementById('uploadPlaceholder').style.display = 'none';
@@ -2337,8 +2105,6 @@ input[type="radio"] {
     }
   };
 
-  // Keep the live registration terminal in the page; its submit action opens
-  // the existing confirmation ID-card sequence below.
   const form   = document.getElementById('regForm');
   const status = document.getElementById('formStatus');
 
@@ -2740,33 +2506,15 @@ input[type="radio"] {
   const idCardTicket  = document.getElementById('idCardTicket');
   const idCardRegId   = document.getElementById('idCardRegId');
   const idCardQr      = document.getElementById('idCardQr');
-  const idCardBarcode = document.getElementById('idCardBarcode');
-  const idCardDownload= document.getElementById('idCardDownload');
-  const idCardShare   = document.getElementById('idCardShare');
-  const idCardHint    = document.getElementById('idCardHint');
 
   const STAGES = ['stage-initiate','stage-generate','stage-reveal','stage-enhance','stage-complete'];
   let sequenceRunning = false;
   let lastFocused = null;
   let currentRegId = '';
+  let currentTicketUrl = null;   // signed QR payload, set when the card is populated
   const stageTimers = [];
-
-  // A reload (including the browser back-forward cache) must always begin on
-  // the landing page, never midway through a previously generated ID card.
-  // The card sequence is started only by a successful form submission.
-  function resetIdCardOnPageLoad() {
-    clearStageTimers();
-    sequenceRunning = false;
-    idCardOverlay.classList.remove('open', ...STAGES);
-    idCardOverlay.hidden = true;
-    idCardOverlay.style.transform = '';
-    idCardOverlay.style.transition = '';
-    idCardOverlay.style.opacity = '';
-  }
-  resetIdCardOnPageLoad();
-  window.addEventListener('pageshow', event => {
-    if (event.persisted) resetIdCardOnPageLoad();
-  });
+  const downloadQrBtn = document.getElementById('downloadQrBtn');
+  const qrDlNote      = document.getElementById('qrDlNote');
 
   function setStage(name) {
     idCardOverlay.classList.remove(...STAGES);
@@ -2792,7 +2540,8 @@ input[type="radio"] {
 
   function populateCard(data) {
     const name = data.name.trim();
-    currentRegId = generateRegId();
+    // One ID everywhere: admin-panel record, printed card and QR ticket.
+    currentRegId = data.__regId || generateRegId();
 
     idCardName.textContent    = name;
     idCardRole.textContent    = 'Event Participant';
@@ -2801,21 +2550,97 @@ input[type="radio"] {
     idCardTicket.textContent  = data.is_ieee_member === 'Yes' ? 'IEEE Member' : 'Non-Member';
     idCardRegId.textContent   = 'ID: ' + currentRegId;
 
-    // ID + name + event, so a scan identifies the holder offline
-    const payload = ['IEEE-SS26', currentRegId, name, 'IEEE Summer School 2026'].join('|');
+    // Signed, self-contained ticket URL (ticket.js) — the host's phone
+    // opens check.html and sees ✓ VERIFIED only for tickets issued by
+    // a completed (paid) registration.
+    currentTicketUrl = null;
+    downloadQrBtn.hidden = true;
+    if (qrDlNote) qrDlNote.hidden = true;
+    window.Ticket.issue({ name, regId: currentRegId, track: data.track, isMember: data.is_ieee_member === 'Yes' })
+      .then(url => {
+        currentTicketUrl = url;
+        QR.render(idCardQr, url);
+      })
+      .catch(err => {
+        // Never block the card: fall back to the offline plain payload.
+        console.error('Ticket QR failed, falling back to plain payload', err);
+        try {
+          QR.render(idCardQr, ['IEEE-SS26', currentRegId, name, 'IEEE Summer School 2026'].join('|'));
+        } catch (_) { /* keep card without QR */ }
+      })
+      .finally(() => {
+        downloadQrBtn.hidden = false;
+        if (qrDlNote) qrDlNote.hidden = false;
+      });
+  }
+
+  /** Export the ticket QR as a captioned PNG the student can save/print. */
+  function downloadQrTicket() {
+    if (!currentTicketUrl || !currentRegId) {
+      if (qrDlNote) qrDlNote.textContent = 'Ticket not ready yet — try again in a moment.';
+      return;
+    }
     try {
-      QR.render(idCardQr, payload);
-      // Barcode removed
+      const grid = QR.encode(currentTicketUrl);
+      const n = grid.length, quiet = 3, px = 10;
+      const qrDim = (n + quiet * 2) * px;
+      const pad = 48, captionH = 150;
+      const W = qrDim + pad * 2, H = qrDim + pad * 2 + captionH;
+
+      const cv = document.createElement('canvas');
+      cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#000000';
+      for (let r = 0; r < n; r++)
+        for (let c = 0; c < n; c++)
+          if (grid[r][c]) ctx.fillRect(pad + (c + quiet) * px, pad + (r + quiet) * px, px, px);
+
+      // caption block
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#8a6d1f'; ctx.font = 'bold 26px Georgia, serif';
+      ctx.fillText('IEEE SUMMER SCHOOL 2026', W / 2, pad + qrDim + 44);
+      ctx.fillStyle = '#111111'; ctx.font = 'bold 30px Georgia, serif';
+      ctx.fillText(idCardName.textContent, W / 2, pad + qrDim + 88);
+      ctx.fillStyle = '#555555'; ctx.font = '24px monospace';
+      ctx.fillText(currentRegId + '  ·  PAID · UPI', W / 2, pad + qrDim + 124);
+
+      // Blob + object URL — browsers reliably surface this as a download
+      // (data:-URL downloads are often swallowed silently).
+      cv.toBlob(blob => {
+        if (!blob) return;
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'IEEE-SS26-ticket-' + currentRegId + '.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      }, 'image/png');
     } catch (err) {
-      console.error('Code generation failed', err);
+      console.error('QR download failed', err);
+      if (qrDlNote) qrDlNote.textContent = 'Download failed — please screenshot the badge instead.';
     }
   }
 
   function closeIdCard() {
     clearStageTimers();
     sequenceRunning = false;
-    idCardOverlay.classList.remove('open', ...STAGES);
+    phoneUpsideDown = false;
+    LANYARD.setRetracted(false);
+    idCardOverlay.classList.remove('open', 'is-retracted', ...STAGES);
     document.removeEventListener('keydown', onEsc);
+    const bloodBg = document.getElementById('blood-bg');
+    if (bloodBg) {
+      bloodBg.classList.remove('active');
+      // Force visibility:hidden immediately when closing
+      setTimeout(() => {
+        if (!bloodBg.classList.contains('active')) {
+          bloodBg.style.visibility = 'hidden';
+        }
+      }, 250);
+    }
     targetRotX = 0; targetRotY = 0; rotX = 0; rotY = 0;
     idCardOverlay.style.transform = '';
     idCardOverlay.style.transition = '';
@@ -2855,28 +2680,561 @@ input[type="radio"] {
      INITIATE → GENERATE → REVEAL (shutter down/up) → ENHANCE → COMPLETE */
   
   
-  const idCardWrapper = document.getElementById('idCardWrapper');
-  let rotX = 0, rotY = 0;
-  let targetRotX = 0, targetRotY = 0;
-  
-  function updateCardRotation() {
-    rotX += (targetRotX - rotX) * 0.1;
-    rotY += (targetRotY - rotY) * 0.1;
-    if(idCardWrapper) {
-       idCardWrapper.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  /* ============================================================
+     ID-CARD LANYARD PHYSICS  (verlet rope + rigid card body)
+     A real lanyard, not a bias-following spring:
+
+       • Two cloth strands hang from anchors just below the screen's
+         top edge, converge through an O-ring at the "neck point",
+         and the O-ring is the rope's heavy tip — the badge hangs
+         from it via a chrome snap-hook.
+       • Verlet integration + distance-constraint relaxation makes
+         the strands bend like woven fabric; a shake visibly RIPPLES
+         up the cloth.
+       • The badge is a rigid body welded to the rope tip: it
+         TRANSLATES with the tip and ROTATES with the last strand
+         segment — so it swings on a visible arc (real pendulum),
+         never slides sideways, and the snap-hook stays seated in
+         the card's punch-slot because hook + card are one body.
+       • Inputs: hovering the badge pushes it like a finger (torque
+         about the ring + ring deflection + flick kicks); pointer
+         motion near the card drags air into the rope; the phone's
+         accelerometer (two-stage low-pass, single tilt authority)
+         steadies the anchor frame; a real shake injects lateral
+         velocity into every rope point. Idle, it settles dead
+         straight — and renders nothing at all until touched. */
+  const idCardWrapper  = document.getElementById('idCardWrapper');
+  const idCardContainer= document.getElementById('idCardContainer');
+  const idCardSwing    = document.getElementById('idCardSwing');
+  const lySvg          = document.getElementById('lySvg');
+  const strandIds = ['lyStrandLEdge','lyStrandREdge','lyStrandLMid','lyStrandRMid',
+                     'lyStrandLCore','lyStrandRCore','lyStrandLSheen','lyStrandRSheen',
+                     'lyStrandLStitch','lyStrandRStitch'];
+  const strandEls = strandIds.map(id => document.getElementById(id));
+
+  const LANYARD = (() => {
+    // ---------- configurable physics ----------
+    // Kept together so the interaction can be tuned without touching the
+    // rendering or card content. Values are deliberately conservative: the
+    // badge is heavy, while the woven strap is flexible and slightly delayed.
+    const PHYSICS = {
+      gravity: 2600,         // px/s² on the fabric particles
+      mass: 14,              // ring + card coupling mass
+      stiffness: 30,         // pendulum restoring force
+      damping: 3.35,         // angular air damping
+      friction: 0.978,       // cloth particle velocity retention
+      maxAngle: 0.9,         // radians; prevents the strap wrapping over itself
+      impulseStrength: 420,  // baseline tap impulse (px/s)
+      hoverForce: 32,        // sustained pointer pressure
+      idleForce: 1.6         // intentionally tiny, natural hanging sway
+    };
+    const PEND_LEN = 16;            // ring→card-top drop (px): the snap-hook span
+    const ITER = 5;                 // constraint relaxation passes per substep
+    const SUB = 1/90;               // fixed physics substep (s)
+
+    // ---------- state ----------
+    let W = 0, H = 0;
+    let axL = 0, axR = 0;           // anchor xs (just below top edge)
+    const AY_OFF = -8;              // anchor y (slightly above top edge)
+    const NPT = 6;                  // points per strand (incl. anchor & tip)
+    let ptsL = [], ptsR = [];       // verlet points {x,y,px,py,m}
+    let segLens = { L: 0, R: 0 };   // rest length per segment
+    let tip = null;                 // shared tip point (the O-ring)
+    let started = false;
+    let fresh = false;               // true right after activation — seed a sway
+    let acc = 0, last = performance.now();
+    let winDX = 0;                  // anchor-frame lateral offset (device tilt)
+    let windX = 0;                  // pointer "air" force on cloth
+    let shakeVX = 0;                // velocity injected by shake jerks
+    let swingAng = 0, swingVel = 0; // rigid card body under the tip (rad)
+    let prevGX = 0;                  // previous medium-passed accel-x (g)
+    let leanF = 0, leanM = 0;        // heavy / medium low-passed accel lean (g)
+    let hover = null;                // pointer inside the card {px, py}
+    let hoverVX = 0;                 // smoothed pointer x-velocity while hovering
+    let hoverDef = 0;                // steady hold deflection force on the tip
+    let idleTime = 0;                // phase for the barely perceptible rest sway
+    let tiltTarget = 0;              // phone tilt target; written by sensors, consumed in rAF
+    let arrivalY = 0, arrivalV = 0; // shared card + strap top-down arrival state
+    let retracted = false;
+
+    const makePt = (x, y, m) => ({ x, y, px: x, py: y, m });
+
+    // Where the swing group sits at REST, measured once, without the
+    // cardDrop animation or the rope's own transform polluting the rect:
+    // freeze animations, clear the rope transform, read, restore.
+    function measureRest(){
+      if (!idCardSwing) return { x: innerWidth / 2, top: innerHeight / 2 - 200 };
+      // Neutralise ancestor animation (cardDrop) AND the static
+      // translateY(-150vh) pre-drop transform: pin the container at its
+      // end-of-animation pose so the rect is the true resting position.
+      const swingCS = idCardSwing.style.transform;
+      const contAnim = idCardContainer.style.animation;
+      const contTrans = idCardContainer.style.transform;
+      idCardSwing.style.transform = 'none';
+      idCardContainer.style.animation = 'none';
+      idCardContainer.style.transform = 'translateY(0)';
+      const rect = idCardSwing.getBoundingClientRect();
+      idCardContainer.style.transform = contTrans;
+      idCardContainer.style.animation = contAnim;
+      idCardSwing.style.transform = swingCS;
+      return { x: rect.left + rect.width / 2, top: rect.top, h: rect.height, w: rect.width };
     }
-    requestAnimationFrame(updateCardRotation);
-  }
-  updateCardRotation();
-  
-  document.addEventListener('mousemove', (e) => {
-    if(!sequenceRunning) return;
-    const x = (e.clientX / window.innerWidth - 0.5) * 20; // max 10 deg
-    const y = -(e.clientY / window.innerHeight - 0.5) * 20;
-    targetRotX = y;
-    targetRotY = x;
+    let rest = { x: 0, top: 0, h: 0 };  // filled by build()
+    let restX = 0, restTop = 0;         // static flow position (same values)
+
+    function build(){
+      W = innerWidth; H = innerHeight;
+      axL = W / 2 - 46; axR = W / 2 + 46;
+      rest = measureRest();
+      restX = rest.x;
+      restTop = rest.top;
+      const ty = rest.top - PEND_LEN;   // O-ring hangs PEND_LEN above card top
+      tip = makePt(W / 2 + winDX, ty, PHYSICS.mass);
+      ptsL = [makePt(axL + winDX, AY_OFF, 1)];
+      ptsR = [makePt(axR + winDX, AY_OFF, 1)];
+      segLens.L = Math.hypot(tip.x - ptsL[0].x, tip.y - ptsL[0].y) / (NPT - 1);
+      segLens.R = Math.hypot(tip.x - ptsR[0].x, tip.y - ptsR[0].y) / (NPT - 1);
+      for (let i = 1; i < NPT - 1; i++){
+        const t = i / (NPT - 1);
+        ptsL.push(makePt(ptsL[0].x + (tip.x - ptsL[0].x) * t,
+                         ptsL[0].y + (tip.y - ptsL[0].y) * t, 1));
+        ptsR.push(makePt(ptsR[0].x + (tip.x - ptsR[0].x) * t,
+                         ptsR[0].y + (tip.y - ptsR[0].y) * t, 1));
+      }
+      ptsL.push(tip); ptsR.push(tip);
+      if (fresh){
+        // the drop just ended with a little bounce: let the rope inherit it
+        fresh = false;
+        arrivalY = -(rest.top + (rest.h || 320) + 36);
+        arrivalV = 0;
+      }
+    }
+
+    function reset(){
+      if (!started) return;
+      hover = null; hoverVX = 0; hoverDef = 0; leanF = 0; leanM = 0;
+      build(); swingAng = 0; swingVel = 0; windX = 0; shakeVX = 0; idleTime = 0;
+      paint(); driveCard();
+    }
+
+    // ---------- inputs ----------
+    function pushPointer(dx){
+      // pointer moving near the card drags a little "air" along
+      if (!started) return;
+      windX = Math.max(-28, Math.min(28, windX + dx * 0.008));
+    }
+
+    // HOVER — pointer gliding across the badge face. The card is pushed
+    // like a badge poked by a finger: a steady hold yields the ring
+    // toward the pointer, presses low on the card tilt it harder (lever
+    // arm about the ring pivot), and fast flicks kick the pendulum.
+    function hoverMove(px, py, vx){
+      if (!started) return;
+      hover = { px, py };
+      // Deliberately low-pass the pointer stream. The card should feel like
+      // a weight following a hand, not a cursor-sized vibration detector.
+      hoverVX += (Math.max(-1200, Math.min(1200, vx || 0)) - hoverVX) * 0.055;
+    }
+    function hoverEnd(){
+      // finger leaves the badge: pure pendulum + rope physics take over
+      hover = null; hoverVX = 0;
+    }
+
+    // A tap acts at the actual hit point. A quick pass across the badge
+    // becomes a slap: the incoming pointer velocity is converted into both
+    // linear momentum at the ring and angular momentum about the hook.
+    function strike(px, py, vx, vy, force = 1){
+      if (!started || !tip) return;
+      const half = Math.max(80, (rest.w || 240) * 0.5);
+      const hitX = Math.max(-1, Math.min(1, (px - tip.x) / half));
+      const topY = tip.y + PEND_LEN;
+      const lever = Math.max(0.16, Math.min(1, (py - topY) / Math.max(100, rest.h || 320)));
+      const speed = Math.min(2600, Math.hypot(vx || 0, vy || 0));
+      const direction = Math.abs(vx || 0) > 90 ? Math.sign(vx) : (Math.sign(hitX) || 1);
+      const energy = PHYSICS.impulseStrength * force * (1 + speed / 1200);
+      const kick = Math.min(1050, energy) * direction;
+
+      // Verlet velocity is current position minus previous position.
+      // Moving the previous position backwards preserves momentum instead of
+      // snapping toward a target on the next frame.
+      tip.px -= kick * SUB * 0.9;
+      tip.py += Math.min(180, Math.abs(vy || 0) * 0.11) * SUB;
+      windX = Math.max(-125, Math.min(125, windX + kick * 0.12));
+      swingVel = Math.max(-2.2, Math.min(2.2,
+        swingVel + direction * (0.34 + lever * 0.62) * force + hitX * 0.18));
+    }
+
+    function deviceTilt(gamma){
+      // FALLBACK tilt source only — honoured when devicemotion is
+      // silent (the plumbing gates it on accelerometer freshness), so
+      // the two sensors never double-drive the anchor frame.
+      if (!started) return;
+      tiltTarget = Math.max(-90, Math.min(90, -(gamma / 45) * 90));
+    }
+    function motion(gx){
+      if (!started) return;
+      // ---- PHONE STABILISATION ----
+      // Raw accelerometer data is noisy: hand tremor and sensor jitter
+      // used to fire the shake path every few frames. Two cascaded
+      // exponential low-pass stages separate the signals:
+      //   leanF (heavy, tau~0.30s @60Hz) -> steady anchor tilt
+      //   leanM (medium, tau~0.07s)      -> fast enough for genuine
+      //                                     jerks, eats hf tremor
+      const lean = Math.max(-1, Math.min(1, gx / 9.81));
+      // Sensor callbacks never directly move the rope. They only update a
+      // target which the fixed-timestep solver follows once per frame.
+      tiltTarget = -lean * 72;
+    }
+
+    // ---------- simulation ----------
+    function step(dt){
+      const axLc = axL + winDX, axRc = axR + winDX;
+      ptsL[0].x = axLc; ptsL[0].y = AY_OFF;
+      ptsR[0].x = axRc; ptsR[0].y = AY_OFF;
+
+      const wind = windX * dt * dt;
+      for (const pts of [ptsL, ptsR]){
+        for (let i = 1; i < pts.length; i++){
+          const p = pts[i];
+          const vx = (p.x - p.px) * PHYSICS.friction;
+          const vy = (p.y - p.py) * PHYSICS.friction;
+          p.px = p.x; p.py = p.y;
+          p.x += vx + wind / p.m;
+          p.y += vy + (PHYSICS.gravity / p.m) * dt * dt;
+        }
+      }
+      // shake: velocity injected along the strand, strongest at the tip
+      if (shakeVX){
+        const kick = shakeVX * dt;
+        for (const pts of [ptsL, ptsR]){
+          for (let i = 1; i < pts.length - 1; i++){
+            pts[i].px -= kick * (0.4 + 0.6 * i / pts.length) * 0.5;
+          }
+        }
+        tip.px -= kick * 0.5;
+        shakeVX *= Math.exp(-dt * 6);
+        if (Math.abs(shakeVX) < 2) shakeVX = 0;
+      }
+
+      for (let k = 0; k < ITER; k++){
+        relax(ptsL, segLens.L);
+        relax(ptsR, segLens.R);
+      }
+      windX *= Math.exp(-dt * 2.2);
+      if (Math.abs(windX) < 0.05) windX = 0;
+      // One damped phone target prevents noisy sensor callbacks from
+      // injecting dozens of competing movements into the cloth per frame.
+      winDX += (tiltTarget - winDX) * (1 - Math.exp(-dt * 3.4));
+
+      // Vertical arrival/retraction is part of this same connected system.
+      // The ring, hook, card and rendered fabric all use arrivalY, so the
+      // attachment is never visually broken during a drop or phone flip.
+      const arrivalTarget = retracted ? -(rest.top + (rest.h || 320) + 36) : 0;
+      const arrivalA = (arrivalTarget - arrivalY) * 24 - arrivalV * 8;
+      arrivalV += arrivalA * dt;
+      arrivalY += arrivalV * dt;
+      if (!retracted && arrivalY > 0){ arrivalY = 0; arrivalV *= -0.12; }
+
+      // hover hold: the O-ring is springed toward the pointer side, so
+      // the badge physically yields and the strands bow around it
+      if (hover && tip){
+        const half = Math.max(80, (rest.w || 240) * 0.5);
+        const off  = Math.max(-1, Math.min(1, (hover.px - tip.x) / half));
+        const topY = tip.y + PEND_LEN;
+        const lev  = Math.max(0.15, Math.min(1, (hover.py - topY) / Math.max(120, rest.h || 320)));
+        const velocityBoost = 1 + Math.min(.38, Math.abs(hoverVX) / 1800);
+        hoverDef += (off * PHYSICS.hoverForce * lev * velocityBoost - hoverDef) * (1 - Math.exp(-dt * 4.5));
+      } else {
+        hoverDef *= Math.exp(-dt * 7);
+        if (Math.abs(hoverDef) < 0.02) hoverDef = 0;
+      }
+      if (hoverDef && tip){
+        // verlet force: accelerate the ring toward the held offset
+        tip.x += hoverDef * 90 * dt * dt;
+      }
+
+      // A low-frequency, deterministic micro-sway keeps the resting badge
+      // alive. Its force is dwarfed by a hover or strike and fades out while
+      // the user is interacting, so it never competes with user input.
+      idleTime += dt;
+      if (!hover && Math.abs(windX) < 8 && Math.abs(shakeVX) < 8){
+        const idle = (Math.sin(idleTime * 0.73) + Math.sin(idleTime * 1.19 + 0.8) * 0.36) * PHYSICS.idleForce;
+        tip.x += idle * dt * dt;
+      }
+
+      // rigid card body: pendulum on the ring, gravity-restored.
+      // Hover presses add torque about the pivot — pushing lower on
+      // the face tilts the card further, exactly like a real lanyard.
+      let hoverTorque = 0;
+      if (hover && tip){
+        const half = Math.max(80, (rest.w || 240) * 0.5);
+        const off  = Math.max(-1, Math.min(1, (hover.px - tip.x) / half));
+        const topY = tip.y + PEND_LEN;
+        const lev  = Math.max(0.15, Math.min(1, (hover.py - topY) / Math.max(120, rest.h || 320)));
+        hoverTorque = off * 2.7 * lev * (1 + Math.min(.20, Math.abs(hoverVX) / 1800));
+      }
+      const a = -Math.sin(swingAng) * PHYSICS.stiffness - PHYSICS.damping * swingVel + hoverTorque;
+      swingVel += a * dt;
+      swingAng += swingVel * dt;
+      // a lanyard can't wrap over the ring — the clamp keeps violent
+      // shakes or flicks from flipping the badge upside-down
+      if (swingAng > PHYSICS.maxAngle)  { swingAng = PHYSICS.maxAngle;  if (swingVel > 0) swingVel *= -0.16; }
+      if (swingAng < -PHYSICS.maxAngle) { swingAng = -PHYSICS.maxAngle; if (swingVel < 0) swingVel *= -0.16; }
+    }
+
+    function relax(pts, seg){
+      for (let i = 0; i < pts.length - 1; i++){
+        const a = pts[i], b = pts[i + 1];
+        let dx = b.x - a.x, dy = b.y - a.y;
+        const d = Math.hypot(dx, dy) || 1e-6;
+        const diff = (d - seg) / d * 0.5;
+        dx *= diff; dy *= diff;
+        if (i === 0){
+          b.x -= dx * 2; b.y -= dy * 2;          // anchor is pinned
+        } else {
+          const ma = a.m, mb = b.m, tot = ma + mb;
+          a.x += dx * 2 * (mb / tot); a.y += dy * 2 * (mb / tot);
+          b.x -= dx * 2 * (ma / tot); b.y -= dy * 2 * (ma / tot);
+        }
+      }
+    }
+
+    // ---------- painting ----------
+    function catmull(pts){
+      const P = [pts[0], ...pts, pts[pts.length - 1]];
+      let d = 'M' + P[1].x.toFixed(2) + ',' + P[1].y.toFixed(2);
+      for (let i = 1; i < P.length - 2; i++){
+        const p0 = P[i-1], p1 = P[i], p2 = P[i+1], p3 = P[i+2];
+        const c1x = p1.x + (p2.x - p0.x) / 6, c1y = p1.y + (p2.y - p0.y) / 6;
+        const c2x = p2.x - (p3.x - p1.x) / 6, c2y = p2.y - (p3.y - p1.y) / 6;
+        d += 'C' + c1x.toFixed(2) + ',' + c1y.toFixed(2) + ' ' +
+              c2x.toFixed(2) + ',' + c2y.toFixed(2) + ' ' +
+              p2.x.toFixed(2) + ',' + p2.y.toFixed(2);
+      }
+      return d;
+    }
+
+    function visualPoints(pts){
+      const lastIndex = pts.length - 1;
+      return pts.map((p, i) => ({ x:p.x, y:p.y + arrivalY * (i / lastIndex) }));
+    }
+    function paint(){
+      if (!lySvg) return;
+      const viewL = visualPoints(ptsL), viewR = visualPoints(ptsR);
+      const dL = catmull(viewL), dR = catmull(viewR);
+      const order = [dL, dR, dL, dR, dL, dR, dL, dR, dL, dR];
+      for (let i = 0; i < strandEls.length; i++){
+        if (strandEls[i]) strandEls[i].setAttribute('d', order[i]);
+      }
+      // O-ring: full circle behind the strands, lower half in front —
+      // the fabric visibly passes through the metal
+      const visualTipY = tip.y + arrivalY;
+      const t = 'translate(' + tip.x.toFixed(2) + ' ' + visualTipY.toFixed(2) + ')';
+      const rb = document.getElementById('lyRingBackC');
+      const rf = document.getElementById('lyRingFrontC');
+      if (rb) rb.setAttribute('transform', t);
+      if (rf) rf.setAttribute('transform', t);
+      // snap-hook spans the tip→card-top link, drawn once at build
+      // and translated+rotated with the swinging card body
+      const hg = document.getElementById('lyHookG');
+      if (hg){
+        const nx = tip.x + Math.sin(swingAng) * PEND_LEN;
+        const ny = visualTipY + Math.cos(swingAng) * PEND_LEN;
+        hg.setAttribute('transform',
+          'translate(' + nx.toFixed(2) + ' ' + ny.toFixed(2) + ') rotate(' +
+          (swingAng * 180 / Math.PI).toFixed(2) + ')');
+      }
+    }
+
+    // ---------- driving the card DOM ----------
+    function driveCard(){
+      if (!idCardSwing || !tip) return;
+      // rigid-body swing: the group rotates about the ring centre, and
+      // follows the rope tip. tip - restTip is how far the O-ring has
+      // wandered; the rotation pivots at 50% -16px (the ring).
+      const dx = tip.x - restX;
+      const dy = tip.y + arrivalY - (restTop - PEND_LEN);
+      const ang = swingAng * 180 / Math.PI;
+      idCardSwing.style.transform =
+        'translate(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px) ' +
+        'rotate(' + ang.toFixed(3) + 'deg)';
+    }
+
+    // ---------- main loop ----------
+    let lastBeat = performance.now();   // updated on every frame() call
+    let lastPose = null;                // last painted pose for diagnostics
+    function frame(now){
+      lastBeat = now;
+      // start only once the 0.8s cardDrop has finished (stage-enhance
+      // onward) — measuring the rest pose mid-drop would anchor the
+      // rope 150vh above where the card finally settles
+      const stage = idCardOverlay.classList;
+      // Prime and paint the woven strap as soon as the card reveal begins,
+      // rather than waiting for the later enhancement stage. The card's
+      // physics continues uninterrupted through enhance and completion.
+      const revealed = stage.contains('stage-reveal') ||
+                       stage.contains('stage-enhance') || stage.contains('stage-complete');
+      const active = sequenceRunning && revealed &&
+                     idCardOverlay.classList.contains('open');
+      let dt = (now - last) / 1000; last = now;
+      dt = Math.min(Math.max(dt || 0.016, 0.001), 0.05);
+
+      if (active){
+        if (!started){ started = true; fresh = true; build(); }
+        if (Math.abs(innerWidth - W) > 2 || Math.abs(innerHeight - H) > 2) build();
+        // Keep the solver alive at rest: the low-frequency idle sway is a
+        // real force in the same system, not a CSS animation layered on top.
+        acc += dt;
+        let guard = 0;
+        while (acc >= SUB && guard++ < 6){ step(SUB); acc -= SUB; }
+        paint();
+        driveCard();
+        lastPose = { x: tip.x, y: tip.y, ang: swingAng };
+      } else if (started){
+        started = false; acc = 0;
+        swingAng = 0; swingVel = 0; windX = 0; shakeVX = 0; winDX = 0; prevGX = 0;
+        leanF = 0; leanM = 0; hover = null; hoverVX = 0; hoverDef = 0;
+        lastPose = null; idleTime = 0;
+        if (idCardSwing) idCardSwing.style.transform = '';
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    return {
+      pushPointer, hoverMove, hoverEnd, strike, motion, deviceTilt, reset,
+      setRetracted(value){ retracted = !!value; },
+      replayDrop(){ retracted = false; arrivalY = -(rest.top + (rest.h || 320) + 36); arrivalV = 0; },
+      physics: PHYSICS,
+      // live card geometry for the pointer plumbing — derived from sim
+      // state only, so the hot pointermove path never touches layout
+      cardGeom(){
+        if (!tip || !started) return null;
+        return { cx: tip.x, top: tip.y + arrivalY + PEND_LEN, w: rest.w || 240, h: rest.h || 320 };
+      },
+      isStarted: () => started,
+      dbg(){ return { tip: tip && { x: tip.x, y: tip.y }, swingAng }; }
+    };
+  })();
+
+  // ---------- input plumbing ----------
+  // Hot path: NO layout reads. The card's live position comes from
+  // LANYARD.cardGeom() (sim state), so pointermove never forces reflow.
+  //   pointer over the badge  -> finger-push physics (hover drive)
+  //   pointer near the badge  -> moving air nudges the rope (as before)
+  let lastPX = null, lastPY = null, lastPT = 0, lastVX = 0, lastVY = 0, hovering = false;
+  document.addEventListener('pointermove', (e) => {
+    // Hover physics belongs to a desktop pointer. On touch devices it would
+    // fight the orientation solver and cause apparent jitter.
+    if (e.pointerType === 'touch') return;
+    if (!sequenceRunning){
+      lastPX = null;
+      if (hovering){ hovering = false; LANYARD.hoverEnd(); }
+      return;
+    }
+    const now = performance.now();
+    const dx  = lastPX !== null ? e.clientX - lastPX : 0;
+    const dy  = lastPY !== null ? e.clientY - lastPY : 0;
+    const dtms = now - (lastPT || (now - 16));
+    lastVX = dtms > 0 ? dx * 1000 / dtms : 0;
+    lastVY = dtms > 0 ? dy * 1000 / dtms : 0;
+    const g   = LANYARD.cardGeom();
+    if (g){
+      const overX = Math.abs(e.clientX - g.cx) <= g.w / 2 + 12;
+      const overY = e.clientY >= g.top - 14 && e.clientY <= g.top + g.h + 14;
+      if (overX && overY){
+        hovering = true;
+        LANYARD.hoverMove(e.clientX, e.clientY, lastVX);
+        lastPX = e.clientX; lastPY = e.clientY; lastPT = now;
+        return;
+      }
+      if (hovering){ hovering = false; LANYARD.hoverEnd(); }
+      if (lastPX !== null){
+        const cy    = g.top + g.h / 2;
+        const reach = Math.max(g.w, 320) + 130;
+        if (Math.hypot(e.clientX - g.cx, e.clientY - cy) < reach){
+          LANYARD.pushPointer(dx);
+        }
+      }
+    }
+    lastPX = e.clientX; lastPY = e.clientY; lastPT = now;
+  }, { passive: true });
+
+  document.addEventListener('pointerdown', (e) => {
+    if (!sequenceRunning) return;
+    const g = LANYARD.cardGeom();
+    if (!g) return;
+    const inside = Math.abs(e.clientX - g.cx) <= g.w / 2 + 8 &&
+                   e.clientY >= g.top - 8 && e.clientY <= g.top + g.h + 8;
+    if (!inside) return;
+    // Fast pointer travel is a deliberate hard slap; an ordinary click/tap
+    // still gets a firm, readable impulse in the hit direction.
+    const speed = Math.hypot(lastVX, lastVY);
+    const force = e.pointerType === 'touch' ? 1.05 : speed > 900 ? 2.35 : speed > 380 ? 1.55 : 1;
+    LANYARD.strike(e.clientX, e.clientY, lastVX, lastVY, force);
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => {
+    lastPX = null; lastPY = null; lastVX = 0; lastVY = 0;
+    if (hovering){ hovering = false; LANYARD.hoverEnd(); }
   });
 
+  // ---- MOBILE — device motion drives the rope ----
+  // iOS 13+ only allows sensors after an explicit user permission, and the
+  // promise can reject when called outside a real gesture, so we retry on
+  // the first touch/click after arrival.
+  let lastMotionAt = 0;   // freshness stamp for the accelerometer
+  const onMotion = (e) => {
+    const a = e.accelerationIncludingGravity;
+    if (a && a.x != null){ lastMotionAt = performance.now(); LANYARD.motion(a.x); }
+  };
+  let phoneUpsideDown = false;
+  const onOrientation = (e) => {
+    const upsideDown = e.beta != null && Math.abs(e.beta) > 115;
+    if (upsideDown !== phoneUpsideDown && sequenceRunning) {
+      phoneUpsideDown = upsideDown;
+      if (upsideDown) {
+        // Turning the phone over retracts the completed badge upward into
+        // the shutter. No backdrop click can dismiss it; this is purely a
+        // physical orientation response.
+        LANYARD.setRetracted(true);
+      } else {
+        // Returning upright replays the same top-down arrival, then the
+        // rope solver takes over again from its resting connection point.
+        LANYARD.replayDrop();
+      }
+    }
+    if (e.gamma == null || phoneUpsideDown) return;
+    LANYARD.deviceTilt(e.gamma);
+  };
+  let sensorsAttached = false;
+  const attachSensors = () => {
+    if (sensorsAttached) return;
+    sensorsAttached = true;
+    window.addEventListener('devicemotion', onMotion);
+    window.addEventListener('deviceorientation', onOrientation);
+  };
+  const enableDevicePhysics = () => {
+    if (window.DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === 'function') {
+      DeviceMotionEvent.requestPermission()
+        .then(state => { if (state === 'granted') attachSensors(); })
+        .catch(() => {});   // retried by the one-shot gesture listeners below
+    } else if (window.DeviceMotionEvent || window.DeviceOrientationEvent) {
+      attachSensors();
+    }
+  };
+  enableDevicePhysics();
+  const sensorRetry = () => {
+    enableDevicePhysics();
+    document.removeEventListener('touchend', sensorRetry);
+    document.removeEventListener('click', sensorRetry);
+  };
+  document.addEventListener('touchend', sensorRetry, { once: true });
+  document.addEventListener('click', sensorRetry, { once: true });
+  // Test/automation hook — lets QA drive the rope without the full
+  // registration flow. Harmless in production.
+  window.__ieeeLanyard = { LANYARD, isRunning: () => sequenceRunning,
+                           start() { sequenceRunning = true; },
+                           stop()  { sequenceRunning = false; } };
 
   function runIdCardSequence(data) {
     if (sequenceRunning) return;
@@ -2917,27 +3275,41 @@ input[type="radio"] {
 
         // Keep "THANK YOU" visible for 2 seconds before lifting
         at(2000, () => {
-          // 1. Load the ID card FIRST (overlay + card animation starts behind shutter)
+          // 1. Show the id-card-overlay immediately (no fade transition) BEHIND the
+          //    shutter (z-index:65 < shutter z-index:70).  The overlay's own warehouse
+          //    background image is what gets revealed as the shutter rolls up — no
+          //    red flash because #blood-bg is never activated.
           idCardOverlay.hidden = false;
-          void idCardOverlay.offsetHeight;
-          idCardOverlay.classList.add('open');
+          idCardOverlay.style.transition = 'none';
+          idCardOverlay.style.opacity    = '1';
+          void idCardOverlay.offsetHeight;   // force paint before shutter moves
 
-          // 2. Ensure shutter is fully settled in closed position, THEN lift it
+          // 2. Lift the shutter — overlay's warehouse bg is already visible underneath
           at(100, () => {
             shutter.style.visibility = 'visible';
             shutter.classList.remove('open');
             void shutter.offsetHeight;
-
             shutter.classList.add('open');
             shutter.setAttribute('aria-hidden', 'true');
 
             afterShutterTransition(() => {
               shutter.style.visibility = 'hidden';
+              // 3. Shutter is gone — finish activating overlay (restore transition, pointer-events)
+              idCardOverlay.style.transition = '';
+              idCardOverlay.style.opacity    = '';
+              idCardOverlay.classList.add('open');
               document.addEventListener('keydown', onEsc);
-              setStage('stage-reveal');
-              at(300, () => {
-                setStage('stage-complete');
-                idCardClose.focus();
+
+              // 5. Card drop starts as overlay fades in
+              at(80, () => {
+                setStage('stage-reveal');
+                at(900, () => {
+                  setStage('stage-enhance');
+                  at(1200, () => {
+                    setStage('stage-complete');
+                    idCardClose.focus();
+                  });
+                });
               });
             });
           });
@@ -2976,10 +3348,9 @@ input[type="radio"] {
 
   /* ---- stage 5 actions ---- */
   idCardClose.addEventListener('click', closeIdCard);
-  idCardOverlay.addEventListener('click', e => {
-    // only a click on the backdrop itself dismisses the badge
-    if (e.target === idCardOverlay) closeIdCard();
-  });
+  if (downloadQrBtn) downloadQrBtn.addEventListener('click', downloadQrTicket);
+  // The badge is intentionally modal: only the visible × button can close
+  // it, so accidental backdrop clicks never exit the completed ticket.
 
   // Download / share buttons removed from UI — no handlers needed
 
@@ -2988,31 +3359,27 @@ input[type="radio"] {
     'f-phone'  : v => /^[0-9+\-\s]{10,15}$/.test(v.trim()) || 'Enter a valid phone number.',
     'f-email'  : v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) || 'Enter a valid email address.',
     'f-track'  : v => !!v || 'Choose a track.',
-    'f-payment-method': v => !!v || 'Choose a payment method.',
+    'f-payment-method': v => true,  // UPI is enforced by the hidden input; no user choice to validate
     'f-ieee-id': v => {
       const radio = document.querySelector('input[name="is_ieee_member"]:checked');
       if(radio && radio.value === 'Yes') {
-         return v.trim().length > 0 || 'IEEE Membership ID is required.';
+         const id = v.trim();
+         if (!id) return 'IEEE Membership ID is required.';
+         if (!/^\d{10}$/.test(id)) return 'Membership ID must be exactly 10 digits.';
       }
       return true;
     },
-    'f-screenshot': v => {
-      if(document.getElementById('f-payment-method').value === 'upi') {
-         const input = document.getElementById('f-screenshot');
-         return (input.files && input.files.length > 0) || 'Screenshot is required for UPI payment.';
-      }
-      return true;
-    }
+    'f-screenshot': v => validateScreenshotFile(document.getElementById('f-screenshot'))
   };
 
   function validateField(id) {
     const el     = document.getElementById(id);
-    const result = rules[id](el.value);
     const wrap   = el.closest('.field');
-    const err    = wrap.querySelector('.err');
+    const err    = wrap ? wrap.querySelector('.err') : null;
+    const result = rules[id](el.value);
     const ok     = result === true;
-    wrap.classList.toggle('invalid', !ok);
-    err.textContent = ok ? '' : result;
+    if (wrap) wrap.classList.toggle('invalid', !ok);
+    if (err) err.textContent = ok ? '' : result;
     return ok;
   }
 
@@ -3031,12 +3398,10 @@ input[type="radio"] {
     const placeholder = document.getElementById('uploadPlaceholder');
     if (preview)     { preview.src = ''; preview.style.display = 'none'; }
     if (placeholder) { placeholder.style.display = ''; }
-    // conditional fields collapse back to their default state
-    toggleUpiScreenshot();
     toggleIeeeId(false);
   }
 
-  form?.addEventListener('submit', e => {
+  form.addEventListener('submit', e => {
     e.preventDefault();
     const allOk = Object.keys(rules).map(validateField).every(Boolean);
     if (!allOk) {
@@ -3045,21 +3410,73 @@ input[type="radio"] {
       return;
     }
     const data = Object.fromEntries(new FormData(form).entries());
+    // One registration ID shared by the stored record, the ID card and the QR ticket.
+    data.__regId = generateRegId();
 
-    // NOTE: there is no backend. The UPI screenshot is previewed client-side only
-    // and is NOT uploaded or stored anywhere — `data.screenshot` is a File object
-    // that is discarded here. Wire a fetch() to a real endpoint to persist it.
     console.log('Registration payload →', data);
 
-    status.hidden = false;
-    status.textContent = 'Thank you — your registration is being processed.';
+    const proceed = () => {
+      status.hidden = false;
+      status.textContent = 'Thank you — your registration is being processed.';
 
-    runIdCardSequence(data);
-    form.reset();
-    resetUpload();
+      runIdCardSequence(data);
+      form.reset();
+      resetUpload();
+    };
+
+    // Persist to localStorage so the /#admin panel can list & verify entries.
+    // Screenshot is downscaled first to stay inside the ~5MB storage budget.
+    const finishWithData = (shotDataUrl) => {
+      const rec = {
+        id: data.__regId,
+        ts: new Date().toISOString(),
+        name: (data.name || '').trim(),
+        phone: (data.phone || '').trim(),
+        email: (data.email || '').trim(),
+        track: data.track || '',
+        ieeeMember: data.is_ieee_member === 'Yes',
+        ieeeId: data.is_ieee_member === 'Yes' ? (data.ieee_id || '').trim() : '',
+        paymentMethod: data.payment_method || '',
+        note: (data.note || '').trim(),
+        screenshot: shotDataUrl,
+        verified: false
+      };
+      try {
+        const list = JSON.parse(localStorage.getItem('registrations') || '[]');
+        list.push(rec);
+        localStorage.setItem('registrations', JSON.stringify(list));
+      } catch (err) {
+        console.warn('Registration could not be stored for the admin panel:', err);
+      }
+      proceed();
+    };
+
+    const file = (data.screenshot instanceof File && data.screenshot.size) ? data.screenshot : null;
+    if (!file) {
+      finishWithData(null);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1400;
+        const scale  = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.max(1, Math.round(img.width  * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        finishWithData(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = () => finishWithData(null);
+      img.src = reader.result;
+    };
+    reader.onerror = () => finishWithData(null);
+    reader.readAsDataURL(file);
   });
 
 })();
+
 </script>
 </body>
 </html>
