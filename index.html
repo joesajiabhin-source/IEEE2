@@ -950,7 +950,7 @@ input[type="radio"] {
 .figma-name .figma-hole {
   display: inline-block;
   cursor: pointer;
-  transition: transform 0.22s cubic-bezier(0.2, 0, 0.2, 1), filter 0.22s ease;
+  transition: filter 0.22s ease;
 }
 
 .figma-year {
@@ -966,8 +966,16 @@ input[type="radio"] {
 }
 
 /* Cosmic Black Hole 'O' Formation & Gravitational Warp */
+/* Normal scroll-controlled O expansion */
+.figma-hole {
+  transform: scale(var(--hole-scale, 1)) !important;
+  transform-origin: center center !important;
+  will-change: transform !important;
+}
+
+/* During entrance slam only, without 'both' fill-mode so it never freezes the transform */
 .figma-mark.animate-title .figma-hole {
-  animation: vyHoleForm 0.68s cubic-bezier(0.19, 1, 0.22, 1) calc(var(--i, 2) * 0.12s) both !important;
+  animation: vyHoleForm 0.68s cubic-bezier(0.19, 1, 0.22, 1) calc(var(--i, 2) * 0.12s) !important;
   will-change: transform, opacity;
 }
 
@@ -2166,6 +2174,14 @@ input[type="radio"] {
     const eased = Math.pow(progress, 1.65);
     vyoraStory.style.setProperty('--story-progress', progress.toFixed(4));
     vyoraStory.style.setProperty('--hole-scale', (1 + eased * 30).toFixed(3));
+
+    // Clear any entrance animation immediately upon scroll so the O expands without interference
+    if (progress > 0.002 || window.scrollY > 15) {
+      const figmaMark = document.querySelector('.figma-mark');
+      if (figmaMark && figmaMark.classList.contains('animate-title')) {
+        figmaMark.classList.remove('animate-title');
+      }
+    }
   }
   function requestVyoraPaint() {
     if (!vyoraFrameQueued) { vyoraFrameQueued = true; requestAnimationFrame(paintVyoraStory); }
@@ -2194,11 +2210,16 @@ input[type="radio"] {
   }
 
   function triggerTitleAnimation() {
+    // Only run entrance slam if user is at the top of the landing page
+    if (window.scrollY > 30) return;
     const figmaMark = document.querySelector('.figma-mark');
     if (!figmaMark) return;
     figmaMark.classList.remove('animate-title');
     void figmaMark.offsetWidth; // force DOM reflow
     figmaMark.classList.add('animate-title');
+    setTimeout(() => {
+      figmaMark.classList.remove('animate-title');
+    }, 1300);
   }
 
   function openShutter(scrollTo, cb) {
@@ -2625,17 +2646,7 @@ input[type="radio"] {
         if (typeof triggerTitleAnimation === 'function') triggerTitleAnimation();
       }, 400);
 
-      // Also trigger via IntersectionObserver when scrolled into view
-      if ('IntersectionObserver' in window) {
-        const obs = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting && typeof triggerTitleAnimation === 'function') {
-              triggerTitleAnimation();
-            }
-          });
-        }, { threshold: 0.3 });
-        obs.observe(figmaMark);
-      }
+// IntersectionObserver removed to prevent scroll interruption
     }
 
     if (document.readyState === 'loading') {
